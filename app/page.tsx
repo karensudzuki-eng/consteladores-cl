@@ -1,124 +1,100 @@
-import React from "react";
-import { ModernNavbar } from "@/components/landing/ModernNavbar";
-import { ModernHero } from "@/components/landing/ModernHero";
-import { ModernTherapistDirectory, TherapistItem } from "@/components/landing/ModernTherapistDirectory";
-import { HowItWorksModern } from "@/components/landing/HowItWorksModern";
-import { TopicsGridModern } from "@/components/landing/TopicsGridModern";
+"use client";
+
+import React, { useState } from "react";
+import { HeaderProfile } from "@/components/agendapro/HeaderProfile";
+import { ServiceCatalog, ServiceItem, servicesData } from "@/components/agendapro/ServiceCatalog";
+import { BookingFlowModal, TherapistOption, defaultTherapists } from "@/components/agendapro/BookingFlowModal";
+import { SystemicPhilosophy } from "@/components/icalma/SystemicPhilosophy";
+import { TherapistsTeam } from "@/components/icalma/TherapistsTeam";
 import { ConsteladorCTAModern } from "@/components/landing/ConsteladorCTAModern";
 import { FAQSectionModern } from "@/components/landing/FAQSectionModern";
 import { ModernFooter } from "@/components/landing/ModernFooter";
-import { createAdminClient } from "@/lib/supabase/admin";
 
-// Facilitadores de referencia para el marketplace
-const fallbackTherapists: TherapistItem[] = [
-  {
-    id: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    name: "María Paz Vial",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop",
-    headline: "Facilitadora en Constelaciones Familiares y Duelo",
-    bio: "Acompaño procesos de reconciliación con el linaje materno y resolución de duelos difíciles con un enfoque de respeto y serenidad.",
-    approach: "Formada en Instituto Bert Hellinger de Chile",
-    experienceYears: 9,
-    priceClp: 45000,
-    durationMinutes: 75,
-    location: "Online en todo Chile (Google Meet)",
-    specialties: ["Madre y Padre", "Duelos", "Vínculos afectivos"],
-    nextAvailable: "Jueves disponible",
-  },
-  {
-    id: "b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e",
-    name: "Rodrigo San Martín",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop",
-    headline: "Constelador Sistémico • Vocación y Prosperidad",
-    bio: "Especialista en destrabar lealtades familiares invisibles que frenan el desarrollo laboral, la relación con el dinero y los proyectos de vida.",
-    approach: "Certificado por Centro Latinoamericano de Constelaciones",
-    experienceYears: 12,
-    priceClp: 48000,
-    durationMinutes: 75,
-    location: "Online en todo Chile (Google Meet)",
-    specialties: ["Trabajo y Dinero", "Vocación", "Padre y Éxito"],
-    nextAvailable: "Viernes disponible",
-  },
-  {
-    id: "c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f",
-    name: "Camila Echeverría",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop",
-    headline: "Facilitadora Sistémica • Pareja y Síntomas Corporales",
-    bio: "Miro con delicadeza dinámicas de pareja recurrentes y síntomas corporales que manifiestan historias inconclusas en el árbol familiar.",
-    approach: "Escuela de Constelaciones Familiares de Chile",
-    experienceYears: 7,
-    priceClp: 42000,
-    durationMinutes: 75,
-    location: "Online en todo Chile (Google Meet)",
-    specialties: ["Pareja y Relaciones", "Síntomas", "Linaje Femenino"],
-    nextAvailable: "Lunes disponible",
-  },
-];
+export default function HomePage() {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<ServiceItem | null>(servicesData[0]);
 
-async function getTherapists(): Promise<TherapistItem[]> {
-  try {
-    const supabase = createAdminClient();
-    const { data, error } = await supabase
-      .from("constellation_therapists")
-      .select("*, profiles:user_id(full_name, avatar_url)")
-      .eq("status", "approved");
-
-    if (error || !data || data.length === 0) {
-      return fallbackTherapists;
+  const handleOpenBooking = (service?: ServiceItem) => {
+    if (service) {
+      setSelectedService(service);
+    } else {
+      setSelectedService(servicesData[0]);
     }
+    setIsBookingOpen(true);
+  };
 
-    return data.map((t) => ({
-      id: t.id,
-      name: t.profiles?.full_name || "Facilitador",
-      avatarUrl:
-        t.profiles?.avatar_url ||
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop",
-      headline: t.headline,
-      bio: t.bio,
-      approach: t.approach,
-      experienceYears: t.experience_years,
-      priceClp: t.price_clp,
-      durationMinutes: t.duration_minutes,
-      location: t.location,
-      specialties: t.modalities || ["Familia", "Pareja", "Duelo"],
-      nextAvailable: "Horas disponibles esta semana",
-    }));
-  } catch {
-    return fallbackTherapists;
-  }
-}
-
-export default async function HomePage() {
-  const therapists = await getTherapists();
+  const handleSelectTherapist = (therapist: TherapistOption) => {
+    // Al seleccionar terapeuta, abrimos el modal de reserva con el servicio individual
+    setSelectedService(servicesData[0]);
+    setIsBookingOpen(true);
+  };
 
   return (
-    <div className="min-h-screen bg-white text-slate-800">
-      {/* 1. Barra de Navegación Moderna */}
-      <ModernNavbar />
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans">
+      
+      {/* 1. Cabecera institucional y de datos estilo AgendaPro (Rumbo Sagrado) */}
+      <HeaderProfile onBookClick={() => handleOpenBooking()} />
 
-      {/* 2. Hero de Alta Conversión con Buscador */}
-      <ModernHero />
+      {/* Contenedor principal de servicios y agendamiento */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6">
+        
+        {/* Banner de aviso para el consultante */}
+        <div className="mt-6 p-4 rounded-2xl bg-teal-50 border border-teal-200 text-teal-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
+          <div className="flex items-center gap-2.5">
+            <span className="text-base">🌿</span>
+            <span>
+              <strong>Atención online y presencial:</strong> Sesiones individuales guiadas por Google Meet y talleres presenciales en Santiago.
+            </span>
+          </div>
+          <button
+            onClick={() => handleOpenBooking()}
+            className="px-4 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs whitespace-nowrap self-start sm:self-auto"
+          >
+            Agendar ahora
+          </button>
+        </div>
 
-      {/* 3. Directorio de Terapeutas con Filtros y Reserva */}
-      <ModernTherapistDirectory initialTherapists={therapists} />
+        {/* 2. Catálogo de Servicios estilo AgendaPro con precios en CLP */}
+        <section id="servicios">
+          <div className="pt-8 pb-2">
+            <span className="text-xs font-bold uppercase tracking-widest text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
+              Catálogo de Servicios
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2">
+              Elige tu sesión de constelación familiar
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 mt-1">
+              Selecciona el formato que mejor responda a tu necesidad actual y reserva tu hora en línea con confirmación inmediata.
+            </p>
+          </div>
 
-      {/* 4. Cómo Funciona en 3 Pasos */}
-      <HowItWorksModern />
+          <ServiceCatalog onSelectService={handleOpenBooking} />
+        </section>
 
-      {/* 5. Temas que se Trabajan */}
-      <TopicsGridModern />
+      </main>
 
-      {/* 6. Llamado a la Acción para Consteladores ("Soy Constelador") */}
+      {/* 3. Filosofía y rigor sistémico estilo Icalma (constelacionesfamiliares.cl) */}
+      <SystemicPhilosophy />
+
+      {/* 4. Equipo de Facilitadores Certificados de la Red */}
+      <TherapistsTeam onSelectTherapist={handleSelectTherapist} />
+
+      {/* 5. Convocatoria para Facilitadores ("Soy Constelador") */}
       <ConsteladorCTAModern />
 
-      {/* 7. Preguntas Frecuentes (Acordeón) */}
+      {/* 6. Preguntas Frecuentes sobre el Agendamiento y la Sesión */}
       <FAQSectionModern />
 
-      {/* 8. Footer Moderno */}
+      {/* 7. Pie de página profesional */}
       <ModernFooter />
+
+      {/* 8. MODAL INTERACTIVO DE AGENDAMIENTO ESTILO AGENDAPRO */}
+      <BookingFlowModal
+        isOpen={isBookingOpen}
+        onClose={() => setIsBookingOpen(false)}
+        selectedService={selectedService}
+      />
+
     </div>
   );
 }
