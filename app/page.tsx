@@ -1,19 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
-import { MercuryNavbar } from "@/components/mercury/MercuryNavbar";
-import { MercuryHero } from "@/components/mercury/MercuryHero";
-import { MercuryPhilosophy } from "@/components/mercury/MercuryPhilosophy";
-import { MercuryServices } from "@/components/mercury/MercuryServices";
-import { MercuryPaymentExplainer } from "@/components/mercury/MercuryPaymentExplainer";
-import { MercuryTherapists } from "@/components/mercury/MercuryTherapists";
-import { MercuryTherapistCTA } from "@/components/mercury/MercuryTherapistCTA";
-import { MercuryTestimonialsAndAbout } from "@/components/mercury/MercuryTestimonialsAndAbout";
-import { MercuryFAQ } from "@/components/mercury/MercuryFAQ";
-import { MercuryFooter } from "@/components/mercury/MercuryFooter";
-import { MercuryFloatingWhatsApp } from "@/components/mercury/MercuryFloatingWhatsApp";
-import { MercuryStickyMobileBar } from "@/components/mercury/MercuryStickyMobileBar";
-import { MercuryBookingModal } from "@/components/mercury/MercuryBookingModal";
+import { WatercolorNavbar } from "@/components/watercolor/WatercolorNavbar";
+import { WatercolorHero } from "@/components/watercolor/WatercolorHero";
+import { WatercolorPhilosophy } from "@/components/watercolor/WatercolorPhilosophy";
+import { WatercolorServices } from "@/components/watercolor/WatercolorServices";
+import { WatercolorPaymentExplainer } from "@/components/watercolor/WatercolorPaymentExplainer";
+import { WatercolorTherapists } from "@/components/watercolor/WatercolorTherapists";
+import { WatercolorTherapistCTA } from "@/components/watercolor/WatercolorTherapistCTA";
+import { WatercolorAbout } from "@/components/watercolor/WatercolorAbout";
+import { WatercolorFAQ } from "@/components/watercolor/WatercolorFAQ";
+import { WatercolorFooter } from "@/components/watercolor/WatercolorFooter";
+import { WatercolorFloatingWhatsApp } from "@/components/watercolor/WatercolorFloatingWhatsApp";
+import { WatercolorStickyMobileBar } from "@/components/watercolor/WatercolorStickyMobileBar";
+import { WatercolorBookingModal } from "@/components/watercolor/WatercolorBookingModal";
 import { OnlineService, onlineServicesList } from "@/components/redesign/OnlineServiceCatalog";
 import { VerifiedTherapist, onlineTherapists } from "@/components/redesign/TherapistTeamOnline";
 
@@ -38,46 +38,46 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#171721] text-[#ededf3] font-sans antialiased selection:bg-[#5266eb]/30 selection:text-[#ffffff] pb-16 sm:pb-0">
+    <div className="min-h-screen bg-[#FAF8F5] text-[#27221F] font-sans antialiased selection:bg-terracotta-100 selection:text-terracotta-800 pb-16 sm:pb-0">
       
-      {/* 1. Transparent Top Navigation Bar with Blur on Scroll */}
-      <MercuryNavbar onBookClick={() => handleOpenBooking()} />
+      {/* 1. Barra de Navegación con Amonite y Tipografía Cursiva Armoniosa */}
+      <WatercolorNavbar onBookClick={() => handleOpenBooking()} />
 
-      {/* 2. Full-Bleed Atmospheric Photographic Hero (Roots, Memory, Bonds) */}
-      <MercuryHero onBookClick={() => handleOpenBooking()} />
+      {/* 2. Hero Principal con Fondo de Acuarela, Títulos Centrados y sin WhatsApp en el cuadro */}
+      <WatercolorHero onBookClick={() => handleOpenBooking()} />
 
-      {/* 3. Para Consultantes: Filosofía y Órdenes del Amor (Graphite Cards, Centered Titles) */}
-      <MercuryPhilosophy />
+      {/* 3. ¿Qué es una constelación? y los 3 Órdenes del Amor en Tarjetas Pasteles */}
+      <WatercolorPhilosophy />
 
-      {/* 4. Catálogo de Servicios 100% Online con Reserva 20% / Saldo 80% */}
-      <MercuryServices onSelectService={handleOpenBooking} />
+      {/* 4. Servicios 100% Online con Desglose 20% / 80% */}
+      <WatercolorServices onSelectService={handleOpenBooking} />
 
-      {/* 5. ¿Cómo Funciona el Pago? (3 Pasos, Medios de Pago y Cancelación) */}
-      <MercuryPaymentExplainer />
+      {/* 5. ¿Cómo funciona el pago del 20%? */}
+      <WatercolorPaymentExplainer />
 
-      {/* 6. Facilitadores Validados (Graphite Cards, Centered Titles, Foto Pendiente) */}
-      <MercuryTherapists onSelectTherapist={handleSelectTherapist} />
+      {/* 6. Facilitadores Verificados en Chile con Títulos Centrados */}
+      <WatercolorTherapists onSelectTherapist={handleSelectTherapist} />
 
-      {/* 7. Para Consteladores: Acceso y Convocatoria de Acreditación */}
-      <MercuryTherapistCTA />
+      {/* 7. Para Consteladores: Botón estricto "Postular como facilitador" */}
+      <WatercolorTherapistCTA />
 
-      {/* 8. Quiénes Somos y Testimonios Reales Pendientes */}
-      <MercuryTestimonialsAndAbout />
+      {/* 8. Quiénes Somos y Testimonios */}
+      <WatercolorAbout />
 
-      {/* 9. Preguntas Frecuentes (Minimalist Accordion in Graphite) */}
-      <MercuryFAQ />
+      {/* 9. Preguntas Frecuentes en Acordeón Suave */}
+      <WatercolorFAQ />
 
-      {/* 10. Disclaimer Banner Footnote & Legal Footer */}
-      <MercuryFooter />
+      {/* 10. Pie de Página Ético con Disclaimer y Línea *4141 */}
+      <WatercolorFooter />
 
-      {/* Botón flotante accesible de WhatsApp (Obsidian / Ivory, cero verde) */}
-      <MercuryFloatingWhatsApp />
+      {/* Botón Flotante de WhatsApp (Exclusivo en esquina inferior, cero verde chillón) */}
+      <WatercolorFloatingWhatsApp />
 
-      {/* Barra móvil fija inferior con botón Cobalt */}
-      <MercuryStickyMobileBar onBookClick={() => handleOpenBooking()} />
+      {/* Barra móvil fija inferior con precio desde $9.000 (20%) */}
+      <WatercolorStickyMobileBar onBookClick={() => handleOpenBooking()} />
 
-      {/* Modal de Agendamiento Online (Graphite Card #1e1e2a, Pill Inputs, Cobalt Action) */}
-      <MercuryBookingModal
+      {/* Modal de Agendamiento Online Adaptado a Acuarela y Pergamino */}
+      <WatercolorBookingModal
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
         selectedService={selectedService}
