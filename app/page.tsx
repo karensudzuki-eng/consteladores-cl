@@ -2,10 +2,12 @@ import React from "react";
 import Link from "next/link";
 import { HeroCarousel } from "@/components/landing/HeroCarousel";
 import { TenderSteps } from "@/components/landing/TenderSteps";
+import { ConsultantSection } from "@/components/landing/ConsultantSection";
+import { TherapistCommunitySection } from "@/components/landing/TherapistCommunitySection";
 import { TherapistCard, TherapistData } from "@/components/landing/TherapistCard";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-// Datos de terapeutas iniciales para el MVP (si la BD aún no tiene registros)
+// Facilitadores de referencia para el MVP
 const mockTherapists: TherapistData[] = [
   {
     id: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
@@ -25,8 +27,8 @@ const mockTherapists: TherapistData[] = [
     name: "Rodrigo San Martín",
     avatarUrl:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop",
-    headline: "Constelador Familiar • Vocación, Éxito y Órdenes del Amor",
-    bio: "Mi labor es ayudarte a destrabar lealtades invisibles que frenan tu prosperidad y tu desarrollo en el mundo. Un trabajo sobrio, respetuoso y muy clarificador.",
+    headline: "Constelador Familiar • Vocación, Prosperidad y Órdenes del Amor",
+    bio: "Mi labor es ayudarte a destrabar lealtades invisibles que frenan tu desarrollo en el mundo. Un trabajo sobrio, respetuoso y muy clarificador.",
     approach: "Certificado por el Centro Latinoamericano de Pedagogía y Constelaciones Sistémicas",
     experienceYears: 12,
     priceClp: 48000,
@@ -85,40 +87,43 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-earth-50 text-earth-900 selection:bg-terracotta-100 selection:text-terracotta-700">
       
-      {/* Barra de navegación superior sobria y acogedora */}
-      <header className="sticky top-0 z-40 bg-earth-50/90 backdrop-blur-md border-b border-earth-200/60">
+      {/* Barra de navegación superior con doble enfoque */}
+      <header className="sticky top-0 z-40 bg-earth-50/95 backdrop-blur-md border-b border-earth-200/60">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2.5 group">
             <span className="w-2.5 h-2.5 rounded-full bg-terracotta-500 group-hover:scale-125 transition-transform" />
             <span className="font-serif text-2xl tracking-tight text-earth-900 font-semibold">
               consteladores<span className="text-terracotta-600 font-normal">.cl</span>
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8 text-sm text-earth-700 font-medium">
-            <a href="#que-es" className="hover:text-terracotta-600 transition-colors">
-              ¿Qué es una constelación?
+          <nav className="hidden lg:flex items-center gap-7 text-sm text-earth-700 font-medium">
+            <a href="#proposito" className="hover:text-terracotta-600 transition-colors">
+              Propósito y Ética
             </a>
-            <a href="#pasos" className="hover:text-terracotta-600 transition-colors">
-              Cómo funciona
+            <a href="#consultantes" className="hover:text-terracotta-600 transition-colors">
+              Para Consultantes
             </a>
             <a href="#terapeutas" className="hover:text-terracotta-600 transition-colors">
-              Facilitadores certificados
+              Facilitadores Certificados
+            </a>
+            <a href="#soy-constelador" className="hover:text-terracotta-600 transition-colors">
+              Soy Constelador
             </a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <Link
               href="/registro-terapeuta"
-              className="text-xs sm:text-sm font-medium text-earth-700 hover:text-terracotta-600 px-3.5 py-2 transition-colors"
+              className="text-xs sm:text-sm font-medium text-earth-700 hover:text-terracotta-600 px-3 py-1.5 transition-colors border border-earth-200 rounded-full bg-white/70 hover:bg-white"
             >
-              Soy Constelador
+              Postular como Facilitador
             </Link>
             <a
               href="#terapeutas"
-              className="px-4 py-2 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs sm:text-sm font-medium transition-all shadow-sm"
+              className="px-4 sm:px-5 py-2 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs sm:text-sm font-medium transition-all shadow-sm"
             >
-              Buscar facilitador
+              Agendar Sesión
             </a>
           </div>
         </div>
@@ -127,34 +132,60 @@ export default async function HomePage() {
       {/* Hero Section con Carrusel de Calma */}
       <HeroCarousel />
 
-      {/* Sección intermedia: Una reflexión sincera */}
-      <section id="que-es" className="py-20 max-w-4xl mx-auto px-6 text-center space-y-6">
-        <span className="text-xs uppercase tracking-widest text-olive-700 font-semibold">
-          Un refugio para tu historia
-        </span>
+      {/* 1. SECCIÓN: PROPÓSITO Y BIENVENIDA ÉTICA */}
+      <section id="proposito" className="py-20 max-w-4xl mx-auto px-6 text-center space-y-6">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-olive-50 border border-olive-200 text-olive-700 text-xs tracking-wider uppercase font-medium">
+          <span className="w-1.5 h-1.5 rounded-full bg-olive-500" />
+          Propósito y Encuentro Ético
+        </div>
+
         <h2 className="font-serif text-3xl sm:text-4xl text-earth-900 leading-tight">
-          "Hay dolores que no nacieron en ti, pero sí tienen en ti la oportunidad de encontrar paz."
+          "Un puente seguro para mirar el origen de lo que duele, con amor y sin apuro."
         </h2>
+
         <p className="text-earth-700 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
-          En las constelaciones no venimos a juzgar a quienes estuvieron antes, ni a buscar culpables.
-          Venimos a mirar con los ojos del corazón aquello que quedó excluido o silenciado, para que puedas caminar con tu propia vida, libre y en paz.
+          Las constelaciones familiares sistémicas nos invitan a comprender que ningún sufrimiento ocurre de forma aislada. Pertenecemos a un entramado vivo donde cada generación intenta equilibrar las heridas, los duelos y los silencios del pasado.
         </p>
+
+        <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left max-w-3xl mx-auto">
+          <div className="p-5 rounded-2xl bg-white border border-earth-200/80 shadow-warm-subtle">
+            <p className="font-serif text-lg text-earth-900 mb-1">Sin juicio</p>
+            <p className="text-xs text-earth-600 leading-relaxed">
+              No buscamos culpables ni juzgamos a los ancestros. Miramos con compasión lo que fue posible para ellos.
+            </p>
+          </div>
+          <div className="p-5 rounded-2xl bg-white border border-earth-200/80 shadow-warm-subtle">
+            <p className="font-serif text-lg text-earth-900 mb-1">Rigor verificado</p>
+            <p className="text-xs text-earth-600 leading-relaxed">
+              Cada facilitador cuenta con diploma avalado por escuelas sistémicas y revisión humana de sus credenciales.
+            </p>
+          </div>
+          <div className="p-5 rounded-2xl bg-white border border-earth-200/80 shadow-warm-subtle">
+            <p className="font-serif text-lg text-earth-900 mb-1">Tu propio ritmo</p>
+            <p className="text-xs text-earth-600 leading-relaxed">
+              El alma necesita tiempo para asimilar. Acompañamos el proceso respetando tus tiempos internos.
+            </p>
+          </div>
+        </div>
       </section>
 
-      {/* Pasos a seguir (explicados con ternura) */}
+      {/* 2. SECCIÓN: PARA CONSULTANTES (TEMAS Y CONTENCIÓN) */}
+      <ConsultantSection />
+
+      {/* PASOS A SEGUIR EXPLICADOS CON TERNURA */}
       <TenderSteps />
 
-      {/* Directorio de Facilitadores Certificados */}
-      <section id="terapeutas" className="py-20 max-w-6xl mx-auto px-6 sm:px-8">
+      {/* DIRECTORIO DE FACILITADORES CERTIFICADOS */}
+      <section id="terapeutas" className="py-20 max-w-6xl mx-auto px-6 sm:px-8 border-b border-earth-200/70">
         <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
           <span className="text-xs uppercase tracking-widest text-terracotta-600 font-semibold">
-            Terapeutas con acreditación verificada
+            Terapeutas con certificación comprobada
           </span>
           <h2 className="font-serif text-3xl sm:text-4xl text-earth-900 tracking-tight">
             Nuestros facilitadores
           </h2>
           <p className="text-earth-700 text-base">
-            Cada facilitador listado aquí ha completado su formación en escuelas reconocidas de constelaciones y cuenta con certificación revisada manualmente por nuestro equipo.
+            Lee sus biografías en primera persona, conoce sus escuelas formativas y selecciona a quien resuene de forma genuina con tu momento presente.
           </p>
         </div>
 
@@ -165,31 +196,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Llamado para Terapeutas */}
-      <section className="bg-earth-100/70 border-t border-earth-200/80 py-16">
-        <div className="max-w-4xl mx-auto px-6 text-center space-y-4">
-          <span className="text-xs uppercase tracking-widest text-olive-700 font-semibold">
-            Espacio para profesionales
-          </span>
-          <h3 className="font-serif text-2xl sm:text-3xl text-earth-900">
-            ¿Eres facilitador en constelaciones familiares certificado?
-          </h3>
-          <p className="text-earth-700 text-sm sm:text-base leading-relaxed max-w-xl mx-auto">
-            Te invitamos a sumarte a este espacio cuidado. Podrás crear tu perfil, subir tu certificado de acreditación y comenzar a recibir a personas que buscan un acompañamiento consciente.
-          </p>
-          <div className="pt-2">
-            <Link
-              href="/registro-terapeuta"
-              className="inline-flex items-center px-6 py-3 rounded-full bg-earth-900 hover:bg-earth-800 text-white text-xs sm:text-sm font-medium transition-colors"
-            >
-              Postular mi certificación como facilitador
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* 3. SECCIÓN: PARA CONSTELADORES ("SOY CONSTELADOR") */}
+      <TherapistCommunitySection />
 
-      {/* Pie de página cálido y humano */}
-      <footer className="bg-earth-900 text-earth-200 py-16 border-t border-earth-800">
+      {/* PIE DE PÁGINA CÁLIDO Y SERENO */}
+      <footer className="bg-earth-900 text-earth-200 py-16">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 grid grid-cols-1 md:grid-cols-3 gap-10">
           <div className="space-y-3">
             <span className="font-serif text-2xl text-white font-semibold">
@@ -198,24 +209,35 @@ export default async function HomePage() {
             <p className="text-xs text-earth-300 leading-relaxed">
               Plataforma chilena dedicada al encuentro amoroso y consciente entre personas y facilitadores certificados en constelaciones familiares sistémicas.
             </p>
+            <p className="text-xs text-terracotta-300 font-serif italic pt-1">
+              "Honrar lo que fue para abrazar lo que viene."
+            </p>
           </div>
 
           <div className="space-y-2 text-xs text-earth-300">
             <p className="font-semibold text-white uppercase tracking-wider text-[11px] mb-3">
-              Cuidado y respeto
+              Cuidado y Ética Terapéutica
             </p>
             <p>• Toda sesión es de estricta confidencialidad entre tú y el terapeuta.</p>
-            <p>• Las constelaciones son un camino de autoconocimiento complementario y no reemplazan atención médica o psiquiátrica clínica.</p>
+            <p>• Las constelaciones son una disciplina de autoconocimiento sistémico y no sustituyen atención médica, psiquiátrica o farmacológica.</p>
           </div>
 
           <div className="space-y-2 text-xs text-earth-300">
             <p className="font-semibold text-white uppercase tracking-wider text-[11px] mb-3">
-              Contacto humano
+              Contacto y Red
             </p>
-            <p>Escríbenos directamente con cualquier duda o inquietud a:</p>
+            <p>Escríbenos directamente con cualquier consulta o para verificar antecedentes:</p>
             <p className="text-white font-medium">contacto@consteladores.cl</p>
+            <div className="pt-2">
+              <Link
+                href="/registro-terapeuta"
+                className="text-xs text-terracotta-400 hover:text-terracotta-300 underline font-medium"
+              >
+                Postulación para consteladores certificados →
+              </Link>
+            </div>
             <p className="text-[11px] text-earth-400 mt-4">
-              Hecho con cariño y presencia en Chile • © {new Date().getFullYear()}
+              Hecho con cariño, rigor y presencia en Chile • © {new Date().getFullYear()}
             </p>
           </div>
         </div>
