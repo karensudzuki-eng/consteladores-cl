@@ -9,47 +9,71 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Paleta oficial solicitada
-        forest: {
-          50: "#F2F6F3",
-          100: "#E3ECE6",
-          200: "#C4D8CB",
-          500: "#446D56",
-          700: "#2F4F3E", // Color primario verde bosque
-          800: "#243E31",
-          900: "#1A2C23",
+        // Mercury Alpine Banking tokens (DESIGN.md)
+        onyx: {
+          canvas: "#171721", // Dominant page background
+          DEFAULT: "#171721",
         },
-        ochre: {
-          50: "#FDF9F2",
-          100: "#FAF1E2",
-          200: "#F4E1C1",
-          500: "#DCA152",
-          600: "#C98B3C", // Color de acento ocre para botones CTA
-          700: "#AB722D",
-          800: "#8C5B23",
+        graphite: {
+          card: "#1e1e2a", // Elevated card surfaces sit flat on onyx
+          DEFAULT: "#1e1e2a",
         },
-        cream: {
-          50: "#FCFAF7",
-          100: "#F7F3EC", // Fondo crema suave
-          200: "#EFE8DC",
-          300: "#E4D9C5",
+        obsidian: {
+          button: "#272735", // Secondary button fills, interactive surfaces
+          DEFAULT: "#272735",
         },
-        charcoal: {
-          400: "#757575",
-          500: "#575757",
-          600: "#404040",
-          700: "#333333",
-          900: "#2B2B2B", // Color de texto principal
+        cobalt: {
+          DEFAULT: "#5266eb", // Sole chromatic punctuation for primary actions
+          hover: "#4355db",
+          glow: "rgba(82, 102, 235, 0.25)",
+        },
+        slate: {
+          border: "#70707d", // Medium dividers and structural borders
+        },
+        mist: {
+          border: "#e2e3ed", // Hairline borders, ghost outlines
+        },
+        ash: {
+          text: "#c3c3cc", // Muted body copy, helper text, secondary labels
+          DEFAULT: "#c3c3cc",
+        },
+        ivory: {
+          text: "#ededf3", // Primary text, icons, ghost button strokes
+          DEFAULT: "#ededf3",
+        },
+        // Warm pastel neutrals for harmonized subtle badges (cero verdes)
+        pastel: {
+          sand: "#f7f0e8",
+          rose: "#f5e8e8",
+          warmth: "#e8ded2",
         },
       },
       fontFamily: {
+        sans: ["var(--font-geist-sans)", "Inter", "system-ui", "-apple-system", "sans-serif"],
+        display: ["var(--font-geist-sans)", "Inter", "system-ui", "-apple-system", "sans-serif"],
         serif: ["var(--font-cormorant)", "Georgia", "serif"],
-        sans: ["var(--font-geist-sans)", "system-ui", "-apple-system", "sans-serif"],
       },
-      boxShadow: {
-        subtle: "0 1px 3px rgba(43, 43, 43, 0.05), 0 1px 2px rgba(43, 43, 43, 0.03)",
-        card: "0 4px 12px rgba(43, 43, 43, 0.06)",
-        hover: "0 10px 24px -4px rgba(47, 79, 62, 0.15)",
+      fontWeight: {
+        regular: "400",
+        medium: "480", // Signature Mercury intermediate weight
+        semibold: "530",
+      },
+      letterSpacing: {
+        architectural: "0.015em",
+        display: "0.02em",
+        caption: "0.01em",
+      },
+      borderRadius: {
+        DEFAULT: "4px",
+        card: "12px", // Mercury graphite card radius
+        pill: "32px", // Mercury button/input radius
+        "pill-lg": "40px", // Mercury nav/tag radius
+        full: "9999px",
+      },
+      spacing: {
+        "72": "72px", // Mercury signature section rhythm
+        "112": "112px",
+        "128": "128px",
       },
     },
   },
