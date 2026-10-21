@@ -4,28 +4,28 @@ import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["500", "600", "700"],
   variable: "--font-cormorant",
   display: "swap",
 });
 
 const geist = Geist({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-geist-sans",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "consteladores.cl • Constelaciones Familiares Online en Chile",
+  title: "consteladores.cl • Constelaciones Familiares Online con Terapeutas Certificados en Chile",
   description:
-    "Un espacio cuidado para conectar con facilitadores certificados en constelaciones familiares. Agendamiento simple, videollamadas y acompañamiento honesto.",
+    "Encuentra consteladores familiares certificados en Chile. Sesiones individuales online y presenciales con Google Meet. Agenda tu hora de forma simple y segura.",
   keywords: [
     "constelaciones familiares chile",
-    "consteladores certificados chile",
-    "terapia sistemica online",
-    "bert hellinger chile",
-    "agendamiento constelaciones",
+    "consteladores certificados santiago",
+    "terapia sistemica chile",
+    "constelacion familiar online",
+    "bert hellinger chile terapeutas",
   ],
 };
 
@@ -35,8 +35,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${cormorant.variable} ${geist.variable} scroll-smooth`}>
-      <body className="font-sans antialiased bg-earth-50 text-earth-900 selection:bg-terracotta-100 selection:text-terracotta-700">
+    <html lang="es" className={`${geist.variable} ${cormorant.variable} scroll-smooth`}>
+      <body className="font-sans antialiased bg-white text-slate-800">
         {children}
       </body>
     </html>
