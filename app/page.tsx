@@ -1,98 +1,82 @@
 "use client";
 
 import React, { useState } from "react";
-import { HeaderProfile } from "@/components/agendapro/HeaderProfile";
-import { ServiceCatalog, ServiceItem, servicesData } from "@/components/agendapro/ServiceCatalog";
-import { BookingFlowModal, TherapistOption, defaultTherapists } from "@/components/agendapro/BookingFlowModal";
-import { SystemicPhilosophy } from "@/components/icalma/SystemicPhilosophy";
-import { TherapistsTeam } from "@/components/icalma/TherapistsTeam";
-import { ConsteladorCTAModern } from "@/components/landing/ConsteladorCTAModern";
-import { FAQSectionModern } from "@/components/landing/FAQSectionModern";
-import { ModernFooter } from "@/components/landing/ModernFooter";
+import { CleanNavbar } from "@/components/redesign/CleanNavbar";
+import { HeroSection } from "@/components/redesign/HeroSection";
+import { PaymentExplainer } from "@/components/redesign/PaymentExplainer";
+import { OnlineServiceCatalog, OnlineService, onlineServicesList } from "@/components/redesign/OnlineServiceCatalog";
+import { TherapistTeamOnline, VerifiedTherapist, onlineTherapists } from "@/components/redesign/TherapistTeamOnline";
+import { TestimonialsAndAbout } from "@/components/redesign/TestimonialsAndAbout";
+import { CleanFAQ } from "@/components/redesign/CleanFAQ";
+import { CleanFooter } from "@/components/redesign/CleanFooter";
+import { FloatingWhatsApp } from "@/components/redesign/FloatingWhatsApp";
+import { StickyMobileBar } from "@/components/redesign/StickyMobileBar";
+import { BookingFlowModal } from "@/components/agendapro/BookingFlowModal";
 
 export default function HomePage() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<ServiceItem | null>(servicesData[0]);
+  const [selectedService, setSelectedService] = useState<OnlineService | null>(onlineServicesList[0]);
+  const [selectedTherapist, setSelectedTherapist] = useState<VerifiedTherapist | null>(onlineTherapists[0]);
 
-  const handleOpenBooking = (service?: ServiceItem) => {
+  const handleOpenBooking = (service?: OnlineService) => {
     if (service) {
       setSelectedService(service);
     } else {
-      setSelectedService(servicesData[0]);
+      setSelectedService(onlineServicesList[0]);
     }
     setIsBookingOpen(true);
   };
 
-  const handleSelectTherapist = (therapist: TherapistOption) => {
-    // Al seleccionar terapeuta, abrimos el modal de reserva con el servicio individual
-    setSelectedService(servicesData[0]);
+  const handleSelectTherapist = (therapist: VerifiedTherapist) => {
+    setSelectedTherapist(therapist);
+    setSelectedService(onlineServicesList[0]);
     setIsBookingOpen(true);
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans">
+    <div className="min-h-screen bg-cream-100 text-charcoal-900 font-sans pb-16 sm:pb-0">
       
-      {/* 1. Cabecera institucional y de datos estilo AgendaPro (Rumbo Sagrado) */}
-      <HeaderProfile onBookClick={() => handleOpenBooking()} />
+      {/* 1. Navegación superior limpia y sobria */}
+      <CleanNavbar onBookClick={() => handleOpenBooking()} />
 
-      {/* Contenedor principal de servicios y agendamiento */}
+      {/* 2. Banner principal de sensibilización, contención y contraste WCAG AA */}
+      <HeroSection onBookClick={() => handleOpenBooking()} />
+
+      {/* Contenedor central */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6">
         
-        {/* Banner de aviso para el consultante */}
-        <div className="mt-6 p-4 rounded-2xl bg-teal-50 border border-teal-200 text-teal-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
-          <div className="flex items-center gap-2.5">
-            <span className="text-base">🌿</span>
-            <span>
-              <strong>Atención online y presencial:</strong> Sesiones individuales guiadas por Google Meet y talleres presenciales en Santiago.
-            </span>
-          </div>
-          <button
-            onClick={() => handleOpenBooking()}
-            className="px-4 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs whitespace-nowrap self-start sm:self-auto"
-          >
-            Agendar ahora
-          </button>
-        </div>
-
-        {/* 2. Catálogo de Servicios estilo AgendaPro con precios en CLP */}
-        <section id="servicios">
-          <div className="pt-8 pb-2">
-            <span className="text-xs font-bold uppercase tracking-widest text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">
-              Catálogo de Servicios
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2">
-              Elige tu sesión de constelación familiar
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1">
-              Selecciona el formato que mejor responda a tu necesidad actual y reserva tu hora en línea con confirmación inmediata.
-            </p>
-          </div>
-
-          <ServiceCatalog onSelectService={handleOpenBooking} />
-        </section>
+        {/* 3. Catálogo de servicios 100% online con desglose de reserva 20% */}
+        <OnlineServiceCatalog onSelectService={handleOpenBooking} />
 
       </main>
 
-      {/* 3. Filosofía y rigor sistémico estilo Icalma (constelacionesfamiliares.cl) */}
-      <SystemicPhilosophy />
+      {/* 4. Sección explicativa: ¿Cómo funciona el pago? (20% + 80%) y política de cancelación */}
+      <PaymentExplainer />
 
-      {/* 4. Equipo de Facilitadores Certificados de la Red */}
-      <TherapistsTeam onSelectTherapist={handleSelectTherapist} />
+      {/* 5. Perfiles de facilitadores con insignia Validado y foto real pendiente */}
+      <TherapistTeamOnline onSelectTherapist={handleSelectTherapist} />
 
-      {/* 5. Convocatoria para Facilitadores ("Soy Constelador") */}
-      <ConsteladorCTAModern />
+      {/* 6. Quiénes somos y bloque de testimonios pendientes */}
+      <TestimonialsAndAbout />
 
-      {/* 6. Preguntas Frecuentes sobre el Agendamiento y la Sesión */}
-      <FAQSectionModern />
+      {/* 7. Preguntas frecuentes sin afirmaciones absolutas */}
+      <CleanFAQ />
 
-      {/* 7. Pie de página profesional */}
-      <ModernFooter />
+      {/* 8. Pie de página con datos legales y horario de Chile continental */}
+      <CleanFooter />
 
-      {/* 8. MODAL INTERACTIVO DE AGENDAMIENTO ESTILO AGENDAPRO */}
+      {/* Botón flotante accesible de WhatsApp */}
+      <FloatingWhatsApp />
+
+      {/* Barra fija inferior para dispositivos móviles */}
+      <StickyMobileBar onBookClick={() => handleOpenBooking()} />
+
+      {/* Modal interactivo de agendamiento con pago de reserva del 20% */}
       <BookingFlowModal
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
         selectedService={selectedService}
+        initialTherapist={selectedTherapist}
       />
 
     </div>

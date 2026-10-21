@@ -9,43 +9,47 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Paleta moderna, limpia y de confianza (Estilo Headway / Alma / Calm)
-        brand: {
-          50: "#F0FDF4",   // Menta muy suave
-          100: "#DCFCE7",
-          200: "#BBF7D0",
-          500: "#10B981",  // Verde esmeralda vivo
-          600: "#059669",  // Acento primario de bienestar y salud
-          700: "#047857",
-          800: "#065F46",
-          900: "#064E3B",  // Verde bosque profundo
+        // Paleta oficial solicitada
+        forest: {
+          50: "#F2F6F3",
+          100: "#E3ECE6",
+          200: "#C4D8CB",
+          500: "#446D56",
+          700: "#2F4F3E", // Color primario verde bosque
+          800: "#243E31",
+          900: "#1A2C23",
         },
-        slate: {
-          50: "#F8FAFC",   // Fondo secundario ultra limpio
-          100: "#F1F5F9",  // Borde y divisores sutiles
-          200: "#E2E8F0",
-          300: "#CBD5E1",
-          400: "#94A3B8",
-          500: "#64748B",  // Texto secundario
-          600: "#475569",
-          700: "#334155",  // Texto legible principal
-          800: "#1E293B",
-          900: "#0F172A",  // Tinta moderna de títulos
+        ochre: {
+          50: "#FDF9F2",
+          100: "#FAF1E2",
+          200: "#F4E1C1",
+          500: "#DCA152",
+          600: "#C98B3C", // Color de acento ocre para botones CTA
+          700: "#AB722D",
+          800: "#8C5B23",
         },
-        warm: {
-          50: "#FFFBEB",
-          100: "#FEF3C7",
-          500: "#F59E0B",  // Ámbar cálido para detalles
-          600: "#D97706",
+        cream: {
+          50: "#FCFAF7",
+          100: "#F7F3EC", // Fondo crema suave
+          200: "#EFE8DC",
+          300: "#E4D9C5",
+        },
+        charcoal: {
+          400: "#757575",
+          500: "#575757",
+          600: "#404040",
+          700: "#333333",
+          900: "#2B2B2B", // Color de texto principal
         },
       },
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "system-ui", "-apple-system", "sans-serif"],
         serif: ["var(--font-cormorant)", "Georgia", "serif"],
+        sans: ["var(--font-geist-sans)", "system-ui", "-apple-system", "sans-serif"],
       },
       boxShadow: {
-        "card": "0 2px 10px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02)",
-        "card-hover": "0 12px 30px -10px rgba(6, 78, 59, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+        subtle: "0 1px 3px rgba(43, 43, 43, 0.05), 0 1px 2px rgba(43, 43, 43, 0.03)",
+        card: "0 4px 12px rgba(43, 43, 43, 0.06)",
+        hover: "0 10px 24px -4px rgba(47, 79, 62, 0.15)",
       },
     },
   },

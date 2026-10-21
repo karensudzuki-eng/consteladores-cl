@@ -1,65 +1,28 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
-import { ServiceItem } from "./ServiceCatalog";
+import { OnlineService } from "../redesign/OnlineServiceCatalog";
+import { onlineTherapists, VerifiedTherapist } from "../redesign/TherapistTeamOnline";
 import { bookAndConfirmAppointment } from "@/app/actions/appointments";
-
-export interface TherapistOption {
-  id: string;
-  name: string;
-  avatarUrl: string;
-  headline: string;
-  approach: string;
-  priceClp: number;
-}
-
-export const defaultTherapists: TherapistOption[] = [
-  {
-    id: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    name: "María Paz Vial",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop",
-    headline: "Facilitadora en Vínculos Tempranos y Duelo",
-    approach: "Formada en Instituto Bert Hellinger de Chile",
-    priceClp: 45000,
-  },
-  {
-    id: "b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e",
-    name: "Rodrigo San Martín",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop",
-    headline: "Constelador Sistémico • Vocación y Prosperidad",
-    approach: "Certificado por Centro Latinoamericano de Constelaciones",
-    priceClp: 48000,
-  },
-  {
-    id: "c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f",
-    name: "Camila Echeverría",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop",
-    headline: "Facilitadora Sistémica • Pareja y Síntomas",
-    approach: "Escuela de Constelaciones Familiares de Chile",
-    priceClp: 45000,
-  },
-];
 
 interface BookingFlowModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedService: ServiceItem | null;
+  selectedService: OnlineService | null;
+  initialTherapist?: VerifiedTherapist | null;
 }
 
 export function BookingFlowModal({
   isOpen,
   onClose,
   selectedService,
+  initialTherapist,
 }: BookingFlowModalProps) {
-  // Pasos del flujo estilo AgendaPro: 1=Facilitador, 2=Fecha/Hora, 3=Datos, 4=Confirmado
   const [step, setStep] = useState<number>(1);
-  const [selectedTherapist, setSelectedTherapist] = useState<TherapistOption>(defaultTherapists[0]);
-  
-  // Días disponibles para agendar (próximos 7 días hábiles)
+  const [selectedTherapist, setSelectedTherapist] = useState<VerifiedTherapist>(
+    initialTherapist || onlineTherapists[0]
+  );
+
   const availableDates = [
     { label: "Jue 24 Oct", iso: "2026-10-24" },
     { label: "Vie 25 Oct", iso: "2026-10-25" },
@@ -74,7 +37,6 @@ export function BookingFlowModal({
   const [selectedDate, setSelectedDate] = useState<string>(availableDates[0].iso);
   const [selectedHour, setSelectedHour] = useState<string>(availableHours[1]);
 
-  // Formulario del cliente
   const [clientData, setClientData] = useState({
     fullName: "",
     email: "",
@@ -87,22 +49,25 @@ export function BookingFlowModal({
 
   if (!isOpen) return null;
 
+  const total = selectedService?.totalPriceClp || selectedTherapist.totalPriceClp;
+  const deposit = selectedService?.depositPriceClp || selectedTherapist.depositPriceClp;
+  const balance = selectedService?.balancePriceClp || selectedTherapist.balancePriceClp;
+
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setResult(null);
 
-    // Armar fecha ISO completa
     const fullScheduledAt = new Date(`${selectedDate}T${selectedHour}:00`).toISOString();
 
     const res = await bookAndConfirmAppointment({
-      therapistId: selectedTherapist.id,
+      therapistId: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d", // ID compatible con la tabla de terapeutas
       clientName: clientData.fullName,
       clientEmail: clientData.email,
       clientPhone: clientData.phone,
       scheduledAt: fullScheduledAt,
-      consultationMotive: `${selectedService?.name || "Constelación"} - ${clientData.motive}`,
-      amountPaidClp: selectedService?.priceClp || selectedTherapist.priceClp,
+      consultationMotive: `${selectedService?.name || "Constelación Online"} - ${clientData.motive}`,
+      amountPaidClp: deposit, // Registro del abono del 20%
     });
 
     setIsSubmitting(false);
@@ -113,106 +78,79 @@ export function BookingFlowModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-2xl rounded-2xl bg-white border border-slate-200 shadow-2xl max-h-[92vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-charcoal-900/70 backdrop-blur-sm animate-fadeIn">
+      <div className="relative w-full max-w-2xl rounded-2xl bg-white border border-cream-200 shadow-2xl max-h-[92vh] flex flex-col overflow-hidden">
         
-        {/* Cabecera del modal estilo AgendaPro */}
-        <div className="p-4 sm:p-5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-teal-600 text-white flex items-center justify-center font-bold text-sm">
-              CP
-            </div>
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-teal-700 block">
-                Agendamiento Online en Chile
-              </span>
-              <h3 className="font-sans font-bold text-sm sm:text-base text-slate-900 truncate max-w-sm">
-                {selectedService?.name || "Constelación Familiar"}
-              </h3>
-            </div>
+        {/* Cabecera */}
+        <div className="p-4 sm:p-5 bg-cream-50 border-b border-cream-200 flex items-center justify-between">
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-forest-700 block">
+              Reserva con abono del 20% • Solo Online
+            </span>
+            <h3 className="font-serif font-bold text-base sm:text-lg text-charcoal-900 truncate max-w-sm">
+              {selectedService?.name || "Constelación Familiar Online"}
+            </h3>
           </div>
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center hover:bg-slate-300 transition-colors text-sm font-bold"
+            className="w-8 h-8 rounded-full bg-cream-200 text-charcoal-700 flex items-center justify-center hover:bg-cream-300 transition-colors text-sm font-bold"
+            aria-label="Cerrar ventana"
           >
             ✕
           </button>
         </div>
 
-        {/* Indicador de Pasos estilo AgendaPro */}
+        {/* Pasos */}
         {step < 4 && (
-          <div className="px-6 py-3 bg-white border-b border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-500">
-            <div className={`flex items-center gap-1.5 ${step === 1 ? "text-teal-700 font-bold" : ""}`}>
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step === 1 ? "bg-teal-700 text-white" : "bg-slate-100 text-slate-600"}`}>1</span>
-              <span>Facilitador</span>
-            </div>
-            <span className="text-slate-300">→</span>
-            <div className={`flex items-center gap-1.5 ${step === 2 ? "text-teal-700 font-bold" : ""}`}>
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step === 2 ? "bg-teal-700 text-white" : "bg-slate-100 text-slate-600"}`}>2</span>
-              <span>Fecha y Hora</span>
-            </div>
-            <span className="text-slate-300">→</span>
-            <div className={`flex items-center gap-1.5 ${step === 3 ? "text-teal-700 font-bold" : ""}`}>
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step === 3 ? "bg-teal-700 text-white" : "bg-slate-100 text-slate-600"}`}>3</span>
-              <span>Tus Datos</span>
-            </div>
+          <div className="px-6 py-2.5 bg-white border-b border-cream-100 flex items-center justify-between text-xs font-semibold text-charcoal-400">
+            <span className={step === 1 ? "text-forest-700 font-bold" : ""}>1. Facilitador</span>
+            <span>→</span>
+            <span className={step === 2 ? "text-forest-700 font-bold" : ""}>2. Fecha y Hora</span>
+            <span>→</span>
+            <span className={step === 3 ? "text-forest-700 font-bold" : ""}>3. Datos y Pago 20%</span>
           </div>
         )}
 
-        {/* Contenido scrolleable del paso */}
-        <div className="p-6 overflow-y-auto flex-1">
+        <div className="p-6 overflow-y-auto flex-1 text-charcoal-900">
           
-          {/* PASO 1: Elegir Facilitador Certificado */}
+          {/* PASO 1: Facilitador */}
           {step === 1 && (
             <div className="space-y-4">
-              <h4 className="font-sans font-bold text-base text-slate-900 mb-1">
-                Selecciona al constelador certificado:
+              <h4 className="font-serif font-bold text-base text-charcoal-900">
+                Selecciona al facilitador acreditado:
               </h4>
-              <p className="text-xs text-slate-500 mb-4">
-                Todos nuestros facilitadores cuentan con formación acreditada en escuelas de constelaciones sistémicas.
-              </p>
 
               <div className="space-y-3">
-                {defaultTherapists.map((therapist) => (
+                {onlineTherapists.map((therapist) => (
                   <div
                     key={therapist.id}
                     onClick={() => setSelectedTherapist(therapist)}
                     className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between gap-4 ${
                       selectedTherapist.id === therapist.id
-                        ? "border-teal-600 bg-teal-50/50 shadow-sm ring-1 ring-teal-600"
-                        : "border-slate-200 hover:border-slate-300 bg-white"
+                        ? "border-forest-700 bg-forest-50/60 ring-1 ring-forest-700"
+                        : "border-cream-200 hover:border-cream-300 bg-white"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
-                        <Image
-                          src={therapist.avatarUrl}
-                          alt={therapist.name}
-                          fill
-                          className="object-cover"
-                          sizes="48px"
-                        />
-                      </div>
-                      <div>
-                        <h5 className="font-sans font-bold text-sm text-slate-900">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h5 className="font-serif font-bold text-sm text-charcoal-900">
                           {therapist.name}
                         </h5>
-                        <p className="text-xs text-teal-700 font-medium">
-                          {therapist.headline}
-                        </p>
-                        <p className="text-[11px] text-slate-500">
-                          {therapist.approach}
-                        </p>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-forest-100 text-forest-800 font-semibold">
+                          ✓ Validado
+                        </span>
                       </div>
+                      <p className="text-xs text-forest-700">{therapist.headline}</p>
+                      <p className="text-[11px] text-charcoal-500">{therapist.schoolAndYear}</p>
                     </div>
 
-                    <div className="text-right shrink-0">
-                      <span className="text-xs font-bold text-slate-900">
-                        ${(selectedService?.priceClp || therapist.priceClp).toLocaleString("es-CL")} CLP
+                    <div className="text-right shrink-0 text-xs">
+                      <span className="block font-bold text-charcoal-900">
+                        Total: ${therapist.totalPriceClp.toLocaleString("es-CL")}
                       </span>
-                      <span className="block text-[11px] text-emerald-600 font-semibold">
-                        Disponible esta semana
+                      <span className="block text-forest-700 font-semibold text-[11px]">
+                        Reserva 20%: ${therapist.depositPriceClp.toLocaleString("es-CL")}
                       </span>
                     </div>
                   </div>
@@ -222,7 +160,7 @@ export function BookingFlowModal({
               <div className="pt-4 flex justify-end">
                 <button
                   onClick={() => setStep(2)}
-                  className="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm shadow-sm transition-all"
+                  className="px-6 py-2.5 rounded-xl bg-ochre-600 hover:bg-ochre-700 text-white font-bold text-sm shadow-sm transition-all"
                 >
                   Continuar a fecha y hora →
                 </button>
@@ -230,29 +168,28 @@ export function BookingFlowModal({
             </div>
           )}
 
-          {/* PASO 2: Elegir Fecha y Hora */}
+          {/* PASO 2: Fecha y Hora */}
           {step === 2 && (
             <div className="space-y-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-sans font-bold text-base text-slate-900">
-                    Elige fecha y horario
+                  <h4 className="font-serif font-bold text-base text-charcoal-900">
+                    Fecha y horario disponible
                   </h4>
-                  <p className="text-xs text-slate-500">
-                    Horario de Chile (CLT / GMT-3) con {selectedTherapist.name}
+                  <p className="text-xs text-charcoal-500">
+                    Horario de Chile continental (CLT) con {selectedTherapist.name}
                   </p>
                 </div>
                 <button
                   onClick={() => setStep(1)}
-                  className="text-xs text-slate-500 hover:text-slate-800 underline font-medium"
+                  className="text-xs text-charcoal-500 hover:underline"
                 >
                   Cambiar facilitador
                 </button>
               </div>
 
-              {/* Selector horizontal de fechas */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-charcoal-600 mb-2">
                   Día disponible
                 </label>
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -263,8 +200,8 @@ export function BookingFlowModal({
                       onClick={() => setSelectedDate(d.iso)}
                       className={`p-3 rounded-xl border text-center transition-all ${
                         selectedDate === d.iso
-                          ? "border-teal-600 bg-teal-600 text-white font-bold shadow-sm"
-                          : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 font-medium"
+                          ? "border-forest-700 bg-forest-700 text-white font-bold shadow-sm"
+                          : "border-cream-200 bg-cream-50 text-charcoal-700 hover:bg-cream-100 font-medium"
                       }`}
                     >
                       <span className="text-xs block">{d.label.split(" ")[0]}</span>
@@ -274,10 +211,9 @@ export function BookingFlowModal({
                 </div>
               </div>
 
-              {/* Selector de bloques horarios estilo AgendaPro */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
-                  Horas disponibles
+                <label className="block text-xs font-bold uppercase tracking-wider text-charcoal-600 mb-2">
+                  Bloques horarios (Google Meet)
                 </label>
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                   {availableHours.map((h) => (
@@ -287,8 +223,8 @@ export function BookingFlowModal({
                       onClick={() => setSelectedHour(h)}
                       className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all ${
                         selectedHour === h
-                          ? "border-teal-600 bg-teal-50 text-teal-800 ring-2 ring-teal-600"
-                          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                          ? "border-ochre-600 bg-ochre-50 text-ochre-800 ring-2 ring-ochre-600"
+                          : "border-cream-200 bg-white text-charcoal-700 hover:bg-cream-50"
                       }`}
                     >
                       {h} hrs
@@ -297,23 +233,16 @@ export function BookingFlowModal({
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs text-slate-600">
-                <span>Resumen horario:</span>
-                <strong className="text-slate-900 font-bold">
-                  {availableDates.find((d) => d.iso === selectedDate)?.label} a las {selectedHour} hrs
-                </strong>
-              </div>
-
               <div className="pt-2 flex items-center justify-between">
                 <button
                   onClick={() => setStep(1)}
-                  className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-900"
+                  className="px-4 py-2 text-xs font-bold text-charcoal-600"
                 >
                   ← Volver
                 </button>
                 <button
                   onClick={() => setStep(3)}
-                  className="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm shadow-sm transition-all"
+                  className="px-6 py-2.5 rounded-xl bg-ochre-600 hover:bg-ochre-700 text-white font-bold text-sm shadow-sm transition-all"
                 >
                   Continuar a tus datos →
                 </button>
@@ -321,19 +250,19 @@ export function BookingFlowModal({
             </div>
           )}
 
-          {/* PASO 3: Formulario del Consultante y Confirmación */}
+          {/* PASO 3: Datos y Confirmación de Abono 20% */}
           {step === 3 && (
             <form onSubmit={handleBooking} className="space-y-4">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="font-sans font-bold text-base text-slate-900">
-                  Completa tus datos para recibir el enlace de Google Meet
+                <h4 className="font-serif font-bold text-base text-charcoal-900">
+                  Datos del consultante
                 </h4>
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="text-xs text-slate-500 hover:text-slate-800 underline font-medium"
+                  className="text-xs text-charcoal-500 hover:underline"
                 >
-                  Cambiar fecha/hora
+                  Cambiar horario
                 </button>
               </div>
 
@@ -344,79 +273,75 @@ export function BookingFlowModal({
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-charcoal-700 mb-1">
                   Nombre y Apellido
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Ej. Constanza Silva"
+                  placeholder="Ej. Francisca Silva"
                   value={clientData.fullName}
                   onChange={(e) => setClientData({ ...clientData, fullName: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
+                  className="w-full px-4 py-2.5 rounded-xl border border-cream-300 text-sm focus:outline-none focus:ring-2 focus:ring-forest-700"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Correo electrónico (para la confirmación y sala Google Meet)
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="constanza@correo.cl"
-                  value={clientData.email}
-                  onChange={(e) => setClientData({ ...clientData, email: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-charcoal-700 mb-1">
+                    Correo electrónico
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="ejemplo@correo.cl"
+                    value={clientData.email}
+                    onChange={(e) => setClientData({ ...clientData, email: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-cream-300 text-sm focus:outline-none focus:ring-2 focus:ring-forest-700"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-charcoal-700 mb-1">
+                    WhatsApp en Chile
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="+56 9 1234 5678"
+                    value={clientData.phone}
+                    onChange={(e) => setClientData({ ...clientData, phone: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-cream-300 text-sm focus:outline-none focus:ring-2 focus:ring-forest-700"
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  WhatsApp / Teléfono en Chile
-                </label>
-                <input
-                  type="tel"
-                  required
-                  placeholder="+56 9 8452 1190"
-                  value={clientData.phone}
-                  onChange={(e) => setClientData({ ...clientData, phone: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Motivo o tema a constelar (Opcional)
+                <label className="block text-xs font-bold text-charcoal-700 mb-1">
+                  Motivo o tema a mirar (Opcional)
                 </label>
                 <textarea
                   rows={2}
-                  placeholder="Breve nota para el facilitador (ej. relación con mi padre, duelo no resuelto, etc.)..."
+                  placeholder="Una frase breve si lo sientes..."
                   value={clientData.motive}
                   onChange={(e) => setClientData({ ...clientData, motive: e.target.value })}
-                  className="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600 resize-none"
+                  className="w-full px-4 py-2 rounded-xl border border-cream-300 text-sm focus:outline-none focus:ring-2 focus:ring-forest-700 resize-none"
                 />
               </div>
 
-              {/* Resumen de reserva antes de disparar la acción */}
-              <div className="p-3.5 rounded-xl bg-teal-50/70 border border-teal-200 text-xs text-teal-900 space-y-1">
-                <div className="flex justify-between">
-                  <span>Servicio:</span>
-                  <span className="font-bold">{selectedService?.name}</span>
+              {/* Desglose claro del 20% y política de pago */}
+              <div className="p-4 rounded-xl bg-cream-50 border border-cream-200 text-xs space-y-1.5">
+                <div className="flex justify-between text-charcoal-600">
+                  <span>Valor total de la sesión:</span>
+                  <span className="font-bold">${total.toLocaleString("es-CL")} CLP</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Facilitador:</span>
-                  <span className="font-bold">{selectedTherapist.name}</span>
+                <div className="flex justify-between text-forest-700 font-bold text-sm pt-1 border-t border-cream-200">
+                  <span>Monto a pagar hoy (Reserva 20%):</span>
+                  <span>${deposit.toLocaleString("es-CL")} CLP</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Fecha:</span>
-                  <span className="font-bold">
-                    {availableDates.find((d) => d.iso === selectedDate)?.label} a las {selectedHour} hrs
-                  </span>
-                </div>
-                <div className="flex justify-between border-t border-teal-200/80 pt-1 font-bold text-sm">
-                  <span>Total a pagar:</span>
-                  <span>${(selectedService?.priceClp || selectedTherapist.priceClp).toLocaleString("es-CL")} CLP</span>
+                <div className="flex justify-between text-charcoal-500 pt-0.5">
+                  <span>Saldo a pagar (80%):</span>
+                  <span>${balance.toLocaleString("es-CL")} CLP [antes / después de la sesión]</span>
                 </div>
               </div>
 
@@ -424,72 +349,59 @@ export function BookingFlowModal({
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-900"
+                  className="px-4 py-2 text-xs font-bold text-charcoal-600"
                 >
                   ← Volver
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 disabled:opacity-60 text-white font-bold text-sm shadow-md transition-all flex items-center gap-2"
+                  className="px-6 py-3 rounded-xl bg-ochre-600 hover:bg-ochre-700 disabled:opacity-60 text-white font-bold text-sm shadow-md transition-all flex items-center gap-2"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                      </svg>
-                      Generando sala de Meet...
-                    </>
-                  ) : (
-                    "Confirmar reserva y recibir Meet"
-                  )}
+                  {isSubmitting ? "Generando reserva..." : `Pagar reserva de $${deposit.toLocaleString("es-CL")}`}
                 </button>
               </div>
+
+              <p className="text-[10px] text-charcoal-400 text-center pt-1 leading-tight">
+                Aviso ético: Espacio complementario de autoconocimiento. No reemplaza atención médica ni psiquiátrica clínica.
+              </p>
             </form>
           )}
 
-          {/* PASO 4: Confirmación Exitosa */}
+          {/* PASO 4: Confirmado */}
           {step === 4 && (
             <div className="text-center py-6 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center text-3xl font-bold">
+              <div className="w-16 h-16 rounded-full bg-forest-100 text-forest-800 mx-auto flex items-center justify-center text-3xl font-bold">
                 ✓
               </div>
-              <h3 className="font-sans font-bold text-2xl text-slate-900">
-                ¡Tu reserva ha sido confirmada con éxito!
+              <h3 className="font-serif font-bold text-2xl text-charcoal-900">
+                ¡Tu reserva ha quedado confirmada!
               </h3>
-              <p className="text-slate-600 text-sm max-w-sm mx-auto">
-                Hemos enviado los detalles del encuentro y las recomendaciones a{" "}
-                <strong className="text-slate-900">{clientData.email}</strong>.
+              <p className="text-charcoal-600 text-sm max-w-sm mx-auto">
+                Hemos enviado los detalles y el enlace a{" "}
+                <strong className="text-charcoal-900">{clientData.email}</strong>.
               </p>
 
               {result?.meetLink && (
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-left my-4 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs uppercase tracking-wider text-slate-500 font-bold">
-                      Enlace a tu sala de Google Meet:
-                    </span>
-                    <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-bold">
-                      Sala lista
-                    </span>
-                  </div>
+                <div className="p-4 rounded-xl bg-cream-50 border border-cream-200 text-left my-4 space-y-1.5 text-xs">
+                  <span className="font-bold text-charcoal-700 block">Enlace de Google Meet:</span>
                   <a
                     href={result.meetLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs sm:text-sm text-teal-700 underline font-mono break-all font-semibold block"
+                    className="text-forest-700 underline font-mono break-all font-semibold block"
                   >
                     {result.meetLink}
                   </a>
-                  <p className="text-[11px] text-slate-500">
-                    Solo haz clic en el enlace el día {availableDates.find((d) => d.iso === selectedDate)?.label} a las {selectedHour} hrs.
+                  <p className="text-charcoal-500 text-[11px] pt-1">
+                    Recuerda que el saldo restante (${balance.toLocaleString("es-CL")} CLP) se abona según la política acordada.
                   </p>
                 </div>
               )}
 
               <button
                 onClick={onClose}
-                className="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors"
+                className="px-6 py-2.5 rounded-xl bg-forest-700 text-white text-xs font-bold hover:bg-forest-800 transition-colors"
               >
                 Cerrar ventana
               </button>

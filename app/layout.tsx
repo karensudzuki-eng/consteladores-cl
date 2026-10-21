@@ -17,15 +17,15 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "consteladores.cl • Constelaciones Familiares Online con Terapeutas Certificados en Chile",
+  title: "Constelaciones Familiares Online en Chile | Facilitadores Certificados",
   description:
-    "Encuentra consteladores familiares certificados en Chile. Sesiones individuales online y presenciales con Google Meet. Agenda tu hora de forma simple y segura.",
+    "Sesiones de constelación familiar online por Google Meet. Facilitadores validados, precios claros y reserva con 20%.",
   keywords: [
-    "constelaciones familiares chile",
-    "consteladores certificados santiago",
-    "terapia sistemica chile",
-    "constelacion familiar online",
-    "bert hellinger chile terapeutas",
+    "constelaciones familiares online chile",
+    "consteladores certificados chile",
+    "terapia sistemica online google meet",
+    "constelaciones familiares santiago valparaiso concepcion",
+    "bert hellinger chile",
   ],
 };
 
@@ -36,7 +36,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${geist.variable} ${cormorant.variable} scroll-smooth`}>
-      <body className="font-sans antialiased bg-white text-slate-800">
+      <body className="font-sans antialiased bg-cream-100 text-charcoal-900 selection:bg-ochre-100 selection:text-ochre-800">
         {children}
       </body>
     </html>

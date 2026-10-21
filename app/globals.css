@@ -7,18 +7,27 @@
     scroll-behavior: smooth;
   }
   body {
-    background-color: #FFFFFF;
-    color: #1E293B;
+    background-color: #F7F3EC;
+    color: #2B2B2B;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  /* Estilos de foco accesible WCAG AA */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid #C98B3C;
+    outline-offset: 2px;
+  }
 }
 
-/* Animaciones y utilidades limpias */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
