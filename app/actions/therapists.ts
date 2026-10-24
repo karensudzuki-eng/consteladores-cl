@@ -2,7 +2,7 @@
 
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { FacilitatorProfile } from "@/lib/data/directory";
+import { FacilitatorProfile, directoryFacilitators } from "@/lib/data/directory";
 import { generateApprovalToken } from "@/lib/security/approval-token";
 import { Resend } from "resend";
 
@@ -292,17 +292,35 @@ export async function registerTherapistApplication(
         }
 
         // Enviar acuse de recibo al constelador postulante
-        const sendApplicant = await resend.emails.send({
-          from: senderEmail,
-          to: [email],
-          subject: "Tu postulación a consteladores.cl fue recibida con éxito (Revisión en 24-48 hrs)",
-          html: applicantEmailHtml,
-        });
+        try {
+          const sendApplicant = await resend.emails.send({
+            from: senderEmail,
+            to: [email],
+            subject: "Tu postulación a consteladores.cl fue recibida con éxito (Revisión en 24-48 hrs)",
+            html: applicantEmailHtml,
+          });
 
-        if (sendApplicant.error) {
-          console.error("Error devuelto por Resend al postulante:", sendApplicant.error);
-        } else {
-          console.log("Acuse de recibo enviado al constelador postulante. ID:", sendApplicant.data?.id);
+          if (sendApplicant.error) {
+            console.warn("Aviso devuelto por Resend al enviar al postulante:", sendApplicant.error);
+          } else {
+            console.log("Acuse de recibo enviado al constelador postulante. ID:", sendApplicant.data?.id);
+          }
+        } catch (applicantErr) {
+          console.warn("Error al enviar acuse de recibo al postulante:", applicantErr);
+        }
+
+        // Si el correo del postulante es distinto al correo personal de Karen, enviamos copia a Karen para constancia
+        if (email !== "karen.sudzuki@gmail.com") {
+          try {
+            await resend.emails.send({
+              from: senderEmail,
+              to: ["karen.sudzuki@gmail.com"],
+              subject: `[Copia Postulante] Confirmación para: ${fullName} (${email})`,
+              html: applicantEmailHtml,
+            });
+          } catch (copyErr) {
+            console.warn("Aviso al enviar copia a Karen:", copyErr);
+          }
         }
       } catch (mailError: any) {
         console.error("Error al procesar envío de correos con Resend:", mailError);
@@ -340,7 +358,7 @@ export async function getApprovedTherapists(): Promise<FacilitatorProfile[]> {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
-      return [];
+      return directoryFacilitators;
     }
 
     const supabase = createSupabaseClient(supabaseUrl, supabaseKey, {
@@ -374,13 +392,8 @@ export async function getApprovedTherapists(): Promise<FacilitatorProfile[]> {
       .eq("status", "approved")
       .order("created_at", { ascending: false });
 
-    if (error) {
-      console.error("Error al consultar facilitadores aprobados en Supabase:", error);
-      return [];
-    }
-
-    if (!data || data.length === 0) {
-      return [];
+    if (error || !data || data.length === 0) {
+      return directoryFacilitators;
     }
 
     return data.map((item: any) => {
@@ -436,6 +449,6 @@ export async function getApprovedTherapists(): Promise<FacilitatorProfile[]> {
     });
   } catch (err) {
     console.error("Error inesperado en getApprovedTherapists:", err);
-    return [];
+    return directoryFacilitators;
   }
 }

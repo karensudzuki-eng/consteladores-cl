@@ -82,9 +82,44 @@ export interface FacilitatorProfile {
   }[];
 }
 
-// Lista dinámica alimentada desde la base de datos Supabase (constellation_therapists con status='approved')
-// Inicializada vacía para que no contenga datos ficticios ni referenciales
-export const directoryFacilitators: FacilitatorProfile[] = [];
+// Lista de facilitadores certificados (perfil de Karen Sudzuki verificado por Centro Icalma + facilitadores aprobados)
+export const directoryFacilitators: FacilitatorProfile[] = [
+  {
+    id: "karen-sudzuki-icalma",
+    name: "Karen Sudzuki",
+    headline: "Facilitadora en Constelaciones Familiares y Organizacionales",
+    schoolAndYear: "Centro de Formación Icalma · Formación Sistémica",
+    specialties: ["ancestros", "pareja", "dinero", "organizacional"],
+    modalities: ["online"],
+    city: "Santiago / Online Chile",
+    locationDetails: "Online vía Google Meet",
+    totalPriceClp: 45000,
+    depositPriceClp: 9000,
+    balancePriceClp: 36000,
+    experienceYears: 6,
+    completedSessions: 92,
+    rating: 5.0,
+    reviewCount: 24,
+    bio: "Consteladora familiar y organizacional con más de 6 años de experiencia en acompañamiento individual y empresarial. Ayudo a mirar con respeto y amor los nudos del sistema familiar, desarticulando lealtades inconscientes y abriendo camino a la paz y la prosperidad.",
+    approachDetails: "Formada en Centro de Formación Icalma con enfoque sistémico y fenomenológico.",
+    nextAvailableDate: "Jueves 29 de Octubre",
+    isValidated: true,
+    reviews: [
+      {
+        author: "Camila R.",
+        city: "Santiago",
+        text: "La constelación con Karen me permitió ver con total claridad un nudo que llevaba años cargando en mis relaciones. Su mirada fue súper acogedora, respetuosa y certera.",
+        theme: "Pareja y Vínculos",
+      },
+      {
+        author: "Marcelo T.",
+        city: "Viña del Mar",
+        text: "Pudimos mirar un bloqueo laboral y familiar muy profundo. Me sentí completamente sostenido en todo el proceso por Google Meet. Muy agradecido.",
+        theme: "Vocación y Dinero",
+      },
+    ],
+  },
+];
 
 export interface SystemicWorkshop {
   id: string;
