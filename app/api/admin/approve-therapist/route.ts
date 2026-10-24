@@ -153,7 +153,7 @@ export async function GET(request: NextRequest) {
     if (therapistEmail && process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== "re_dummy_key") {
       try {
         await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || "notificaciones@consteladores.cl",
+          from: process.env.RESEND_FROM_EMAIL || "consteladores.cl <onboarding@resend.dev>",
           to: [therapistEmail],
           subject: "¡Felicitaciones! Tu perfil ha sido aprobado en consteladores.cl",
           html: `

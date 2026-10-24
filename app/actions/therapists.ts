@@ -155,6 +155,7 @@ export async function registerTherapistApplication(
 
     // 3. Correo A: Notificación a Karen con certificado adjunto y botón de aprobación
     const adminEmail = "karen.sudzuki@vorticeintegration.com";
+    const senderEmail = process.env.RESEND_FROM_EMAIL || "consteladores.cl <onboarding@resend.dev>";
 
     const adminEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #FAF8F5; color: #27221F; border: 1px solid #E7DECE; border-radius: 16px;">
@@ -257,11 +258,11 @@ export async function registerTherapistApplication(
     `;
 
     // 5. Envíos mediante Resend
-    try {
-      if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== "re_dummy_key") {
+    if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== "re_dummy_key") {
+      try {
         // Enviar a Karen con el archivo adjunto
-        await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || "notificaciones@consteladores.cl",
+        const sendAdmin = await resend.emails.send({
+          from: senderEmail,
           to: [adminEmail],
           subject: `Nueva postulación de constelador: ${fullName}`,
           html: adminEmailHtml,
@@ -273,20 +274,33 @@ export async function registerTherapistApplication(
           ],
         });
 
+        if (sendAdmin.error) {
+          console.error("Error devuelto por Resend al notificar a Karen:", sendAdmin.error);
+        } else {
+          console.log("Correo enviado con éxito a Karen vía Resend. ID:", sendAdmin.data?.id);
+        }
+
         // Enviar acuse de recibo al constelador postulante
-        await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || "notificaciones@consteladores.cl",
+        const sendApplicant = await resend.emails.send({
+          from: senderEmail,
           to: [email],
           subject: "Tu postulación a consteladores.cl fue recibida con éxito (Revisión en 24-48 hrs)",
           html: applicantEmailHtml,
         });
-      } else {
-        console.warn(`[Modo Simulación] Correo para Karen (${adminEmail}) con adjunto: ${certificateFile.name}`);
-        console.warn(`[Modo Simulación] Copia enviada al postulante: ${email}`);
-        console.log(`[URL de Aprobación en 1 clic]: ${approvalUrl}`);
+
+        if (sendApplicant.error) {
+          console.error("Error devuelto por Resend al postulante:", sendApplicant.error);
+        } else {
+          console.log("Acuse de recibo enviado al constelador postulante. ID:", sendApplicant.data?.id);
+        }
+      } catch (mailError: any) {
+        console.error("Error al procesar envío de correos con Resend:", mailError);
       }
-    } catch (mailError: any) {
-      console.error("Error al enviar notificaciones por correo:", mailError);
+    } else {
+      console.warn("⚠️ [Aviso de Configuración]: RESEND_API_KEY no está configurada en las Variables de Entorno de Vercel.");
+      console.warn(`[Modo Simulación] Correo preparado para Karen (${adminEmail}) con adjunto: ${certificateFile.name}`);
+      console.warn(`[Modo Simulación] Copia preparada para el postulante: ${email}`);
+      console.log(`[URL de Aprobación en 1 clic]: ${approvalUrl}`);
     }
 
     return {
