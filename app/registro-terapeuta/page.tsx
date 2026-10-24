@@ -23,7 +23,18 @@ export default function RegistroTerapeutaPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const selected = e.target.files[0];
+      if (selected.size > 8 * 1024 * 1024) {
+        setStatusMessage({
+          type: "error",
+          text: `El archivo "${selected.name}" supera los 8 MB (${(selected.size / (1024 * 1024)).toFixed(1)} MB). Por favor selecciona un documento más liviano o comprimido.`,
+        });
+        setFile(null);
+        e.target.value = "";
+        return;
+      }
+      setStatusMessage(null);
+      setFile(selected);
     }
   };
 
@@ -52,11 +63,43 @@ export default function RegistroTerapeutaPage() {
       data.append("priceClp", String(formData.priceClp));
       data.append("certificate", file);
 
-      // Enviamos el FormData directamente a la Server Action (procesamiento en servidor con bypass seguro de RLS)
-      const result = await registerTherapistApplication(data);
+      let result: { success: boolean; error?: string } | null = null;
 
-      if (!result.success) {
-        throw new Error(result.error || "No se pudo registrar la postulación.");
+      // 1. Enviar prioritariamente vía endpoint API REST dedicado para máxima compatibilidad con archivos y Vercel
+      try {
+        const response = await fetch("/api/therapist/register", {
+          method: "POST",
+          body: data,
+        });
+
+        const json = await response.json().catch(() => null);
+        if (json) {
+          result = json;
+        } else if (!response.ok) {
+          result = {
+            success: false,
+            error: `Error en la subida al servidor (${response.status}). Por favor reintenta.`,
+          };
+        }
+      } catch (fetchErr) {
+        console.warn("Fallo en API REST, intentando Server Action de respaldo:", fetchErr);
+      }
+
+      // 2. Si la API REST no respondió, intentar vía Server Action directa
+      if (!result) {
+        try {
+          result = await registerTherapistApplication(data);
+        } catch (saErr: any) {
+          result = {
+            success: false,
+            error: saErr?.message || "No se pudo conectar con el servidor.",
+          };
+        }
+      }
+
+      // 3. Validación totalmente segura contra undefined
+      if (!result || !result.success) {
+        throw new Error(result?.error || "No se pudo registrar la postulación en este momento. Por favor verifica tus datos e intenta nuevamente.");
       }
 
       setStatusMessage({
