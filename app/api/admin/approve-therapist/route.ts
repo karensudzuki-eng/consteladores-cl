@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateApprovalToken } from "@/lib/security/approval-token";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy_key");
 
 function renderHtml(title: string, message: string, isSuccess: boolean) {
   return `<!DOCTYPE html>
@@ -143,12 +146,54 @@ export async function GET(request: NextRequest) {
     }
 
     const profileData = Array.isArray(therapist.profiles) ? therapist.profiles[0] : therapist.profiles;
-    const therapistName = profileData?.full_name || "El/la facilitador(a)";
+    const therapistName = profileData?.full_name || "Facilitador(a)";
+    const therapistEmail = profileData?.email;
+
+    // 3. Notificación Automática al Constelador (Cierre de ciclo 100% automatizado)
+    if (therapistEmail && process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== "re_dummy_key") {
+      try {
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL || "notificaciones@consteladores.cl",
+          to: [therapistEmail],
+          subject: "¡Felicitaciones! Tu perfil ha sido aprobado en consteladores.cl",
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #FAF8F5; color: #27221F; border: 1px solid #E7DECE; border-radius: 16px;">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <h2 style="font-size: 22px; color: #27221F; margin: 0 0 8px;">¡Bienvenido/a a la Red de Consteladores!</h2>
+                <p style="font-size: 14px; color: #5C524A; margin: 0;">Tu acreditación ha sido validada exitosamente</p>
+              </div>
+
+              <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #E7DECE; margin-bottom: 20px; font-size: 14px; line-height: 1.6; color: #5C524A;">
+                <p style="margin-top: 0;">Estimado/a <strong>${therapistName}</strong>,</p>
+                <p>
+                  Nos alegra informarte que tu formación y certificado han sido revisados y <strong>aprobados</strong> por el equipo de moderación ética.
+                </p>
+                <p>
+                  A partir de este momento, tu perfil se encuentra activo en el directorio público de <strong>consteladores.cl</strong>, donde los consultantes podrán ver tu reseña, escuela formativa y solicitar sesiones contigo bajo el modelo de reserva del 20%.
+                </p>
+              </div>
+
+              <div style="text-align: center; margin-bottom: 20px;">
+                <a href="https://www.consteladores.cl/#directorio" style="display: inline-block; background-color: #D66847; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 50px; font-weight: bold; font-size: 14px;">
+                  Ver mi perfil en el directorio en vivo
+                </a>
+              </div>
+
+              <p style="font-size: 11px; color: #8A7E73; text-align: center; margin: 0;">
+                consteladores.cl · Red Oficial de Constelaciones Familiares en Chile
+              </p>
+            </div>
+          `,
+        });
+      } catch (notifyErr) {
+        console.warn("Aviso al notificar aprobación al terapeuta:", notifyErr);
+      }
+    }
 
     return new NextResponse(
       renderHtml(
         "¡Facilitador Aprobado Exitosamente!",
-        `El perfil de <strong>${therapistName}</strong> ha sido aprobado y verificado. A partir de este momento ya se encuentra activo y visible para los consultantes en el directorio público de <strong>consteladores.cl</strong>.`,
+        `El perfil de <strong>${therapistName}</strong> ha sido aprobado y verificado. Se ha enviado una notificación automática a su correo (<strong>${therapistEmail}</strong>) y a partir de este momento ya se encuentra activo y visible para los consultantes en el directorio público de <strong>consteladores.cl</strong>.`,
         true
       ),
       {

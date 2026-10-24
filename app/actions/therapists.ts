@@ -16,9 +16,9 @@ export interface RegisterTherapistResult {
 
 /**
  * Registro de postulación con manejo seguro de archivos y notificación por correo.
- * Procesa el archivo en el servidor con permisos de administración (evita errores RLS del cliente)
- * y envía el certificado adjunto directamente a karen.suzuki@vorticeintegration.com con un enlace
- * de aprobación directa en 1 clic.
+ * - Sube el archivo y datos a Supabase con permisos de servidor.
+ * - Notifica a karen.sudzuki@vorticeintegration.com con el certificado adjunto y botón de 1 clic.
+ * - Envía automáticamente copia de confirmación al constelador indicando revisión en 24-48 hrs.
  */
 export async function registerTherapistApplication(
   formData: FormData
@@ -51,7 +51,6 @@ export async function registerTherapistApplication(
     // Convertir archivo a Buffer para storage y adjunto de correo
     const fileArrayBuffer = await certificateFile.arrayBuffer();
     const fileBuffer = Buffer.from(fileArrayBuffer);
-    const fileExt = certificateFile.name.split(".").pop() || "pdf";
     const sanitizedFileName = certificateFile.name.replace(/[^a-zA-Z0-9.-]/g, "_");
     const storagePath = `postulaciones/${Date.now()}-${sanitizedFileName}`;
 
@@ -65,7 +64,6 @@ export async function registerTherapistApplication(
 
         // 1.1 Intentar subir a Supabase Storage con cliente admin
         try {
-          // Asegurar que el bucket 'certifications' exista
           await supabase.storage.createBucket("certifications", { public: false });
         } catch {
           // El bucket ya existe
@@ -103,7 +101,6 @@ export async function registerTherapistApplication(
 
           if (authError || !authUser?.user) {
             console.warn("Aviso al crear authUser:", authError?.message);
-            // Si falla auth, usamos un UUID generado para no bloquear
             userId = crypto.randomUUID();
             await supabase.from("profiles").upsert({
               id: userId,
@@ -156,10 +153,10 @@ export async function registerTherapistApplication(
     const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.consteladores.cl";
     const approvalUrl = `${appBaseUrl}/api/admin/approve-therapist?id=${therapistId}&token=${approvalToken}`;
 
-    // 3. Enviar Correo con Certificado Adjunto a karen.suzuki@vorticeintegration.com
-    const adminEmail = "karen.suzuki@vorticeintegration.com";
+    // 3. Correo A: Notificación a Karen con certificado adjunto y botón de aprobación
+    const adminEmail = "karen.sudzuki@vorticeintegration.com";
 
-    const emailHtml = `
+    const adminEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #FAF8F5; color: #27221F; border: 1px solid #E7DECE; border-radius: 16px;">
         <div style="text-align: center; margin-bottom: 24px;">
           <h2 style="font-size: 22px; color: #27221F; margin: 0 0 8px;">Nueva Postulación de Constelador(a)</h2>
@@ -214,23 +211,60 @@ export async function registerTherapistApplication(
             ✓ Dar OK y Publicar en consteladores.cl
           </a>
           <p style="font-size: 11px; color: #8A7E73; margin: 10px 0 0;">
-            Al hacer clic, el estado cambiará a <em>aprobado</em> y el perfil aparecerá automáticamente en el directorio.
+            Al hacer clic, el estado cambiará a <em>aprobado</em>, se publicará en el directorio y se le notificará al constelador.
           </p>
         </div>
 
         <p style="font-size: 11px; color: #8A7E73; text-align: center; margin: 0;">
-          consteladores.cl · Notificación Automática de Postulación
+          consteladores.cl · Notificación Automática para Karen Sudzuki
         </p>
       </div>
     `;
 
+    // 4. Correo B: Confirmación automática para el Constelador Postulante
+    const applicantEmailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #FAF8F5; color: #27221F; border: 1px solid #E7DECE; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h2 style="font-size: 22px; color: #27221F; margin: 0 0 8px;">¡Hemos recibido tu postulación!</h2>
+          <p style="font-size: 14px; color: #5C524A; margin: 0;">Red de Facilitadores en Constelaciones Familiares · Chile</p>
+        </div>
+
+        <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #E7DECE; margin-bottom: 20px; font-size: 14px; line-height: 1.6; color: #5C524A;">
+          <p style="margin-top: 0;">Hola <strong>${fullName}</strong>,</p>
+          <p>
+            Te confirmamos que tu postulación y tu diploma/certificado han sido recibidos con éxito por el equipo moderador de <strong>consteladores.cl</strong>.
+          </p>
+          <p>
+            Nuestro equipo ético revisará tus antecedentes dentro de un plazo de <strong>24 a 48 horas hábiles</strong>.
+          </p>
+          <p>
+            Si tu postulación es aceptada, recibirás una notificación a este correo confirmando la activación de tu perfil y comenzarás a aparecer en el directorio público para recibir consultantes en todo Chile.
+          </p>
+        </div>
+
+        <div style="background-color: #FDF7F4; border: 1px solid #F2D8CC; padding: 14px 20px; border-radius: 10px; font-size: 12px; color: #A34327; margin-bottom: 20px;">
+          <strong>Resumen de tu registro:</strong><br/>
+          • Titular: ${headline}<br/>
+          • Escuela formativa: ${approach}<br/>
+          • Tarifa indicada: $${priceClp.toLocaleString("es-CL")} CLP (Reserva inicial 20%: $${Math.round(priceClp * 0.2).toLocaleString("es-CL")} CLP)
+        </div>
+
+        <p style="font-size: 11px; color: #8A7E73; text-align: center; margin: 0;">
+          Gracias por tu vocación y compromiso con el orden y la salud sistémica.<br/>
+          <strong>consteladores.cl</strong> · Santiago de Chile
+        </p>
+      </div>
+    `;
+
+    // 5. Envíos mediante Resend
     try {
       if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== "re_dummy_key") {
+        // Enviar a Karen con el archivo adjunto
         await resend.emails.send({
           from: process.env.RESEND_FROM_EMAIL || "notificaciones@consteladores.cl",
           to: [adminEmail],
           subject: `Nueva postulación de constelador: ${fullName}`,
-          html: emailHtml,
+          html: adminEmailHtml,
           attachments: [
             {
               filename: certificateFile.name,
@@ -238,13 +272,21 @@ export async function registerTherapistApplication(
             },
           ],
         });
+
+        // Enviar acuse de recibo al constelador postulante
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL || "notificaciones@consteladores.cl",
+          to: [email],
+          subject: "Tu postulación a consteladores.cl fue recibida con éxito (Revisión en 24-48 hrs)",
+          html: applicantEmailHtml,
+        });
       } else {
-        console.warn(`[Modo Simulación] Correo preparado para ${adminEmail} con certificado adjunto: ${certificateFile.name}`);
+        console.warn(`[Modo Simulación] Correo para Karen (${adminEmail}) con adjunto: ${certificateFile.name}`);
+        console.warn(`[Modo Simulación] Copia enviada al postulante: ${email}`);
         console.log(`[URL de Aprobación en 1 clic]: ${approvalUrl}`);
       }
     } catch (mailError: any) {
-      console.error("Error al enviar notificación por correo:", mailError);
-      // No bloqueamos el éxito de la postulación si el correo falla temporalmente
+      console.error("Error al enviar notificaciones por correo:", mailError);
     }
 
     return {
