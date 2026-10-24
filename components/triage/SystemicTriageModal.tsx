@@ -1,17 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
-import { directoryFacilitators, FacilitatorProfile, specialtiesList } from "@/lib/data/directory";
+import { FacilitatorProfile, specialtiesList } from "@/lib/data/directory";
 
 interface SystemicTriageModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectFacilitator: (facilitator: FacilitatorProfile) => void;
+  facilitators?: FacilitatorProfile[];
+  onSelectFacilitator: (facilitator?: FacilitatorProfile) => void;
 }
 
 export function SystemicTriageModal({
   isOpen,
   onClose,
+  facilitators = [],
   onSelectFacilitator,
 }: SystemicTriageModalProps) {
   const [step, setStep] = useState<number>(1);
@@ -33,10 +35,10 @@ export function SystemicTriageModal({
     setStep(1);
   };
 
-  // Encontrar el facilitador que mejor calce
+  // Encontrar el facilitador que mejor calce en los datos reales de la base de datos
   const recommendedFacilitator =
-    directoryFacilitators.find((f) => f.specialties.includes(selectedSpecialty)) ||
-    directoryFacilitators[0];
+    facilitators.find((f) => f.specialties.includes(selectedSpecialty)) ||
+    (facilitators.length > 0 ? facilitators[0] : null);
 
   const specialtyInfo = specialtiesList.find((s) => s.id === selectedSpecialty) || specialtiesList[0];
 
@@ -289,59 +291,72 @@ export function SystemicTriageModal({
             </h3>
             
             <p className="text-xs sm:text-sm text-[#5C524A] max-w-md mx-auto mb-6 leading-relaxed">
-              Basado en tus respuestas, el camino con menor resistencia emocional es abordar tu consulta mediante una{" "}
+              Basado en tus respuestas, el abordaje más indicado para tu motivo es una{" "}
               <strong className="text-[#27221F]">
-                {selectedFormat === "taller_grupal" ? "constelación en taller vivencial" : "sesión individual"}
+                {selectedFormat === "taller_grupal" ? "constelación en taller vivencial" : "sesión individual online o presencial"}
               </strong>{" "}
-              centrada en reconocer el origen inconsciente y devolver la carga con respeto.
+              enfocada en mirar el origen inconsciente y restablecer el equilibrio en tu sistema.
             </p>
 
-            {/* Tarjeta del Facilitador Recomendado */}
-            <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-2xl p-5 mb-6 text-left shadow-sm">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <span className="text-[11px] font-semibold text-ochre-600 uppercase tracking-wider block">
-                    Facilitador(a) Recomendado(a)
-                  </span>
-                  <h4 className="text-xl font-serif font-semibold text-[#27221F]">
-                    {recommendedFacilitator.name}
-                  </h4>
-                  <p className="text-xs text-terracotta-600 font-medium">
-                    {recommendedFacilitator.headline}
-                  </p>
+            {/* Si hay un facilitador real recomendado de la BD */}
+            {recommendedFacilitator ? (
+              <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-2xl p-5 mb-6 text-left shadow-sm">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <span className="text-[11px] font-semibold text-ochre-600 uppercase tracking-wider block">
+                      Facilitador(a) Recomendado(a)
+                    </span>
+                    <h4 className="text-xl font-serif font-semibold text-[#27221F]">
+                      {recommendedFacilitator.name}
+                    </h4>
+                    <p className="text-xs text-terracotta-600 font-medium">
+                      {recommendedFacilitator.headline}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs text-[#8A7E73] block">Valor sesión:</span>
+                    <span className="text-lg font-serif font-bold text-[#27221F]">
+                      ${recommendedFacilitator.totalPriceClp.toLocaleString("es-CL")}
+                    </span>
+                    <span className="text-[10px] text-terracotta-600 block">
+                      Reserva 20%: ${recommendedFacilitator.depositPriceClp.toLocaleString("es-CL")}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-xs text-[#8A7E73] block">Valor sesión:</span>
-                  <span className="text-lg font-serif font-bold text-[#27221F]">
-                    ${recommendedFacilitator.totalPriceClp.toLocaleString("es-CL")}
-                  </span>
-                  <span className="text-[10px] text-terracotta-600 block">
-                    Reserva hoy 20%: ${recommendedFacilitator.depositPriceClp.toLocaleString("es-CL")}
-                  </span>
+
+                <p className="text-xs text-[#5C524A] leading-relaxed mb-3 bg-[#FAF8F5] p-2.5 rounded-xl border border-[#E7DECE]/60">
+                  {recommendedFacilitator.bio}
+                </p>
+
+                <div className="flex items-center justify-between text-xs text-[#8A7E73] pt-2 border-t border-[#E7DECE]/60">
+                  <span>📍 {recommendedFacilitator.locationDetails}</span>
+                  <span>Verificado ✓</span>
                 </div>
               </div>
-
-              <p className="text-xs text-[#5C524A] leading-relaxed mb-3 bg-[#FAF8F5] p-2.5 rounded-xl border border-[#E7DECE]/60">
-                {recommendedFacilitator.bio}
-              </p>
-
-              <div className="flex items-center justify-between text-xs text-[#8A7E73] pt-2 border-t border-[#E7DECE]/60">
-                <span>📍 {recommendedFacilitator.locationDetails}</span>
-                <span>Próxima fecha: <strong className="text-[#27221F]">{recommendedFacilitator.nextAvailableDate}</strong></span>
+            ) : (
+              <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-5 mb-6 text-center text-xs text-[#5C524A]">
+                <p className="mb-2 font-medium text-[#27221F]">
+                  Estamos asignando facilitadores certificados en tiempo real para este tema.
+                </p>
+                <p className="text-[#8A7E73]">
+                  Puedes solicitar tu sesión y nuestro equipo te conectará con el constelador idóneo para tu caso.
+                </p>
               </div>
-            </div>
+            )}
 
             {/* Acciones */}
             <div className="space-y-3">
               <button
                 onClick={() => {
                   onClose();
-                  onSelectFacilitator(recommendedFacilitator);
+                  onSelectFacilitator(recommendedFacilitator || undefined);
                 }}
                 type="button"
                 className="w-full py-3.5 px-6 text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md hover:shadow-lg transition-all"
               >
-                Agendar con {recommendedFacilitator.name} (Reserva 20%)
+                {recommendedFacilitator
+                  ? `Agendar con ${recommendedFacilitator.name} (Reserva 20%)`
+                  : "Solicitar sesión y evaluación de mi caso"}
               </button>
               
               <button

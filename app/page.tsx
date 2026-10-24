@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { WatercolorNavbar } from "@/components/watercolor/WatercolorNavbar";
 import { WatercolorHero } from "@/components/watercolor/WatercolorHero";
 import { WatercolorPhilosophy } from "@/components/watercolor/WatercolorPhilosophy";
@@ -19,26 +19,61 @@ import { FacilitatorDetailModal } from "@/components/directory/FacilitatorDetail
 import { SystemicTriageModal } from "@/components/triage/SystemicTriageModal";
 import { HumanInTheLoopModal, BookingModalMode } from "@/components/booking/HumanInTheLoopModal";
 
-import { FacilitatorProfile, directoryFacilitators, SystemicWorkshop } from "@/lib/data/directory";
+import { FacilitatorProfile, SystemicWorkshop } from "@/lib/data/directory";
 import { OnlineService } from "@/components/redesign/OnlineServiceCatalog";
+import { getApprovedTherapists } from "@/app/actions/therapists";
 
 export default function HomePage() {
+  // Facilitadores dinámicos consultados desde Supabase (status='approved')
+  const [facilitators, setFacilitators] = useState<FacilitatorProfile[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   // Estados para modales y flujos
   const [isTriageOpen, setIsTriageOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [bookingMode, setBookingMode] = useState<BookingModalMode>("booking");
   
-  const [selectedFacilitator, setSelectedFacilitator] = useState<FacilitatorProfile>(
-    directoryFacilitators[0]
-  );
-  
+  const [selectedFacilitator, setSelectedFacilitator] = useState<FacilitatorProfile | null>(null);
   const [detailFacilitator, setDetailFacilitator] = useState<FacilitatorProfile | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
+  // Carga dinámica de facilitadores certificados desde la base de datos
+  useEffect(() => {
+    let isMounted = true;
+    async function loadTherapistsFromDatabase() {
+      try {
+        setIsLoading(true);
+        const data = await getApprovedTherapists();
+        if (isMounted) {
+          setFacilitators(data);
+          if (data.length > 0) {
+            setSelectedFacilitator(data[0]);
+          }
+        }
+      } catch (err) {
+        console.error("Error al cargar facilitadores desde la base de datos:", err);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadTherapistsFromDatabase();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   // Manejadores
-  const handleOpenBooking = (facilitator?: FacilitatorProfile, mode: BookingModalMode = "booking") => {
+  const handleOpenBooking = (facilitator?: FacilitatorProfile | null, mode: BookingModalMode = "booking") => {
     if (facilitator) {
       setSelectedFacilitator(facilitator);
+    } else if (facilitators.length > 0) {
+      setSelectedFacilitator(facilitators[0]);
+    } else {
+      setSelectedFacilitator(null);
     }
     setBookingMode(mode);
     setIsBookingOpen(true);
@@ -50,14 +85,11 @@ export default function HomePage() {
   };
 
   const handleSelectServiceFromCatalog = (service: OnlineService) => {
-    // Vincular con el facilitador principal
-    setSelectedFacilitator(directoryFacilitators[0]);
-    setBookingMode("booking");
-    setIsBookingOpen(true);
+    handleOpenBooking(facilitators.length > 0 ? facilitators[0] : null, "booking");
   };
 
   const handleWorkshopQuote = (workshop: SystemicWorkshop) => {
-    const matched = directoryFacilitators.find((f) => f.id === workshop.facilitatorId) || directoryFacilitators[0];
+    const matched = facilitators.find((f) => f.id === workshop.facilitatorId) || (facilitators.length > 0 ? facilitators[0] : null);
     setSelectedFacilitator(matched);
     setBookingMode("quote");
     setIsBookingOpen(true);
@@ -68,18 +100,20 @@ export default function HomePage() {
       
       {/* 1. Barra de Navegación con Amonite y Enlaces al Marketplace */}
       <WatercolorNavbar
-        onBookClick={() => handleOpenBooking(directoryFacilitators[0], "booking")}
+        onBookClick={() => handleOpenBooking(null, "booking")}
         onOpenTriage={() => setIsTriageOpen(true)}
       />
 
       {/* 2. Hero Principal TOFU (Gancho Emocional & Dolor Silencioso) */}
       <WatercolorHero
-        onBookClick={() => handleOpenBooking(directoryFacilitators[0], "booking")}
+        onBookClick={() => handleOpenBooking(null, "booking")}
         onOpenTriage={() => setIsTriageOpen(true)}
       />
 
-      {/* 3. Directorio Interactivo de Facilitadores y Talleres Vivenciales (Marketplace Core) */}
+      {/* 3. Directorio Dinámico de Facilitadores y Talleres (Conectado a Base de Datos Supabase) */}
       <InteractiveDirectory
+        facilitators={facilitators}
+        isLoading={isLoading}
         onSelectFacilitator={(f) => handleOpenBooking(f, "booking")}
         onOpenDetail={handleOpenDetail}
         onOpenWorkshopQuote={handleWorkshopQuote}
@@ -112,13 +146,14 @@ export default function HomePage() {
 
       {/* Barra Móvil Inferior con Acceso Directo */}
       <WatercolorStickyMobileBar
-        onBookClick={() => handleOpenBooking(directoryFacilitators[0], "booking")}
+        onBookClick={() => handleOpenBooking(null, "booking")}
       />
 
       {/* MODAL 1: Orientador Sistémico Inteligente / Triage (Alto CRO) */}
       <SystemicTriageModal
         isOpen={isTriageOpen}
         onClose={() => setIsTriageOpen(false)}
+        facilitators={facilitators}
         onSelectFacilitator={(f) => handleOpenBooking(f, "booking")}
       />
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { FacilitatorProfile, directoryFacilitators } from "@/lib/data/directory";
+import { FacilitatorProfile } from "@/lib/data/directory";
 import { bookAndConfirmAppointment } from "@/app/actions/appointments";
 
 export type BookingModalMode = "booking" | "quote";
@@ -20,9 +20,6 @@ export function HumanInTheLoopModal({
   mode = "booking",
 }: HumanInTheLoopModalProps) {
   const [currentMode, setCurrentMode] = useState<BookingModalMode>(mode);
-  const [selectedFacilitator, setSelectedFacilitator] = useState<FacilitatorProfile>(
-    initialFacilitator || directoryFacilitators[0]
-  );
 
   const [sessionType, setSessionType] = useState<string>("individual_online");
   const [scheduledDate, setScheduledDate] = useState<string>("2026-10-29");
@@ -48,9 +45,14 @@ export function HumanInTheLoopModal({
 
   if (!isOpen) return null;
 
-  const total = selectedFacilitator.totalPriceClp;
-  const deposit = selectedFacilitator.depositPriceClp;
-  const balance = selectedFacilitator.balancePriceClp;
+  // Si hay un facilitador seleccionado, usar sus valores reales; de lo contrario, valores estándar de la plataforma
+  const facilitatorName = initialFacilitator?.name || "Facilitador Certificado de la Red";
+  const facilitatorHeadline = initialFacilitator?.headline || "Acompañamiento en Constelaciones Familiares";
+  const therapistId = initialFacilitator?.id || "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d";
+
+  const total = initialFacilitator?.totalPriceClp || 45000;
+  const deposit = initialFacilitator?.depositPriceClp || Math.round(total * 0.2);
+  const balance = total - deposit;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +64,7 @@ export function HumanInTheLoopModal({
 
       // Flujo de Reserva Estructurado con Human-in-the-Loop
       const res = await bookAndConfirmAppointment({
-        therapistId: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d", // ID controlado
+        therapistId,
         clientName: formData.fullName,
         clientEmail: formData.email,
         clientPhone: formData.phone,
@@ -140,7 +142,7 @@ export function HumanInTheLoopModal({
               </div>
               <div className="flex justify-between border-b border-[#E7DECE]/60 pb-1.5">
                 <span className="text-[#8A7E73]">Facilitador asignado:</span>
-                <span className="font-semibold text-[#27221F]">{selectedFacilitator.name}</span>
+                <span className="font-semibold text-[#27221F]">{facilitatorName}</span>
               </div>
               <div className="flex justify-between border-b border-[#E7DECE]/60 pb-1.5">
                 <span className="text-[#8A7E73]">Modalidad solicitada:</span>
@@ -210,11 +212,11 @@ export function HumanInTheLoopModal({
 
               <h3 className="text-2xl font-serif font-semibold text-[#27221F]">
                 {currentMode === "booking"
-                  ? "Agendar Sesión con Acompañamiento"
+                  ? "Agendar Sesión Sistémica"
                   : "Solicitar Evaluación Sistémica Previa"}
               </h3>
               <p className="text-xs text-[#5C524A] mt-1">
-                Con {selectedFacilitator.name} · {selectedFacilitator.headline}
+                {facilitatorName} · {facilitatorHeadline}
               </p>
             </div>
 

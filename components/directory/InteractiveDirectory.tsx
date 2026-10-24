@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import {
-  directoryFacilitators,
   FacilitatorProfile,
   specialtiesList,
   upcomingWorkshopsList,
@@ -10,6 +10,8 @@ import {
 } from "@/lib/data/directory";
 
 interface InteractiveDirectoryProps {
+  facilitators: FacilitatorProfile[];
+  isLoading?: boolean;
   onSelectFacilitator: (facilitator: FacilitatorProfile) => void;
   onOpenDetail: (facilitator: FacilitatorProfile) => void;
   onOpenWorkshopQuote: (workshop: SystemicWorkshop) => void;
@@ -17,6 +19,8 @@ interface InteractiveDirectoryProps {
 }
 
 export function InteractiveDirectory({
+  facilitators,
+  isLoading = false,
   onSelectFacilitator,
   onOpenDetail,
   onOpenWorkshopQuote,
@@ -28,9 +32,9 @@ export function InteractiveDirectory({
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Filtrado reactivo en tiempo real
+  // Filtrado reactivo en tiempo real sobre los datos reales de la base de datos
   const filteredFacilitators = useMemo(() => {
-    return directoryFacilitators.filter((f) => {
+    return facilitators.filter((f) => {
       // Filtro especialidad
       if (selectedSpecialty !== "all" && !f.specialties.includes(selectedSpecialty)) {
         return false;
@@ -56,7 +60,7 @@ export function InteractiveDirectory({
       }
       return true;
     });
-  }, [selectedSpecialty, selectedModality, selectedCity, searchQuery]);
+  }, [facilitators, selectedSpecialty, selectedModality, selectedCity, searchQuery]);
 
   const resetFilters = () => {
     setSelectedSpecialty("all");
@@ -75,10 +79,11 @@ export function InteractiveDirectory({
             Ecosistema y Directorio Nacional
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-[#27221F] mb-4">
-            Encuentra tu Constelador(a) en Chile
+            Facilitadores Certificados en Chile
           </h2>
           <p className="text-base sm:text-lg text-[#5C524A] leading-relaxed">
-            Filtra por tu dolor sistémico, modalidad online o ciudad. Todos los facilitadores cuentan con acreditación formal revisada y política de reserva transparente del 20%.
+            Directorio conectado en tiempo real con nuestra base de datos de facilitadores acreditados.
+            Cada constelador visible ha superado la validación manual de diploma y compromiso ético.
           </p>
 
           {/* Banner de Orientador Rápido / Triage */}
@@ -108,7 +113,7 @@ export function InteractiveDirectory({
                   : "text-[#5C524A] hover:text-[#27221F]"
               }`}
             >
-              Facilitadores Individuales ({directoryFacilitators.length})
+              Facilitadores Acreditados ({facilitators.length})
             </button>
             <button
               type="button"
@@ -119,13 +124,74 @@ export function InteractiveDirectory({
                   : "text-[#5C524A] hover:text-[#27221F]"
               }`}
             >
-              Talleres Vivenciales Grupales ({upcomingWorkshopsList.length})
+              Talleres Vivenciales ({upcomingWorkshopsList.length})
             </button>
           </div>
         </div>
 
-        {/* Barra de Filtros Reactivos para Facilitadores */}
-        {activeTab === "facilitadores" && (
+        {/* Estado de Carga (Skeleton) */}
+        {isLoading && activeTab === "facilitadores" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-6 h-80 flex flex-col justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-[#E7DECE]" />
+                  <div className="space-y-2 flex-1">
+                    <div className="h-4 bg-[#E7DECE] rounded w-3/4" />
+                    <div className="h-3 bg-[#E7DECE] rounded w-1/2" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 bg-[#E7DECE] rounded w-full" />
+                  <div className="h-3 bg-[#E7DECE] rounded w-5/6" />
+                </div>
+                <div className="h-10 bg-[#E7DECE] rounded-full w-full" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Estado Vacío: Cuando la Base de Datos aún no tiene facilitadores aprobados */}
+        {!isLoading && activeTab === "facilitadores" && facilitators.length === 0 && (
+          <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-8 sm:p-14 text-center max-w-2xl mx-auto shadow-sm">
+            <div className="w-16 h-16 rounded-full bg-[#FEF9EE] border-2 border-ochre-400 text-ochre-600 text-3xl flex items-center justify-center mx-auto mb-4">
+              ⏳
+            </div>
+
+            <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-600 block mb-2">
+              Validación en Curso
+            </span>
+            <h3 className="text-2xl sm:text-3xl font-serif font-semibold text-[#27221F] mb-3">
+              Facilitadores en proceso de acreditación
+            </h3>
+            
+            <p className="text-sm text-[#5C524A] leading-relaxed mb-8 max-w-lg mx-auto">
+              Actualmente nuestro equipo ético se encuentra revisando las postulaciones y diplomas de consteladores en Chile. A medida que se aprueben en la base de datos, sus perfiles aparecerán automáticamente en este directorio público.
+            </p>
+
+            <div className="bg-[#FCFAF7] border border-terracotta-200/80 rounded-2xl p-6 mb-6 text-left">
+              <h4 className="font-serif font-semibold text-lg text-[#27221F] mb-1">
+                ¿Te formaste como constelador(a) familiar?
+              </h4>
+              <p className="text-xs text-[#5C524A] leading-relaxed mb-4">
+                Sube tu certificado y antecedentes formativos para unirte a la red y comenzar a recibir consultantes validados con el modelo de reserva del 20%.
+              </p>
+              <Link
+                href="/registro-terapeuta"
+                className="inline-flex items-center justify-center px-6 py-3 text-xs font-semibold text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all"
+              >
+                Postular como facilitador verificado →
+              </Link>
+            </div>
+
+            <p className="text-xs text-[#8A7E73]">
+              ¿Tienes dudas o buscas una sesión prioritaria? Escríbenos directamente a través del botón de WhatsApp.
+            </p>
+          </div>
+        )}
+
+        {/* Barra de Filtros Reactivos para Facilitadores cuando hay registros */}
+        {!isLoading && activeTab === "facilitadores" && facilitators.length > 0 && (
           <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-5 sm:p-6 mb-10 shadow-sm">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
               
@@ -160,7 +226,7 @@ export function InteractiveDirectory({
                 >
                   <option value="all">Todas las modalidades</option>
                   <option value="online">💻 Online (Google Meet)</option>
-                  <option value="presencial">📍 Presencial (Consulta privada)</option>
+                  <option value="presencial">📍 Presencial (Consulta)</option>
                   <option value="taller_grupal">👥 Talleres Vivenciales</option>
                 </select>
               </div>
@@ -176,9 +242,10 @@ export function InteractiveDirectory({
                   className="w-full px-3 py-2 rounded-xl bg-[#FCFAF7] border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
                 >
                   <option value="all">Todo Chile & Online</option>
-                  <option value="santiago">Santiago (Providencia / Las Condes)</option>
+                  <option value="santiago">Santiago</option>
                   <option value="viña">Viña del Mar / Valparaíso</option>
                   <option value="concepción">Concepción</option>
+                  <option value="online">Online</option>
                 </select>
               </div>
 
@@ -189,7 +256,7 @@ export function InteractiveDirectory({
                 </label>
                 <input
                   type="text"
-                  placeholder="Ej. duelo, dinero, María Paz..."
+                  placeholder="Ej. nombre, linaje, ciudad..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-[#FCFAF7] border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
@@ -201,7 +268,7 @@ export function InteractiveDirectory({
             {/* Micro-resumen de resultados y botón reset */}
             <div className="flex items-center justify-between text-xs text-[#8A7E73] pt-3 border-t border-[#E7DECE]/60">
               <span>
-                Mostrando <strong>{filteredFacilitators.length}</strong> de {directoryFacilitators.length} facilitadores verificados
+                Mostrando <strong>{filteredFacilitators.length}</strong> de {facilitators.length} facilitadores certificados
               </span>
               {(selectedSpecialty !== "all" || selectedModality !== "all" || selectedCity !== "all" || searchQuery !== "") && (
                 <button
@@ -216,17 +283,17 @@ export function InteractiveDirectory({
           </div>
         )}
 
-        {/* TAB 1: GRILLA DE FACILITADORES */}
-        {activeTab === "facilitadores" && (
+        {/* TAB 1: GRILLA DE FACILITADORES DINÁMICOS */}
+        {!isLoading && activeTab === "facilitadores" && facilitators.length > 0 && (
           <div>
             {filteredFacilitators.length === 0 ? (
               <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-12 text-center max-w-xl mx-auto">
                 <span className="text-3xl block mb-2">🔍</span>
                 <h4 className="font-serif font-semibold text-xl text-[#27221F] mb-2">
-                  No encontramos facilitadores con esos filtros
+                  No hay facilitadores que coincidan con estos filtros
                 </h4>
                 <p className="text-xs text-[#5C524A] mb-4">
-                  Prueba ampliando la modalidad o limpiando la búsqueda para ver todos los perfiles disponibles.
+                  Prueba restableciendo los filtros para ver todos los consteladores activos.
                 </p>
                 <button
                   onClick={resetFilters}
@@ -263,10 +330,10 @@ export function InteractiveDirectory({
 
                           <div className="text-right">
                             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-ochre-100 text-ochre-800 text-[11px] font-semibold">
-                              ★ {facilitator.rating} ({facilitator.reviewCount})
+                              Certificado ✓
                             </span>
                             <span className="text-[10px] text-[#8A7E73] block mt-1">
-                              +{facilitator.completedSessions} sesiones
+                              {facilitator.experienceYears} años de experiencia
                             </span>
                           </div>
                         </div>
@@ -360,77 +427,95 @@ export function InteractiveDirectory({
                 La Fuerza del Campo Grupal
               </span>
               <h3 className="text-2xl font-serif font-semibold text-[#27221F]">
-                Próximos Talleres Vivenciales en Chile
+                Talleres Vivenciales en Chile
               </h3>
               <p className="text-xs sm:text-sm text-[#5C524A] max-w-lg mx-auto mt-1">
                 Participa como consultante (para constelar tu propio tema) o como representante en una experiencia vivencial profunda.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {upcomingWorkshopsList.map((ws) => (
-                <div
-                  key={ws.id}
-                  className="bg-[#FAF8F5] border border-ochre-300 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between"
+            {upcomingWorkshopsList.length === 0 ? (
+              <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-8 sm:p-12 text-center max-w-xl mx-auto">
+                <span className="text-3xl block mb-2">🗓️</span>
+                <h4 className="font-serif font-semibold text-xl text-[#27221F] mb-2">
+                  Próximas fechas en coordinación
+                </h4>
+                <p className="text-xs text-[#5C524A] leading-relaxed mb-6">
+                  Actualmente estamos organizando las próximas jornadas presenciales y online para este ciclo. Si eres facilitador(a) y programas talleres vivenciales, puedes sumarte a la red para publicarlos aquí.
+                </p>
+                <Link
+                  href="/registro-terapeuta"
+                  className="inline-flex px-6 py-2.5 text-xs font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full"
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-ochre-100 text-ochre-800">
-                        👥 Taller Vivencial
-                      </span>
-                      <span className="text-xs font-bold text-terracotta-600 bg-[#FDF7F4] px-2.5 py-0.5 rounded-full border border-terracotta-200">
-                        {ws.spotsLeft} cupos libres
-                      </span>
-                    </div>
-
-                    <h4 className="text-2xl font-serif font-semibold text-[#27221F] mb-2">
-                      {ws.title}
-                    </h4>
-
-                    <p className="text-xs text-[#8A7E73] mb-4">
-                      Facilitado por <strong className="text-[#27221F]">{ws.facilitatorName}</strong>
-                    </p>
-
-                    <div className="bg-[#FCFAF7] p-3.5 rounded-2xl border border-[#E7DECE] space-y-1.5 text-xs text-[#5C524A] mb-4">
-                      <p>📅 <strong>Fecha:</strong> {ws.date}</p>
-                      <p>📍 <strong>Lugar:</strong> {ws.location} ({ws.city})</p>
-                      <p>🎯 <strong>Enfoque:</strong> {ws.theme}</p>
-                    </div>
-
-                    <p className="text-xs text-[#5C524A] leading-relaxed mb-5">
-                      {ws.description}
-                    </p>
-                  </div>
-
-                  <div className="pt-4 border-t border-[#E7DECE]/80">
-                    <div className="flex items-baseline justify-between mb-4">
-                      <div>
-                        <span className="text-[11px] text-[#8A7E73] block">Valor del cupo:</span>
-                        <span className="text-xl font-serif font-bold text-[#27221F]">
-                          ${ws.totalPriceClp.toLocaleString("es-CL")} CLP
+                  Postular y publicar talleres →
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {upcomingWorkshopsList.map((ws) => (
+                  <div
+                    key={ws.id}
+                    className="bg-[#FAF8F5] border border-ochre-300 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-ochre-100 text-ochre-800">
+                          👥 Taller Vivencial
+                        </span>
+                        <span className="text-xs font-bold text-terracotta-600 bg-[#FDF7F4] px-2.5 py-0.5 rounded-full border border-terracotta-200">
+                          {ws.spotsLeft} cupos libres
                         </span>
                       </div>
-                      <div className="text-right">
-                        <span className="text-[11px] text-terracotta-600 font-semibold block">
-                          Reserva tu cupo (20%):
-                        </span>
-                        <span className="text-base font-bold text-terracotta-700">
-                          ${ws.depositPriceClp.toLocaleString("es-CL")} CLP
-                        </span>
+
+                      <h4 className="text-2xl font-serif font-semibold text-[#27221F] mb-2">
+                        {ws.title}
+                      </h4>
+
+                      <p className="text-xs text-[#8A7E73] mb-4">
+                        Facilitado por <strong className="text-[#27221F]">{ws.facilitatorName}</strong>
+                      </p>
+
+                      <div className="bg-[#FCFAF7] p-3.5 rounded-2xl border border-[#E7DECE] space-y-1.5 text-xs text-[#5C524A] mb-4">
+                        <p>📅 <strong>Fecha:</strong> {ws.date}</p>
+                        <p>📍 <strong>Lugar:</strong> {ws.location} ({ws.city})</p>
+                        <p>🎯 <strong>Enfoque:</strong> {ws.theme}</p>
                       </div>
+
+                      <p className="text-xs text-[#5C524A] leading-relaxed mb-5">
+                        {ws.description}
+                      </p>
                     </div>
 
-                    <button
-                      onClick={() => onOpenWorkshopQuote(ws)}
-                      type="button"
-                      className="w-full py-3 text-xs font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all"
-                    >
-                      Asegurar cupo en el taller (Reserva 20%)
-                    </button>
+                    <div className="pt-4 border-t border-[#E7DECE]/80">
+                      <div className="flex items-baseline justify-between mb-4">
+                        <div>
+                          <span className="text-[11px] text-[#8A7E73] block">Valor del cupo:</span>
+                          <span className="text-xl font-serif font-bold text-[#27221F]">
+                            ${ws.totalPriceClp.toLocaleString("es-CL")} CLP
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-[11px] text-terracotta-600 font-semibold block">
+                            Reserva tu cupo (20%):
+                          </span>
+                          <span className="text-base font-bold text-terracotta-700">
+                            ${ws.depositPriceClp.toLocaleString("es-CL")} CLP
+                          </span>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => onOpenWorkshopQuote(ws)}
+                        type="button"
+                        className="w-full py-3 text-xs font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all"
+                      >
+                        Asegurar cupo en el taller (Reserva 20%)
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
