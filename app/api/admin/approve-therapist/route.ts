@@ -196,6 +196,23 @@ export async function GET(request: NextRequest) {
             </div>
           `,
         });
+        if (therapistEmail !== "karen.sudzuki@gmail.com") {
+          try {
+            await resend.emails.send({
+              from: process.env.RESEND_FROM_EMAIL || "consteladores.cl <onboarding@resend.dev>",
+              to: ["karen.sudzuki@gmail.com"],
+              subject: `[Copia Aprobación] Perfil activado para: ${therapistName} (${therapistEmail})`,
+              html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #FAF8F5; color: #27221F; border: 1px solid #E7DECE; border-radius: 16px;">
+                  <h2 style="font-size: 20px; color: #166534; margin: 0 0 8px;">✓ Facilitador Aprobado y Publicado</h2>
+                  <p style="font-size: 14px; color: #5C524A;">Se ha aprobado el perfil de <strong>${therapistName}</strong> (${therapistEmail}) y ya se encuentra visible en el directorio de consteladores.cl.</p>
+                </div>
+              `,
+            });
+          } catch (admCopyErr) {
+            console.warn("Aviso al enviar copia de aprobación a Karen:", admCopyErr);
+          }
+        }
       } catch (notifyErr) {
         console.warn("Aviso al notificar aprobación al terapeuta:", notifyErr);
       }

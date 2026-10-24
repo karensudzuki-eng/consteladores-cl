@@ -99,9 +99,9 @@ export async function bookAndConfirmAppointment(
             client_email: input.clientEmail,
             client_phone: input.clientPhone,
             scheduled_at: input.scheduledAt,
-            status: "confirmed",
+            status: "pending",
             meet_link: meetLink,
-            payment_id: input.paymentId || "solicitud_evaluacion_o_reserva",
+            payment_id: input.paymentId || "abono_20_pendiente",
             amount_paid_clp: input.amountPaidClp || 0,
             consultation_motive: input.consultationMotive,
           })
@@ -130,8 +130,8 @@ export async function bookAndConfirmAppointment(
         const adminEmailHtml = `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #FAF8F5; color: #27221F; border: 1px solid #E7DECE; border-radius: 16px;">
             <div style="text-align: center; margin-bottom: 24px;">
-              <h2 style="font-size: 22px; color: #27221F; margin: 0 0 8px;">🔔 Nueva Cita Agendada en consteladores.cl</h2>
-              <p style="font-size: 14px; color: #5C524A; margin: 0;">Abono de Reserva (20% - Servicio de Plataforma) Confirmado</p>
+              <h2 style="font-size: 22px; color: #27221F; margin: 0 0 8px;">🔔 Nueva Solicitud de Cita en consteladores.cl</h2>
+              <p style="font-size: 14px; color: #5C524A; margin: 0;">Abono de Reserva (20% - $9.000 CLP) Pendiente de Validación</p>
             </div>
 
             <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #E7DECE; margin-bottom: 24px;">
@@ -158,7 +158,7 @@ export async function bookAndConfirmAppointment(
                 </tr>
                 <tr>
                   <td style="padding: 8px 0; color: #8A7E73;"><strong>Abono 20% (Plataforma):</strong></td>
-                  <td style="padding: 8px 0; color: #166534; font-weight: bold;">$${(input.amountPaidClp || 9000).toLocaleString("es-CL")} CLP</td>
+                  <td style="padding: 8px 0; color: #166534; font-weight: bold;">$${(input.amountPaidClp || 9000).toLocaleString("es-CL")} CLP (Pendiente de pago/conciliación)</td>
                 </tr>
                 <tr>
                   <td style="padding: 8px 0; color: #8A7E73;"><strong>Saldo al constelador (80%):</strong></td>
@@ -174,8 +174,11 @@ export async function bookAndConfirmAppointment(
               </div>
 
               <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #E7DECE;">
-                <p style="font-size: 13px; color: #8A7E73; margin: 0 0 6px;"><strong>Sala de Google Meet generada:</strong></p>
+                <p style="font-size: 13px; color: #8A7E73; margin: 0 0 6px;"><strong>Sala de Google Meet pre-generada para este encuentro:</strong></p>
                 <a href="${meetLink}" style="color: #D66847; font-size: 14px; word-break: break-all;">${meetLink}</a>
+                <p style="font-size: 11px; color: #8A7E73; margin: 4px 0 0;">
+                  (Por seguridad, este enlace NO fue expuesto al consultante en la web y solo se validará al confirmar su abono de $9.000 CLP).
+                </p>
               </div>
             </div>
 
@@ -190,7 +193,7 @@ export async function bookAndConfirmAppointment(
             await resend.emails.send({
               from: senderEmail,
               to: [recipient],
-              subject: `🔔 Nueva cita de ${input.clientName} en consteladores.cl (Abono 20% Confirmado)`,
+              subject: `🔔 Nueva solicitud de cita de ${input.clientName} (Pendiente Abono 20%)`,
               html: adminEmailHtml,
             });
           } catch (admErr) {
@@ -198,17 +201,18 @@ export async function bookAndConfirmAppointment(
           }
         }
 
-        // Correo 2: Confirmación cálida para el consultante con Google Meet y detalle de saldo 80%
+        // Correo 2: Notificación para el consultante con instrucciones de abono 20%
         try {
           await resend.emails.send({
             from: senderEmail,
             to: [input.clientEmail],
-            subject: `Tu espacio está listo: constelación familiar con ${therapistName}`,
+            subject: `Tu espacio está pre-agendado: completa el abono del 20% para confirmar con ${therapistName}`,
             react: AppointmentConfirmationEmail({
               clientName: input.clientName,
               therapistName: therapistName,
               scheduledDate: formattedDate,
               meetLink: meetLink,
+              isConfirmed: false,
             }),
           });
         } catch (clientErr) {
@@ -221,12 +225,13 @@ export async function bookAndConfirmAppointment(
             await resend.emails.send({
               from: senderEmail,
               to: ["karen.sudzuki@gmail.com"],
-              subject: `[Copia Consultante] Cita confirmada para ${input.clientName} (${input.clientEmail})`,
+              subject: `[Copia Consultante] Pre-reserva para ${input.clientName} (${input.clientEmail})`,
               react: AppointmentConfirmationEmail({
                 clientName: input.clientName,
                 therapistName: therapistName,
                 scheduledDate: formattedDate,
                 meetLink: meetLink,
+                isConfirmed: false,
               }),
             });
           } catch (copyErr) {
@@ -239,13 +244,13 @@ export async function bookAndConfirmAppointment(
           const therapistEmailHtml = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #FAF8F5; color: #27221F; border: 1px solid #E7DECE; border-radius: 16px;">
               <div style="text-align: center; margin-bottom: 24px;">
-                <h2 style="font-size: 22px; color: #27221F; margin: 0 0 8px;">🗓️ Nueva Cita Asignada</h2>
+                <h2 style="font-size: 22px; color: #27221F; margin: 0 0 8px;">🗓️ Nueva Solicitud de Cita</h2>
                 <p style="font-size: 14px; color: #5C524A; margin: 0;">Plataforma consteladores.cl</p>
               </div>
 
               <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #E7DECE; margin-bottom: 20px; font-size: 14px; line-height: 1.6; color: #5C524A;">
                 <p>Hola <strong>${therapistName}</strong>,</p>
-                <p>Se ha reservado una nueva sesión de constelación familiar con abono de plataforma (20%) confirmado.</p>
+                <p>Se ha pre-agendado una sesión de constelación familiar. El consultante ha sido derivado a completar el abono del 20% de plataforma. Te compartimos los detalles para tu preparación:</p>
                 
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0;">
                   <tr><td style="padding: 6px 0; color: #8A7E73;"><strong>Consultante:</strong></td><td>${input.clientName}</td></tr>

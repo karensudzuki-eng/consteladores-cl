@@ -64,6 +64,8 @@ export interface FacilitatorProfile {
   approachDetails: string;
   nextAvailableDate: string;
   isValidated: boolean;
+  availableHours?: string[];
+  googleCalendarUrl?: string;
   reviews: {
     author: string;
     city: string;
@@ -102,8 +104,10 @@ export const directoryFacilitators: FacilitatorProfile[] = [
     reviewCount: 24,
     bio: "Consteladora familiar y organizacional con más de 6 años de experiencia en acompañamiento individual y empresarial. Ayudo a mirar con respeto y amor los nudos del sistema familiar, desarticulando lealtades inconscientes y abriendo camino a la paz y la prosperidad.",
     approachDetails: "Formada en Centro de Formación Icalma con enfoque sistémico y fenomenológico.",
-    nextAvailableDate: "Jueves 29 de Octubre",
+    nextAvailableDate: "A coordinar en agenda",
     isValidated: true,
+    availableHours: ["10:00", "11:30", "15:00", "16:30", "18:00", "19:30"],
+    googleCalendarUrl: "", // Enlace opcional de Google Calendar Appointment Schedule de Karen
     reviews: [
       {
         author: "Camila R.",

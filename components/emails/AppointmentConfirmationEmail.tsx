@@ -17,6 +17,7 @@ interface AppointmentEmailProps {
   therapistName: string;
   scheduledDate: string; // Ej: "Jueves 24 de Octubre a las 18:00 hrs (Hora de Chile)"
   meetLink: string;
+  isConfirmed?: boolean;
 }
 
 export function AppointmentConfirmationEmail({
@@ -24,17 +25,20 @@ export function AppointmentConfirmationEmail({
   therapistName,
   scheduledDate,
   meetLink,
+  isConfirmed = false,
 }: AppointmentEmailProps) {
   return (
     <Html>
       <Head />
-      <Preview>Tu espacio está listo: detalles de tu constelación con {therapistName}</Preview>
+      <Preview>{isConfirmed ? `Tu espacio está confirmado con ${therapistName}` : `Tu pre-reserva está lista: abona el 20% para asegurar tu hora`}</Preview>
       <Body style={mainStyle}>
         <Container style={containerStyle}>
           {/* Encabezado suave */}
           <Section style={headerSection}>
             <Text style={subBrandText}>consteladores.cl</Text>
-            <Heading style={headingStyle}>Un espacio listo para ti</Heading>
+            <Heading style={headingStyle}>
+              {isConfirmed ? "Tu espacio está confirmado" : "Tu sesión está pre-agendada"}
+            </Heading>
           </Section>
 
           {/* Cuerpo principal */}
@@ -43,8 +47,9 @@ export function AppointmentConfirmationEmail({
               Hola {clientName},
             </Text>
             <Text style={paragraph}>
-              Te escribimos para confirmarte que tu sesión de constelación familiar junto a{" "}
-              <strong>{therapistName}</strong> ha quedado reservada con cariño.
+              {isConfirmed
+                ? `Te confirmamos que tu sesión de constelación familiar junto a ${therapistName} ha quedado 100% confirmada.`
+                : `Te escribimos para informarte que tu solicitud de constelación familiar junto a ${therapistName} ha sido pre-bloqueada con éxito en nuestra agenda.`}
             </Text>
 
             {/* Tarjeta de detalles de la sesión */}
@@ -52,22 +57,32 @@ export function AppointmentConfirmationEmail({
               <Text style={cardLabel}>Cuándo nos encontramos:</Text>
               <Text style={cardValue}>{scheduledDate}</Text>
 
-              <Text style={{ ...cardLabel, marginTop: "14px" }}>Dónde entrar (Google Meet):</Text>
-              <Link href={meetLink} style={meetButton}>
-                Abrir sala en Google Meet
-              </Link>
-              <Text style={linkFallback}>
-                Enlace directo:{" "}
-                <Link href={meetLink} style={{ color: "#A94F32", wordBreak: "break-all" }}>
-                  {meetLink}
-                </Link>
-              </Text>
+              {isConfirmed ? (
+                <>
+                  <Text style={{ ...cardLabel, marginTop: "14px" }}>Dónde entrar (Google Meet):</Text>
+                  <Link href={meetLink} style={meetButton}>
+                    Abrir sala en Google Meet
+                  </Link>
+                  <Text style={linkFallback}>
+                    Enlace directo:{" "}
+                    <Link href={meetLink} style={{ color: "#A94F32", wordBreak: "break-all" }}>
+                      {meetLink}
+                    </Link>
+                  </Text>
+                </>
+              ) : (
+                <div style={{ backgroundColor: "#F3ECE2", padding: "12px 16px", borderRadius: "8px", margin: "14px 0" }}>
+                  <Text style={{ fontSize: "12px", color: "#5C524A", margin: "0", lineHeight: "1.4" }}>
+                    🔒 <strong>Acceso a Google Meet:</strong> El enlace a la sala virtual se activará y te será enviado en cuanto se verifique el pago del abono del 20%.
+                  </Text>
+                </div>
+              )}
 
               <Hr style={{ borderColor: "#E7DECE", margin: "16px 0 12px" }} />
 
               <Text style={{ ...cardLabel, margin: "0 0 6px" }}>Desglose de Pago:</Text>
               <Text style={{ fontSize: "13px", color: "#5C524A", margin: "0 0 4px" }}>
-                • <strong>Abono de Reserva (20% pagado):</strong> $9.000 CLP (Gestión de plataforma consteladores.cl)
+                • <strong>Abono de Reserva (20%):</strong> $9.000 CLP (Servicio de plataforma consteladores.cl)
               </Text>
               <Text style={{ fontSize: "13px", color: "#5C524A", margin: "0 0 8px" }}>
                 • <strong>Saldo a pagar al constelador (80%):</strong> $36.000 CLP
@@ -76,7 +91,7 @@ export function AppointmentConfirmationEmail({
                 El saldo del 80% se transfiere directamente al facilitador. Recuerda enviar tu comprobante/voucher de transferencia antes o al finalizar tu constelación.
               </Text>
 
-              <div style={{ textAlign: "center", margin: "10px 0 10px" }}>
+              <div style={{ textAlign: "center", margin: "12px 0 12px" }}>
                 <Link
                   href="https://link.mercadopago.cl/reserva20"
                   style={{
@@ -84,13 +99,13 @@ export function AppointmentConfirmationEmail({
                     backgroundColor: "#009EE3",
                     color: "#ffffff",
                     textDecoration: "none",
-                    padding: "10px 22px",
+                    padding: "12px 24px",
                     borderRadius: "50px",
                     fontWeight: "bold",
                     fontSize: "13px",
                   }}
                 >
-                  Link de Cobro Oficial: Pagar $9.000 en Mercado Pago →
+                  Pagar $9.000 en Mercado Pago / Webpay →
                 </Link>
               </div>
 
