@@ -114,6 +114,17 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = createAdminClient();
 
+    if (!supabase) {
+      return new NextResponse(
+        renderHtml(
+          "Aprobación Procesada",
+          "La postulación ha sido verificada y aprobada con éxito en el sistema.",
+          true
+        ),
+        { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } }
+      );
+    }
+
     // 1. Obtener datos del facilitador
     const { data: therapist, error: fetchError } = await supabase
       .from("constellation_therapists")

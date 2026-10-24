@@ -62,81 +62,83 @@ export async function registerTherapistApplication(
       try {
         const supabase = createAdminClient();
 
-        // 1.1 Intentar subir a Supabase Storage con cliente admin
-        try {
-          await supabase.storage.createBucket("certifications", { public: false });
-        } catch {
-          // El bucket ya existe
-        }
-
-        const { error: uploadError } = await supabase.storage
-          .from("certifications")
-          .upload(storagePath, fileBuffer, {
-            contentType: certificateFile.type || "application/pdf",
-            upsert: true,
-          });
-
-        if (uploadError) {
-          console.warn("Aviso en Supabase Storage:", uploadError.message);
-        }
-
-        // 1.2 Crear o vincular perfil
-        const { data: existingProfile } = await supabase
-          .from("profiles")
-          .select("id")
-          .eq("email", email)
-          .maybeSingle();
-
-        let userId = existingProfile?.id;
-
-        if (!userId) {
-          const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
-            email,
-            email_confirm: true,
-            user_metadata: {
-              full_name: fullName,
-              role: "constelador",
-            },
-          });
-
-          if (authError || !authUser?.user) {
-            console.warn("Aviso al crear authUser:", authError?.message);
-            userId = crypto.randomUUID();
-            await supabase.from("profiles").upsert({
-              id: userId,
-              email,
-              full_name: fullName,
-              phone,
-              role: "constelador",
-            });
-          } else {
-            userId = authUser.user.id;
+        if (supabase) {
+          // 1.1 Intentar subir a Supabase Storage con cliente admin
+          try {
+            await supabase.storage.createBucket("certifications", { public: false });
+          } catch {
+            // El bucket ya existe
           }
-        }
 
-        // 1.3 Registrar en constellation_therapists
-        const { data: therapistData, error: therapistError } = await supabase
-          .from("constellation_therapists")
-          .upsert(
-            {
-              user_id: userId,
-              headline,
-              bio,
-              approach,
-              experience_years: experienceYears,
-              price_clp: priceClp,
-              certification_url: certificationUrl,
-              status: "pending_approval",
-            },
-            { onConflict: "user_id" }
-          )
-          .select("id")
-          .single();
+          const { error: uploadError } = await supabase.storage
+            .from("certifications")
+            .upload(storagePath, fileBuffer, {
+              contentType: certificateFile.type || "application/pdf",
+              upsert: true,
+            });
 
-        if (therapistError) {
-          console.error("Error al registrar en constellation_therapists:", therapistError);
-        } else if (therapistData) {
-          therapistId = therapistData.id;
+          if (uploadError) {
+            console.warn("Aviso en Supabase Storage:", uploadError.message);
+          }
+
+          // 1.2 Crear o vincular perfil
+          const { data: existingProfile } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("email", email)
+            .maybeSingle();
+
+          let userId = existingProfile?.id;
+
+          if (!userId) {
+            const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
+              email,
+              email_confirm: true,
+              user_metadata: {
+                full_name: fullName,
+                role: "constelador",
+              },
+            });
+
+            if (authError || !authUser?.user) {
+              console.warn("Aviso al crear authUser:", authError?.message);
+              userId = crypto.randomUUID();
+              await supabase.from("profiles").upsert({
+                id: userId,
+                email,
+                full_name: fullName,
+                phone,
+                role: "constelador",
+              });
+            } else {
+              userId = authUser.user.id;
+            }
+          }
+
+          // 1.3 Registrar en constellation_therapists
+          const { data: therapistData, error: therapistError } = await supabase
+            .from("constellation_therapists")
+            .upsert(
+              {
+                user_id: userId,
+                headline,
+                bio,
+                approach,
+                experience_years: experienceYears,
+                price_clp: priceClp,
+                certification_url: certificationUrl,
+                status: "pending_approval",
+              },
+              { onConflict: "user_id" }
+            )
+            .select("id")
+            .single();
+
+          if (therapistError) {
+            console.error("Error al registrar en constellation_therapists:", therapistError);
+          } else if (therapistData) {
+            therapistId = therapistData.id;
+          }
         }
       } catch (dbErr) {
         console.error("Error al operar en Supabase:", dbErr);

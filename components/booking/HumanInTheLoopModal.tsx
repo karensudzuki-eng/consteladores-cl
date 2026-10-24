@@ -75,7 +75,7 @@ export function HumanInTheLoopModal({
 
       setIsSubmitting(false);
 
-      if (res.success) {
+      if (res?.success) {
         const generatedTicket = `CST-${Math.floor(100000 + Math.random() * 900000)}`;
         setResult({
           success: true,
@@ -89,7 +89,7 @@ export function HumanInTheLoopModal({
       } else {
         setResult({
           success: false,
-          error: res.error || "No pudimos procesar la solicitud en este momento.",
+          error: res?.error || "No pudimos procesar la solicitud en este momento.",
         });
       }
     } catch (err: any) {
