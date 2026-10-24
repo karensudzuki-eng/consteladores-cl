@@ -88,9 +88,15 @@ export function HumanInTheLoopModal({
           meetLink: res.meetLink || "https://meet.google.com/cst-safe-room",
           message:
             currentMode === "booking"
-              ? "Tu hora ha sido pre-bloqueada. Para confirmarla definitivamente en la agenda del facilitador, realiza el pago del abono del 20% a continuación."
+              ? "Tu hora ha sido pre-bloqueada y se ha enviado la notificación por correo con el enlace de Google Meet a ti y al facilitador. Para confirmarla definitivamente en la agenda, realiza el pago del abono del 20% a continuación."
               : "Tu solicitud de cotización y evaluación previa ha sido recibida con éxito. El facilitador revisará la pertinencia sistémica de tu caso y te responderá en menos de 4 horas hábiles.",
         });
+
+        // Si existe un Link de Pago configurado (ej. Mercado Pago o Flow), redirigir de inmediato
+        const customPaymentUrl = process.env.NEXT_PUBLIC_PAYMENT_URL;
+        if (currentMode === "booking" && customPaymentUrl) {
+          window.open(customPaymentUrl, "_blank");
+        }
       } else {
         setResult({
           success: false,
@@ -212,8 +218,18 @@ export function HumanInTheLoopModal({
                         <span className="text-base">${deposit.toLocaleString("es-CL")} CLP</span>
                       </div>
                       <div className="text-[11px] text-[#8A7E73] text-right">
-                        Saldo antes de la sesión: ${balance.toLocaleString("es-CL")} CLP
+                        Saldo al constelador (80% con voucher): ${balance.toLocaleString("es-CL")} CLP
                       </div>
+                    </div>
+
+                    {/* Política de Inasistencia y Reagendamiento */}
+                    <div className="bg-[#FEF9EE] border border-ochre-300 rounded-2xl p-3.5 mb-5 text-left text-xs text-[#9A6523] space-y-1">
+                      <div className="font-bold flex items-center gap-1.5">
+                        <span>⚠️ Política de Reserva y Reagendamiento</span>
+                      </div>
+                      <p className="text-[11px] leading-relaxed text-[#7C5217]">
+                        El abono del <strong>20% ($9.000 CLP)</strong> asegura tu cupo en la agenda del facilitador y cubre el servicio de plataforma. Si no asistes sin previo aviso, este 20% <strong>no es reembolsable</strong>. En casos excepcionales de fuerza mayor, puedes solicitar reagendamiento con al menos 24 horas de anticipación escribiendo a soporte: <a href="mailto:contacto@vorticeintegration.com" className="underline font-semibold text-[#8B3E25]">contacto@vorticeintegration.com</a>.
+                      </p>
                     </div>
 
                     {/* Selector de Pasarela / Método de Pago */}
@@ -335,7 +351,7 @@ export function HumanInTheLoopModal({
                     </p>
 
                     {/* Voucher de Transbank */}
-                    <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-2xl p-4 text-left text-xs space-y-1.5 mb-5 font-mono">
+                    <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-2xl p-4 text-left text-xs space-y-1.5 mb-4 font-mono">
                       <div className="flex justify-between border-b border-[#E7DECE] pb-1 font-sans font-bold text-[#27221F]">
                         <span>Comprobante de Pago Webpay</span>
                         <span className="text-emerald-700">Aprobada (0)</span>
@@ -356,6 +372,16 @@ export function HumanInTheLoopModal({
                         <span className="text-[#8A7E73]">Tarjeta:</span>
                         <span>Redcompra **** 4291</span>
                       </div>
+                    </div>
+
+                    {/* Instrucciones para el Saldo del 80% */}
+                    <div className="bg-[#FDF7F4] border border-terracotta-200/80 rounded-2xl p-4 text-left text-xs mb-5 space-y-1">
+                      <span className="font-bold text-terracotta-700 block">
+                        Saldo a pagar al constelador: ${balance.toLocaleString("es-CL")} CLP (80%)
+                      </span>
+                      <p className="text-[11px] text-[#5C524A] leading-relaxed">
+                        Este saldo se transfiere directamente a la cuenta del facilitador. Recuerda enviar tu voucher/comprobante de transferencia antes o al finalizar la constelación.
+                      </p>
                     </div>
 
                     {/* Botón de Entrada a Google Meet */}
@@ -555,18 +581,25 @@ export function HumanInTheLoopModal({
 
             {/* Desglose de Pago si es Reserva Directa */}
             {currentMode === "booking" ? (
-              <div className="bg-[#FDF7F4] border border-terracotta-200/80 rounded-2xl p-3.5 mb-5 text-xs">
-                <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-[#5C524A]">Valor total de la sesión:</span>
-                  <span className="font-semibold text-[#27221F]">${total.toLocaleString("es-CL")} CLP</span>
+              <div className="space-y-3 mb-5">
+                <div className="bg-[#FDF7F4] border border-terracotta-200/80 rounded-2xl p-3.5 text-xs">
+                  <div className="flex justify-between items-baseline mb-1">
+                    <span className="text-[#5C524A]">Valor total de la sesión:</span>
+                    <span className="font-semibold text-[#27221F]">${total.toLocaleString("es-CL")} CLP</span>
+                  </div>
+                  <div className="flex justify-between items-baseline font-bold text-terracotta-600 mb-1">
+                    <span>Reserva hoy (20% - Servicio de plataforma):</span>
+                    <span>${deposit.toLocaleString("es-CL")} CLP</span>
+                  </div>
+                  <div className="flex justify-between items-baseline text-[#8A7E73] text-[11px]">
+                    <span>Saldo al constelador (80% con voucher):</span>
+                    <span>${balance.toLocaleString("es-CL")} CLP</span>
+                  </div>
                 </div>
-                <div className="flex justify-between items-baseline font-bold text-terracotta-600 mb-1">
-                  <span>Reserva hoy para asegurar cupo (20%):</span>
-                  <span>${deposit.toLocaleString("es-CL")} CLP</span>
-                </div>
-                <div className="flex justify-between items-baseline text-[#8A7E73] text-[11px]">
-                  <span>Saldo a pagar antes de la sesión (80%):</span>
-                  <span>${balance.toLocaleString("es-CL")} CLP</span>
+
+                {/* Nota de Política de Inasistencia */}
+                <div className="bg-[#FEF9EE] border border-ochre-300 rounded-2xl p-3 text-[11px] text-[#9A6523] leading-relaxed">
+                  ⚠️ <strong>Política de Reserva:</strong> El abono del 20% asegura tu cupo y cubre el servicio de plataforma. Si no asistes, este 20% no es reembolsable. Reagendamiento excepcional con al menos 24 hrs de aviso a: <a href="mailto:contacto@vorticeintegration.com" className="underline font-bold">contacto@vorticeintegration.com</a>.
                 </div>
               </div>
             ) : (
@@ -587,9 +620,9 @@ export function HumanInTheLoopModal({
               className="w-full py-3.5 text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md transition-all active:scale-[0.99] disabled:opacity-50"
             >
               {isSubmitting
-                ? "Estructurando solicitud..."
+                ? "Conectando con pasarela..."
                 : currentMode === "booking"
-                ? `Continuar al Pago del Abono 20% ($${deposit.toLocaleString("es-CL")})`
+                ? `Pagar Reserva del 20% ($${deposit.toLocaleString("es-CL")}) e Ir a Pasarela`
                 : "Enviar Solicitud para Evaluación Previa"}
             </button>
           </form>

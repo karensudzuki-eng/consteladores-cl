@@ -52,7 +52,7 @@ export function AppointmentConfirmationEmail({
               <Text style={cardLabel}>Cuándo nos encontramos:</Text>
               <Text style={cardValue}>{scheduledDate}</Text>
 
-              <Text style={{ ...cardLabel, marginTop: "14px" }}>Dónde entrar:</Text>
+              <Text style={{ ...cardLabel, marginTop: "14px" }}>Dónde entrar (Google Meet):</Text>
               <Link href={meetLink} style={meetButton}>
                 Abrir sala en Google Meet
               </Link>
@@ -61,6 +61,29 @@ export function AppointmentConfirmationEmail({
                 <Link href={meetLink} style={{ color: "#A94F32", wordBreak: "break-all" }}>
                   {meetLink}
                 </Link>
+              </Text>
+
+              <Hr style={{ borderColor: "#E7DECE", margin: "16px 0 12px" }} />
+
+              <Text style={{ ...cardLabel, margin: "0 0 6px" }}>Desglose de Pago:</Text>
+              <Text style={{ fontSize: "13px", color: "#5C524A", margin: "0 0 4px" }}>
+                • <strong>Abono de Reserva (20% pagado):</strong> $9.000 CLP (Gestión de plataforma consteladores.cl)
+              </Text>
+              <Text style={{ fontSize: "13px", color: "#5C524A", margin: "0 0 8px" }}>
+                • <strong>Saldo a pagar al constelador (80%):</strong> $36.000 CLP
+              </Text>
+              <Text style={{ fontSize: "12px", color: "#8A7E73", margin: "0", lineHeight: "1.4" }}>
+                El saldo del 80% se transfiere directamente al facilitador. Recuerda enviar tu comprobante/voucher de transferencia antes o al finalizar tu constelación.
+              </Text>
+            </Section>
+
+            {/* Política de Inasistencia y Reagendamiento */}
+            <Section style={{ backgroundColor: "#FDF7F4", border: "1px solid #F2D5C8", borderRadius: "12px", padding: "14px 18px", margin: "20px 0" }}>
+              <Text style={{ fontSize: "12px", color: "#8B3E25", margin: "0 0 6px", fontWeight: "bold" }}>
+                ⚠️ Política de Reserva y Reagendamiento:
+              </Text>
+              <Text style={{ fontSize: "12px", color: "#5A493B", margin: "0", lineHeight: "1.5" }}>
+                El abono del 20% asegura tu cupo en la agenda del constelador y cubre los gastos de gestión de la plataforma. Si no asistes sin previo aviso, este 20% no es reembolsable. En casos excepcionales de fuerza mayor, puedes solicitar reagendamiento con un mínimo de 24 horas de anticipación escribiendo a soporte: <Link href="mailto:contacto@vorticeintegration.com" style={{ color: "#C46849", fontWeight: "bold" }}>contacto@vorticeintegration.com</Link>.
               </Text>
             </Section>
 

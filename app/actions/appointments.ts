@@ -120,17 +120,18 @@ export async function bookAndConfirmAppointment(
     const adminRecipients = [
       "karen.sudzuki@gmail.com",
       "karen.sudzuki@vorticeintegration.com",
+      "contacto@vorticeintegration.com",
     ];
     const senderEmail = process.env.RESEND_FROM_EMAIL || "consteladores.cl <onboarding@resend.dev>";
 
     if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== "re_dummy_key") {
       try {
-        // Correo 1: Notificación directa a Karen (administradora/facilitadora) para seguimiento inmediato
+        // Correo 1: Notificación directa a Karen (administradora/soporte) para seguimiento de comisión y cita
         const adminEmailHtml = `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #FAF8F5; color: #27221F; border: 1px solid #E7DECE; border-radius: 16px;">
             <div style="text-align: center; margin-bottom: 24px;">
-              <h2 style="font-size: 22px; color: #27221F; margin: 0 0 8px;">🔔 Nueva Solicitud en consteladores.cl</h2>
-              <p style="font-size: 14px; color: #5C524A; margin: 0;">Solicitud de Evaluación Previa / Reserva Directa</p>
+              <h2 style="font-size: 22px; color: #27221F; margin: 0 0 8px;">🔔 Nueva Cita Agendada en consteladores.cl</h2>
+              <p style="font-size: 14px; color: #5C524A; margin: 0;">Abono de Reserva (20% - Servicio de Plataforma) Confirmado</p>
             </div>
 
             <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #E7DECE; margin-bottom: 24px;">
@@ -149,15 +150,19 @@ export async function bookAndConfirmAppointment(
                 </tr>
                 <tr>
                   <td style="padding: 8px 0; color: #8A7E73;"><strong>Fecha propuesta:</strong></td>
-                  <td style="padding: 8px 0; color: #27221F;">${formattedDate}</td>
+                  <td style="padding: 8px 0; color: #27221F; font-weight: bold;">${formattedDate}</td>
                 </tr>
                 <tr>
                   <td style="padding: 8px 0; color: #8A7E73;"><strong>Facilitador(a):</strong></td>
                   <td style="padding: 8px 0; color: #27221F;">${therapistName}</td>
                 </tr>
                 <tr>
-                  <td style="padding: 8px 0; color: #8A7E73;"><strong>Abono 20% / Monto:</strong></td>
-                  <td style="padding: 8px 0; color: #27221F;">$${(input.amountPaidClp || 0).toLocaleString("es-CL")} CLP</td>
+                  <td style="padding: 8px 0; color: #8A7E73;"><strong>Abono 20% (Plataforma):</strong></td>
+                  <td style="padding: 8px 0; color: #166534; font-weight: bold;">$${(input.amountPaidClp || 9000).toLocaleString("es-CL")} CLP</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #8A7E73;"><strong>Saldo al constelador (80%):</strong></td>
+                  <td style="padding: 8px 0; color: #27221F;">$36.000 CLP (Vía transferencia con voucher)</td>
                 </tr>
               </table>
 
@@ -175,7 +180,7 @@ export async function bookAndConfirmAppointment(
             </div>
 
             <p style="font-size: 11px; color: #8A7E73; text-align: center; margin: 0;">
-              consteladores.cl · Notificación Automática de Citas
+              consteladores.cl · Notificación Automática de Citas y Comisión
             </p>
           </div>
         `;
@@ -185,7 +190,7 @@ export async function bookAndConfirmAppointment(
             await resend.emails.send({
               from: senderEmail,
               to: [recipient],
-              subject: `🔔 Nueva solicitud de ${input.clientName} en consteladores.cl`,
+              subject: `🔔 Nueva cita de ${input.clientName} en consteladores.cl (Abono 20% Confirmado)`,
               html: adminEmailHtml,
             });
           } catch (admErr) {
@@ -193,18 +198,88 @@ export async function bookAndConfirmAppointment(
           }
         }
 
-        // Correo 2: Confirmación cálida para el consultante
-        await resend.emails.send({
-          from: senderEmail,
-          to: [input.clientEmail],
-          subject: `Tu espacio está listo: constelación familiar con ${therapistName}`,
-          react: AppointmentConfirmationEmail({
-            clientName: input.clientName,
-            therapistName: therapistName,
-            scheduledDate: formattedDate,
-            meetLink: meetLink,
-          }),
-        });
+        // Correo 2: Confirmación cálida para el consultante con Google Meet y detalle de saldo 80%
+        try {
+          await resend.emails.send({
+            from: senderEmail,
+            to: [input.clientEmail],
+            subject: `Tu espacio está listo: constelación familiar con ${therapistName}`,
+            react: AppointmentConfirmationEmail({
+              clientName: input.clientName,
+              therapistName: therapistName,
+              scheduledDate: formattedDate,
+              meetLink: meetLink,
+            }),
+          });
+        } catch (clientErr) {
+          console.warn("Aviso al notificar al cliente:", clientErr);
+        }
+
+        // Si el correo del consultante es distinto a Karen, enviar copia de respaldo a Karen
+        if (input.clientEmail !== "karen.sudzuki@gmail.com") {
+          try {
+            await resend.emails.send({
+              from: senderEmail,
+              to: ["karen.sudzuki@gmail.com"],
+              subject: `[Copia Consultante] Cita confirmada para ${input.clientName} (${input.clientEmail})`,
+              react: AppointmentConfirmationEmail({
+                clientName: input.clientName,
+                therapistName: therapistName,
+                scheduledDate: formattedDate,
+                meetLink: meetLink,
+              }),
+            });
+          } catch (copyErr) {
+            console.warn("Aviso al enviar copia de consultante:", copyErr);
+          }
+        }
+
+        // Correo 3: Notificación al constelador facilitador con los datos del consultante y la sala Meet
+        if (therapistEmail && therapistEmail !== "contacto@consteladores.cl" && therapistEmail !== input.clientEmail) {
+          const therapistEmailHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #FAF8F5; color: #27221F; border: 1px solid #E7DECE; border-radius: 16px;">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <h2 style="font-size: 22px; color: #27221F; margin: 0 0 8px;">🗓️ Nueva Cita Asignada</h2>
+                <p style="font-size: 14px; color: #5C524A; margin: 0;">Plataforma consteladores.cl</p>
+              </div>
+
+              <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #E7DECE; margin-bottom: 20px; font-size: 14px; line-height: 1.6; color: #5C524A;">
+                <p>Hola <strong>${therapistName}</strong>,</p>
+                <p>Se ha reservado una nueva sesión de constelación familiar con abono de plataforma (20%) confirmado.</p>
+                
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0;">
+                  <tr><td style="padding: 6px 0; color: #8A7E73;"><strong>Consultante:</strong></td><td>${input.clientName}</td></tr>
+                  <tr><td style="padding: 6px 0; color: #8A7E73;"><strong>Correo:</strong></td><td>${input.clientEmail}</td></tr>
+                  <tr><td style="padding: 6px 0; color: #8A7E73;"><strong>WhatsApp:</strong></td><td>${input.clientPhone || 'No indicado'}</td></tr>
+                  <tr><td style="padding: 6px 0; color: #8A7E73;"><strong>Fecha y Hora:</strong></td><td><strong>${formattedDate}</strong></td></tr>
+                  <tr><td style="padding: 6px 0; color: #8A7E73;"><strong>Saldo a recibir (80%):</strong></td><td>$36.000 CLP (Directo a tu cuenta mediante voucher)</td></tr>
+                </table>
+
+                <div style="background-color: #FAF8F5; padding: 12px; border-radius: 8px; margin: 12px 0;">
+                  <strong>Motivo de consulta:</strong><br/>
+                  ${input.consultationMotive || "Por conversar en el encuentro"}
+                </div>
+
+                <div style="text-align: center; margin: 20px 0;">
+                  <a href="${meetLink}" style="display: inline-block; background-color: #1a73e8; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 50px; font-weight: bold; font-size: 14px;">
+                    Abrir Sala en Google Meet
+                  </a>
+                </div>
+              </div>
+            </div>
+          `;
+
+          try {
+            await resend.emails.send({
+              from: senderEmail,
+              to: [therapistEmail],
+              subject: `🗓️ Nueva cita asignada con ${input.clientName} (${formattedDate})`,
+              html: therapistEmailHtml,
+            });
+          } catch (tErr) {
+            console.warn("Aviso al notificar al terapeuta:", tErr);
+          }
+        }
       } catch (emailError) {
         console.error("Error al despachar correos con Resend:", emailError);
       }
