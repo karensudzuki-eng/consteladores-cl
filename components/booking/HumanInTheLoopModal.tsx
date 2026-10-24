@@ -129,6 +129,27 @@ export function HumanInTheLoopModal({
 
       if (res?.success) {
         const generatedTicket = `CST-${Math.floor(100000 + Math.random() * 900000)}`;
+
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem(
+            "cst_last_booking",
+            JSON.stringify({
+              ticketId: generatedTicket,
+              appointmentId: res.appointmentId,
+              clientName: formData.fullName,
+              clientEmail: formData.email,
+              clientPhone: formData.phone,
+              facilitatorName,
+              scheduledDate,
+              scheduledHour,
+              meetLink: res.meetLink || "https://meet.google.com/cst-safe-room",
+              deposit,
+              balance,
+              total,
+            })
+          );
+        }
+
         setResult({
           success: true,
           ticketId: generatedTicket,
@@ -324,6 +345,18 @@ export function HumanInTheLoopModal({
                     <p className="text-[11px] text-[#8A7E73] text-center mt-2.5">
                       Al hacer clic se abrirá la pasarela segura de Mercado Pago en una pestaña protegida.
                     </p>
+
+                    <div className="pt-4 border-t border-[#E7DECE] mt-4 text-center">
+                      <p className="text-xs text-[#5C524A] mb-2 font-medium">
+                        ¿Ya completaste el abono de $9.000 en Mercado Pago?
+                      </p>
+                      <a
+                        href={`/confirmacion?ticket=${result.ticketId}`}
+                        className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold shadow transition-all"
+                      >
+                        <span>✓ Ver Mi Confirmación y Sala de Google Meet →</span>
+                      </a>
+                    </div>
                   </div>
                 ) : (
                   <div className="bg-white border border-[#E7DECE] rounded-2xl p-5 mb-5 text-left text-xs space-y-2">

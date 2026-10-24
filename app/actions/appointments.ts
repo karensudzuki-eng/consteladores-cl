@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createGoogleMeetLink } from "@/lib/google-meet";
 import { AppointmentConfirmationEmail } from "@/components/emails/AppointmentConfirmationEmail";
+import { directoryFacilitators } from "@/lib/data/directory";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy_key");
 
@@ -62,13 +63,22 @@ export async function bookAndConfirmAppointment(
 
         if (therapist?.profiles?.full_name) {
           therapistName = therapist.profiles.full_name;
-          therapistEmail = therapist.profiles.email || therapistEmail;
+          therapistEmail = therapist.profiles.email || "karen.sudzuki@gmail.com";
         }
         if (therapist?.duration_minutes) {
           durationMinutes = therapist.duration_minutes;
         }
       } catch (dbErr) {
         console.warn("Aviso al consultar terapeuta en Supabase:", dbErr);
+      }
+    }
+
+    // Si no se obtuvo de Supabase, asegurar los datos desde el directorio local
+    if (!therapistName || therapistName === "Facilitador Certificado de la Red") {
+      const fallbackTherapist = directoryFacilitators.find((f) => f.id === input.therapistId) || directoryFacilitators[0];
+      if (fallbackTherapist) {
+        therapistName = fallbackTherapist.name;
+        therapistEmail = "karen.sudzuki@gmail.com";
       }
     }
 
@@ -302,6 +312,102 @@ export async function bookAndConfirmAppointment(
     return {
       success: false,
       error: err?.message || "Ocurrió un error inesperado al procesar tu solicitud.",
+    };
+  }
+}
+
+export interface ConfirmAppointmentInput {
+  appointmentId?: string;
+  ticketId?: string;
+  clientName: string;
+  clientEmail: string;
+  clientPhone?: string;
+  facilitatorName?: string;
+  scheduledDate?: string;
+  scheduledHour?: string;
+  meetLink?: string;
+}
+
+/**
+ * Confirmación definitiva de cita tras completar el abono del 20% en Mercado Pago.
+ * - Despacha el correo definitivo con la sala de Google Meet activa al consultante.
+ * - Notifica a Karen con copia de respaldo y datos del consultante.
+ * - Actualiza el estado en Supabase a 'confirmed'.
+ */
+export async function confirmAppointmentPaymentAction(
+  input: ConfirmAppointmentInput
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const therapistName = input.facilitatorName || "Karen Sudzuki";
+    const therapistEmail = "karen.sudzuki@gmail.com";
+    const meetLink = input.meetLink || "https://meet.google.com/cst-safe-room";
+    const formattedDate = input.scheduledDate
+      ? `${input.scheduledDate} a las ${input.scheduledHour || "16:30"} hrs (Chile)`
+      : "Fecha por coordinar";
+
+    // 1. Actualizar estado en Supabase si está disponible
+    const supabase = createAdminClient();
+    if (supabase && input.appointmentId) {
+      try {
+        await supabase
+          .from("appointments")
+          .update({
+            status: "confirmed",
+            payment_id: "mercadopago_20_confirmado",
+          })
+          .eq("id", input.appointmentId);
+      } catch (dbErr) {
+        console.warn("Aviso al actualizar estado en Supabase:", dbErr);
+      }
+    }
+
+    // 2. Despachar correos con sala de Google Meet activada
+    const senderEmail = process.env.RESEND_FROM_EMAIL || "consteladores.cl <onboarding@resend.dev>";
+
+    if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== "re_dummy_key") {
+      // Correo para el consultante con Google Meet
+      try {
+        await resend.emails.send({
+          from: senderEmail,
+          to: [input.clientEmail],
+          subject: `✓ ¡Cita confirmada! Tu espacio con ${therapistName} está listo (Google Meet)`,
+          react: AppointmentConfirmationEmail({
+            clientName: input.clientName,
+            therapistName,
+            scheduledDate: formattedDate,
+            meetLink,
+            isConfirmed: true,
+          }),
+        });
+      } catch (clientErr) {
+        console.warn("Aviso al notificar confirmación al cliente:", clientErr);
+      }
+
+      // Notificación directa a Karen con Google Meet activo y confirmación de abono
+      try {
+        await resend.emails.send({
+          from: senderEmail,
+          to: ["karen.sudzuki@gmail.com"],
+          subject: `[Abono 20% Confirmado] Cita activa de ${input.clientName} con ${therapistName}`,
+          react: AppointmentConfirmationEmail({
+            clientName: input.clientName,
+            therapistName,
+            scheduledDate: formattedDate,
+            meetLink,
+            isConfirmed: true,
+          }),
+        });
+      } catch (admErr) {
+        console.warn("Aviso al enviar confirmación a Karen:", admErr);
+      }
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    console.error("Error en confirmAppointmentPaymentAction:", err);
+    return {
+      success: false,
+      error: err?.message || "No se pudo confirmar la cita.",
     };
   }
 }
