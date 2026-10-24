@@ -155,8 +155,11 @@ export async function registerTherapistApplication(
     const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.consteladores.cl";
     const approvalUrl = `${appBaseUrl}/api/admin/approve-therapist?id=${therapistId}&token=${approvalToken}`;
 
-    // 3. Correo A: Notificación a Karen con certificado adjunto y botón de aprobación
-    const adminEmail = "karen.sudzuki@vorticeintegration.com";
+    // 3. Correo A: Notificación de aprobación con certificado adjunto y botón de 1 clic
+    const adminRecipients = [
+      "karen.sudzuki@gmail.com",
+      "karen.sudzuki@vorticeintegration.com",
+    ];
     const senderEmail = process.env.RESEND_FROM_EMAIL || "consteladores.cl <onboarding@resend.dev>";
 
     const adminEmailHtml = `
@@ -262,24 +265,30 @@ export async function registerTherapistApplication(
     // 5. Envíos mediante Resend
     if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== "re_dummy_key") {
       try {
-        // Enviar a Karen con el archivo adjunto
-        const sendAdmin = await resend.emails.send({
-          from: senderEmail,
-          to: [adminEmail],
-          subject: `Nueva postulación de constelador: ${fullName}`,
-          html: adminEmailHtml,
-          attachments: [
-            {
-              filename: certificateFile.name,
-              content: fileBuffer,
-            },
-          ],
-        });
+        // Enviar a los correos de administración (karen.sudzuki@gmail.com y karen.sudzuki@vorticeintegration.com)
+        for (const recipient of adminRecipients) {
+          try {
+            const sendAdmin = await resend.emails.send({
+              from: senderEmail,
+              to: [recipient],
+              subject: `Nueva postulación de constelador: ${fullName}`,
+              html: adminEmailHtml,
+              attachments: [
+                {
+                  filename: certificateFile.name,
+                  content: fileBuffer,
+                },
+              ],
+            });
 
-        if (sendAdmin.error) {
-          console.error("Error devuelto por Resend al notificar a Karen:", sendAdmin.error);
-        } else {
-          console.log("Correo enviado con éxito a Karen vía Resend. ID:", sendAdmin.data?.id);
+            if (sendAdmin.error) {
+              console.warn(`Aviso de Resend al enviar notificación de admin a ${recipient}:`, sendAdmin.error);
+            } else {
+              console.log(`Correo de aprobación enviado con éxito a ${recipient}. ID:`, sendAdmin.data?.id);
+            }
+          } catch (admErr) {
+            console.warn(`Error individual al enviar admin email a ${recipient}:`, admErr);
+          }
         }
 
         // Enviar acuse de recibo al constelador postulante
@@ -300,7 +309,7 @@ export async function registerTherapistApplication(
       }
     } else {
       console.warn("⚠️ [Aviso de Configuración]: RESEND_API_KEY no está configurada en las Variables de Entorno de Vercel.");
-      console.warn(`[Modo Simulación] Correo preparado para Karen (${adminEmail}) con adjunto: ${certificateFile.name}`);
+      console.warn(`[Modo Simulación] Correo preparado para Karen (${adminRecipients.join(", ")}) con adjunto: ${certificateFile.name}`);
       console.warn(`[Modo Simulación] Copia preparada para el postulante: ${email}`);
       console.log(`[URL de Aprobación en 1 clic]: ${approvalUrl}`);
     }

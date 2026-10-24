@@ -117,7 +117,10 @@ export async function bookAndConfirmAppointment(
     }
 
     // 4. Enviar correos de notificación mediante Resend
-    const adminEmail = "karen.sudzuki@vorticeintegration.com";
+    const adminRecipients = [
+      "karen.sudzuki@gmail.com",
+      "karen.sudzuki@vorticeintegration.com",
+    ];
     const senderEmail = process.env.RESEND_FROM_EMAIL || "consteladores.cl <onboarding@resend.dev>";
 
     if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== "re_dummy_key") {
@@ -177,12 +180,18 @@ export async function bookAndConfirmAppointment(
           </div>
         `;
 
-        await resend.emails.send({
-          from: senderEmail,
-          to: [adminEmail],
-          subject: `🔔 Nueva solicitud de ${input.clientName} en consteladores.cl`,
-          html: adminEmailHtml,
-        });
+        for (const recipient of adminRecipients) {
+          try {
+            await resend.emails.send({
+              from: senderEmail,
+              to: [recipient],
+              subject: `🔔 Nueva solicitud de ${input.clientName} en consteladores.cl`,
+              html: adminEmailHtml,
+            });
+          } catch (admErr) {
+            console.warn(`Aviso de Resend al enviar cita a ${recipient}:`, admErr);
+          }
+        }
 
         // Correo 2: Confirmación cálida para el consultante
         await resend.emails.send({

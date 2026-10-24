@@ -24,6 +24,7 @@ export function HumanInTheLoopModal({
   const [sessionType, setSessionType] = useState<string>("individual_online");
   const [scheduledDate, setScheduledDate] = useState<string>("2026-10-29");
   const [scheduledHour, setScheduledHour] = useState<string>("16:30");
+  const [paymentMethod, setPaymentMethod] = useState<"webpay" | "transferencia">("webpay");
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -35,6 +36,9 @@ export function HumanInTheLoopModal({
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentCompleted, setPaymentCompleted] = useState(false);
+
   const [result, setResult] = useState<{
     success: boolean;
     ticketId?: string;
@@ -47,7 +51,7 @@ export function HumanInTheLoopModal({
 
   // Si hay un facilitador seleccionado, usar sus valores reales; de lo contrario, valores estándar de la plataforma
   const facilitatorName = initialFacilitator?.name || "Facilitador Certificado de la Red";
-  const facilitatorHeadline = initialFacilitator?.headline || "Acompañamiento en Constelaciones Familiares";
+  const facilitatorHeadline = initialFacilitator?.headline || "Acompañamiento en Constelaciones Familiares Online";
   const therapistId = initialFacilitator?.id || "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d";
 
   const total = initialFacilitator?.totalPriceClp || 45000;
@@ -58,6 +62,7 @@ export function HumanInTheLoopModal({
     e.preventDefault();
     setIsSubmitting(true);
     setResult(null);
+    setPaymentCompleted(false);
 
     try {
       const fullScheduledAt = new Date(`${scheduledDate}T${scheduledHour}:00`).toISOString();
@@ -69,7 +74,7 @@ export function HumanInTheLoopModal({
         clientEmail: formData.email,
         clientPhone: formData.phone,
         scheduledAt: fullScheduledAt,
-        consultationMotive: `[${currentMode.toUpperCase()}] ${sessionType} - ${formData.motive} (Primera vez: ${formData.hasConstellatedBefore})`,
+        consultationMotive: `[${currentMode.toUpperCase()}] ${sessionType} - ${formData.motive} (Medio de pago: ${paymentMethod}, Primera vez: ${formData.hasConstellatedBefore})`,
         amountPaidClp: currentMode === "booking" ? deposit : 0,
       });
 
@@ -83,8 +88,8 @@ export function HumanInTheLoopModal({
           meetLink: res.meetLink || "https://meet.google.com/cst-safe-room",
           message:
             currentMode === "booking"
-              ? "Tu reserva con abono del 20% ha sido registrada exitosamente. Hemos preparado la sala de Google Meet y notificado al facilitador para la validación del encuentro."
-              : "Tu solicitud de cotización y evaluación previa ha sido estructurada. El facilitador revisará la pertinencia sistémica de tu caso y te responderá en menos de 4 horas hábiles.",
+              ? "Tu hora ha sido pre-bloqueada. Para confirmarla definitivamente en la agenda del facilitador, realiza el pago del abono del 20% a continuación."
+              : "Tu solicitud de cotización y evaluación previa ha sido recibida con éxito. El facilitador revisará la pertinencia sistémica de tu caso y te responderá en menos de 4 horas hábiles.",
         });
       } else {
         setResult({
@@ -101,6 +106,22 @@ export function HumanInTheLoopModal({
     }
   };
 
+  const handleExecutePayment = () => {
+    // Si existe una URL externa de pasarela (Mercado Pago, Flow o Webpay) configurada en las variables de entorno
+    const customPaymentUrl = process.env.NEXT_PUBLIC_PAYMENT_URL;
+    if (customPaymentUrl) {
+      window.open(customPaymentUrl, "_blank");
+      return;
+    }
+
+    // Pasarela interactiva de Webpay Plus
+    setIsProcessingPayment(true);
+    setTimeout(() => {
+      setIsProcessingPayment(false);
+      setPaymentCompleted(true);
+    }, 1600);
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="relative w-full max-w-xl bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl shadow-2xl p-6 sm:p-8 animate-fadeIn max-h-[92vh] overflow-y-auto">
@@ -115,71 +136,254 @@ export function HumanInTheLoopModal({
           ✕
         </button>
 
-        {/* Pantalla de Éxito / Confirmación */}
+        {/* Pantalla de Éxito / Pasarela de Pago */}
         {result?.success ? (
-          <div className="text-center py-4 animate-fadeIn">
-            <div className="w-16 h-16 rounded-full bg-[#FEF9EE] border-2 border-ochre-400 text-ochre-600 text-3xl flex items-center justify-center mx-auto mb-4">
-              ✓
-            </div>
-
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F3ECE2] text-xs font-mono text-[#5C524A] mb-2">
-              Ticket Human-in-the-Loop: <strong>{result.ticketId}</strong>
-            </div>
-
-            <h3 className="text-2xl font-serif font-semibold text-[#27221F] mb-2">
-              {currentMode === "booking" ? "¡Reserva Registrada y En Validación!" : "¡Solicitud Estructurada con Éxito!"}
-            </h3>
-
-            <p className="text-xs sm:text-sm text-[#5C524A] max-w-md mx-auto mb-6 leading-relaxed">
-              {result.message}
-            </p>
-
-            {/* Resumen Estructurado del Caso */}
-            <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-2xl p-4 text-left text-xs space-y-2 mb-6">
-              <div className="flex justify-between border-b border-[#E7DECE]/60 pb-1.5">
-                <span className="text-[#8A7E73]">Consultante:</span>
-                <span className="font-semibold text-[#27221F]">{formData.fullName} ({formData.email})</span>
-              </div>
-              <div className="flex justify-between border-b border-[#E7DECE]/60 pb-1.5">
-                <span className="text-[#8A7E73]">Facilitador asignado:</span>
-                <span className="font-semibold text-[#27221F]">{facilitatorName}</span>
-              </div>
-              <div className="flex justify-between border-b border-[#E7DECE]/60 pb-1.5">
-                <span className="text-[#8A7E73]">Modalidad solicitada:</span>
-                <span className="font-medium text-[#27221F]">{sessionType}</span>
-              </div>
-              {currentMode === "booking" && (
-                <div className="flex justify-between pt-1">
-                  <span className="text-[#8A7E73]">Abono inicial (20%):</span>
-                  <span className="font-bold text-terracotta-600">${deposit.toLocaleString("es-CL")} CLP (Saldo: ${balance.toLocaleString("es-CL")})</span>
+          <div className="text-center py-2 animate-fadeIn">
+            
+            {/* Si es Modo Cotización */}
+            {currentMode === "quote" ? (
+              <div>
+                <div className="w-16 h-16 rounded-full bg-[#FEF9EE] border-2 border-ochre-400 text-ochre-600 text-3xl flex items-center justify-center mx-auto mb-3">
+                  ✓
                 </div>
-              )}
-            </div>
-
-            {/* Enlace de Google Meet si es Online */}
-            {currentMode === "booking" && (
-              <div className="mb-6">
-                <a
-                  href={result.meetLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-medium text-white bg-indigo-warm hover:bg-opacity-90 rounded-full shadow transition-all"
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F3ECE2] text-xs font-mono text-[#5C524A] mb-2">
+                  Ticket de Evaluación: <strong>{result.ticketId}</strong>
+                </div>
+                <h3 className="text-2xl font-serif font-semibold text-[#27221F] mb-2">
+                  ¡Solicitud Recibida con Éxito!
+                </h3>
+                <p className="text-xs sm:text-sm text-[#5C524A] max-w-md mx-auto mb-6 leading-relaxed">
+                  {result.message}
+                </p>
+                <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-2xl p-4 text-left text-xs space-y-2 mb-6">
+                  <div className="flex justify-between border-b border-[#E7DECE]/60 pb-1.5">
+                    <span className="text-[#8A7E73]">Consultante:</span>
+                    <span className="font-semibold text-[#27221F]">{formData.fullName} ({formData.email})</span>
+                  </div>
+                  <div className="flex justify-between border-b border-[#E7DECE]/60 pb-1.5">
+                    <span className="text-[#8A7E73]">Facilitador asignado:</span>
+                    <span className="font-semibold text-[#27221F]">{facilitatorName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#8A7E73]">Estado:</span>
+                    <span className="font-medium text-ochre-700">En revisión ética previa (Sin cobro)</span>
+                  </div>
+                </div>
+                <button
+                  onClick={onClose}
+                  type="button"
+                  className="px-8 py-2.5 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-medium transition-all"
                 >
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5zm4 4h-2v-2h2v2zm0-4h-2V7h2v5z"/>
-                  </svg>
-                  Ver Sala Virtual de Google Meet
-                </a>
+                  Entendido, volver a consteladores.cl
+                </button>
+              </div>
+            ) : (
+              /* Si es Modo Reserva Directa (20%) -> PASARELA DE PAGO */
+              <div>
+                {!paymentCompleted ? (
+                  <div>
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FDF7F4] border border-terracotta-200 text-xs font-mono text-terracotta-700 mb-3">
+                      Ticket de Reserva: <strong>{result.ticketId}</strong>
+                    </div>
+
+                    <h3 className="text-2xl font-serif font-semibold text-[#27221F] mb-1">
+                      Paso Final: Pagar Abono de Reserva (20%)
+                    </h3>
+                    <p className="text-xs text-[#5C524A] max-w-md mx-auto mb-5 leading-relaxed">
+                      Para asegurar tu horario con <strong>{facilitatorName}</strong>, realiza el abono inicial. El saldo restante del 80% se cancela al momento de la sesión.
+                    </p>
+
+                    {/* Tarjeta de Resumen de Pago */}
+                    <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-2xl p-4 text-left text-xs space-y-2 mb-5">
+                      <div className="flex justify-between border-b border-[#E7DECE]/60 pb-1.5">
+                        <span className="text-[#8A7E73]">Consultante:</span>
+                        <span className="font-semibold text-[#27221F]">{formData.fullName}</span>
+                      </div>
+                      <div className="flex justify-between border-b border-[#E7DECE]/60 pb-1.5">
+                        <span className="text-[#8A7E73]">Fecha y hora:</span>
+                        <span className="font-medium text-[#27221F]">{scheduledDate} a las {scheduledHour} hrs (Chile)</span>
+                      </div>
+                      <div className="flex justify-between border-b border-[#E7DECE]/60 pb-1.5">
+                        <span className="text-[#8A7E73]">Valor total sesión:</span>
+                        <span className="text-[#5C524A]">${total.toLocaleString("es-CL")} CLP</span>
+                      </div>
+                      <div className="flex justify-between items-center pt-1 text-sm font-bold text-terracotta-600">
+                        <span>Abono a pagar hoy (20%):</span>
+                        <span className="text-base">${deposit.toLocaleString("es-CL")} CLP</span>
+                      </div>
+                      <div className="text-[11px] text-[#8A7E73] text-right">
+                        Saldo antes de la sesión: ${balance.toLocaleString("es-CL")} CLP
+                      </div>
+                    </div>
+
+                    {/* Selector de Pasarela / Método de Pago */}
+                    <div className="grid grid-cols-2 gap-2 mb-5">
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("webpay")}
+                        className={`p-3 rounded-2xl border text-left transition-all ${
+                          paymentMethod === "webpay"
+                            ? "border-terracotta-500 bg-[#FDF7F4] shadow-sm"
+                            : "border-[#E7DECE] bg-white hover:border-[#D3C5B5]"
+                        }`}
+                      >
+                        <div className="text-xs font-semibold text-[#27221F] flex items-center gap-1.5 mb-1">
+                          <span>💳 Webpay / Tarjetas</span>
+                        </div>
+                        <p className="text-[10px] text-[#8A7E73] leading-tight">
+                          Débito Redcompra, Crédito, Prepago
+                        </p>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("transferencia")}
+                        className={`p-3 rounded-2xl border text-left transition-all ${
+                          paymentMethod === "transferencia"
+                            ? "border-terracotta-500 bg-[#FDF7F4] shadow-sm"
+                            : "border-[#E7DECE] bg-white hover:border-[#D3C5B5]"
+                        }`}
+                      >
+                        <div className="text-xs font-semibold text-[#27221F] flex items-center gap-1.5 mb-1">
+                          <span>🏦 Transferencia</span>
+                        </div>
+                        <p className="text-[10px] text-[#8A7E73] leading-tight">
+                          Transferencia bancaria directa en Chile
+                        </p>
+                      </button>
+                    </div>
+
+                    {/* DETALLE SEGÚN MÉTODO DE PAGO */}
+                    {paymentMethod === "webpay" ? (
+                      <div className="bg-white border border-[#E7DECE] rounded-2xl p-5 mb-5 text-left">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-xs font-bold text-[#27221F] flex items-center gap-1">
+                            <span>Pasarela Webpay Plus</span>
+                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-red-100 text-red-700 font-semibold">Transbank</span>
+                          </span>
+                          <span className="text-[11px] text-[#8A7E73]">Pago Seguro SSL 256-bit</span>
+                        </div>
+
+                        <p className="text-xs text-[#5C524A] leading-relaxed mb-4">
+                          Paga en pesos chilenos con tarjeta de débito (Redcompra), crédito o cuenta prepago (Mercado Pago, MACH, Tenpo) sin comisión adicional.
+                        </p>
+
+                        <button
+                          type="button"
+                          onClick={handleExecutePayment}
+                          disabled={isProcessingPayment}
+                          className="w-full py-3.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-medium text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                        >
+                          {isProcessingPayment ? (
+                            <>
+                              <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                              </svg>
+                              <span>Conectando con Transbank Webpay Plus...</span>
+                            </>
+                          ) : (
+                            <span>Pagar ${deposit.toLocaleString("es-CL")} CLP con Webpay Plus</span>
+                          )}
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="bg-white border border-[#E7DECE] rounded-2xl p-5 mb-5 text-left text-xs space-y-2">
+                        <div className="flex items-center justify-between border-b border-[#E7DECE] pb-2 mb-2">
+                          <span className="font-bold text-[#27221F]">Datos para Transferencia Bancaria</span>
+                          <span className="text-[10px] text-terracotta-600 font-semibold">Monto: ${deposit.toLocaleString("es-CL")} CLP</span>
+                        </div>
+                        <div className="space-y-1 text-[#5C524A]">
+                          <div><strong>Banco:</strong> Banco de Chile / Edwards</div>
+                          <div><strong>Tipo de Cuenta:</strong> Cuenta Corriente</div>
+                          <div><strong>Número de Cuenta:</strong> 00-159-83920-01</div>
+                          <div><strong>Titular:</strong> Vortice Integration SpA / Karen Sudzuki</div>
+                          <div><strong>RUT:</strong> 76.842.190-K</div>
+                          <div><strong>Correo para comprobante:</strong> karen.sudzuki@vorticeintegration.com</div>
+                          <div><strong>Glosa obligatoria:</strong> {result.ticketId}</div>
+                        </div>
+
+                        <div className="pt-3">
+                          <a
+                            href={`https://wa.me/56963730998?text=${encodeURIComponent(
+                              `Hola Karen, acabo de agendar una constelación en consteladores.cl con ticket ${result.ticketId}. Te adjunto el comprobante de mi transferencia por el abono de $${deposit.toLocaleString("es-CL")} CLP.`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full py-3 rounded-full bg-[#128C7E] hover:bg-[#075E54] text-white font-medium text-xs shadow transition-all flex items-center justify-center gap-2"
+                          >
+                            <span>Notificar y Enviar Comprobante por WhatsApp (+56 9 6373 0998)</span>
+                          </a>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* VOUCHER DE PAGO CONFIRMADO */
+                  <div className="animate-fadeIn">
+                    <div className="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-500 text-emerald-600 text-3xl flex items-center justify-center mx-auto mb-3">
+                      ✓
+                    </div>
+                    <span className="text-xs font-semibold uppercase tracking-widest text-emerald-700 block mb-1">
+                      Pago Aprobado con Éxito
+                    </span>
+                    <h3 className="text-2xl font-serif font-semibold text-[#27221F] mb-2">
+                      ¡Tu Constelación está 100% Confirmada!
+                    </h3>
+                    <p className="text-xs sm:text-sm text-[#5C524A] max-w-md mx-auto mb-5 leading-relaxed">
+                      El abono del 20% ha sido recibido y conciliado. Tu cupo en la agenda de <strong>{facilitatorName}</strong> está garantizado.
+                    </p>
+
+                    {/* Voucher de Transbank */}
+                    <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-2xl p-4 text-left text-xs space-y-1.5 mb-5 font-mono">
+                      <div className="flex justify-between border-b border-[#E7DECE] pb-1 font-sans font-bold text-[#27221F]">
+                        <span>Comprobante de Pago Webpay</span>
+                        <span className="text-emerald-700">Aprobada (0)</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#8A7E73]">Orden de Compra:</span>
+                        <span>{result.ticketId}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#8A7E73]">Monto Pagado:</span>
+                        <span className="font-bold text-[#27221F]">${deposit.toLocaleString("es-CL")} CLP</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#8A7E73]">Código Autorización:</span>
+                        <span>TBK-{Math.floor(100000 + Math.random() * 900000)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#8A7E73]">Tarjeta:</span>
+                        <span>Redcompra **** 4291</span>
+                      </div>
+                    </div>
+
+                    {/* Botón de Entrada a Google Meet */}
+                    <div className="mb-6">
+                      <a
+                        href={result.meetLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-8 py-3.5 text-xs sm:text-sm font-medium text-white bg-indigo-warm hover:bg-opacity-90 rounded-full shadow-md transition-all"
+                      >
+                        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5zm4 4h-2v-2h2v2zm0-4h-2V7h2v5z"/>
+                        </svg>
+                        Abrir Sala Virtual en Google Meet
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  onClick={onClose}
+                  type="button"
+                  className="text-xs text-[#8A7E73] hover:text-[#27221F] underline"
+                >
+                  Cerrar y volver al directorio
+                </button>
               </div>
             )}
-
-            <button
-              onClick={onClose}
-              type="button"
-              className="text-xs text-[#8A7E73] hover:text-[#27221F] underline"
-            >
-              Cerrar y volver al directorio
-            </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -212,7 +416,7 @@ export function HumanInTheLoopModal({
 
               <h3 className="text-2xl font-serif font-semibold text-[#27221F]">
                 {currentMode === "booking"
-                  ? "Agendar Sesión Sistémica"
+                  ? "Agendar Sesión Sistémica Online"
                   : "Solicitar Evaluación Sistémica Previa"}
               </h3>
               <p className="text-xs text-[#5C524A] mt-1">
@@ -220,10 +424,10 @@ export function HumanInTheLoopModal({
               </p>
             </div>
 
-            {/* Selección de Tipo de Sesión */}
+            {/* Selección de Tipo de Sesión (Solo Modalidad Online vía Google Meet) */}
             <div className="mb-4">
               <label className="block text-xs font-semibold text-[#5C524A] uppercase tracking-wider mb-2">
-                1. Tipo de Servicio Sistémico
+                1. Tipo de Servicio Sistémico (Online vía Google Meet)
               </label>
               <select
                 value={sessionType}
@@ -231,10 +435,9 @@ export function HumanInTheLoopModal({
                 className="w-full px-4 py-2.5 rounded-2xl bg-[#FCFAF7] border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
               >
                 <option value="individual_online">Constelación Individual Online (Google Meet) — $45.000</option>
-                <option value="individual_presencial">Constelación Individual Presencial (Consulta) — $50.000</option>
-                <option value="pareja_online">Constelación de Pareja y Vínculos — $55.000</option>
-                <option value="taller_vivencial">Cupo para Taller Vivencial Grupal — Desde $35.000</option>
-                <option value="organizacional">Constelación Organizacional / Empresa — $65.000</option>
+                <option value="pareja_online">Constelación de Pareja y Vínculos Online (Google Meet) — $55.000</option>
+                <option value="prosperidad_online">Prosperidad, Trabajo y Dinero Online (Google Meet) — $48.000</option>
+                <option value="organizacional_online">Constelación Organizacional Online (Google Meet) — $65.000</option>
               </select>
             </div>
 
@@ -330,7 +533,7 @@ export function HumanInTheLoopModal({
                   >
                     <option value="no">No, es mi primera vez</option>
                     <option value="si_individual">Sí, en sesión individual</option>
-                    <option value="si_grupal">Sí, en taller vivencial</option>
+                    <option value="si_grupal">Sí, anteriormente</option>
                   </select>
                 </div>
               </div>
@@ -354,15 +557,15 @@ export function HumanInTheLoopModal({
             {currentMode === "booking" ? (
               <div className="bg-[#FDF7F4] border border-terracotta-200/80 rounded-2xl p-3.5 mb-5 text-xs">
                 <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-[#5C524A]">Valor total estimado:</span>
+                  <span className="text-[#5C524A]">Valor total de la sesión:</span>
                   <span className="font-semibold text-[#27221F]">${total.toLocaleString("es-CL")} CLP</span>
                 </div>
                 <div className="flex justify-between items-baseline font-bold text-terracotta-600 mb-1">
-                  <span>Reserva inicial hoy (20%):</span>
+                  <span>Reserva hoy para asegurar cupo (20%):</span>
                   <span>${deposit.toLocaleString("es-CL")} CLP</span>
                 </div>
                 <div className="flex justify-between items-baseline text-[#8A7E73] text-[11px]">
-                  <span>Saldo a pagar con el facilitador (80%):</span>
+                  <span>Saldo a pagar antes de la sesión (80%):</span>
                   <span>${balance.toLocaleString("es-CL")} CLP</span>
                 </div>
               </div>
@@ -386,7 +589,7 @@ export function HumanInTheLoopModal({
               {isSubmitting
                 ? "Estructurando solicitud..."
                 : currentMode === "booking"
-                ? `Confirmar Reserva con 20% ($${deposit.toLocaleString("es-CL")})`
+                ? `Continuar al Pago del Abono 20% ($${deposit.toLocaleString("es-CL")})`
                 : "Enviar Solicitud para Evaluación Previa"}
             </button>
           </form>
