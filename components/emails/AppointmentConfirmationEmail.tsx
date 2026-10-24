@@ -76,7 +76,7 @@ export function AppointmentConfirmationEmail({
                 El saldo del 80% se transfiere directamente al facilitador. Recuerda enviar tu comprobante/voucher de transferencia antes o al finalizar tu constelación.
               </Text>
 
-              <div style={{ textAlign: "center", margin: "10px 0 4px" }}>
+              <div style={{ textAlign: "center", margin: "10px 0 10px" }}>
                 <Link
                   href="https://link.mercadopago.cl/reserva20"
                   style={{
@@ -93,6 +93,16 @@ export function AppointmentConfirmationEmail({
                   Link de Cobro Oficial: Pagar $9.000 en Mercado Pago →
                 </Link>
               </div>
+
+              <Hr style={{ borderColor: "#E7DECE", margin: "12px 0 8px" }} />
+
+              <Text style={{ fontSize: "11px", color: "#8A7E73", margin: "0", lineHeight: "1.4" }}>
+                <strong>Datos si prefieres Transferencia Bancaria Directa:</strong><br />
+                Banco / Institución: <strong>Mercado Pago</strong><br />
+                Tipo de Cuenta: <strong>Cuenta Vista</strong> · N°: <strong>1038886585</strong><br />
+                Titular: <strong>Karen Valeria Sudzuki Toro</strong> · RUT: <strong>13.298.884-6</strong><br />
+                Comprobante a: <strong>karen.sudzuki@gmail.com</strong>
+              </Text>
             </Section>
 
             {/* Política de Inasistencia y Reagendamiento */}

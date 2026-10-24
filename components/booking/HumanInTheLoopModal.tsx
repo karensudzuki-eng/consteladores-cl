@@ -298,13 +298,13 @@ export function HumanInTheLoopModal({
                           <span className="font-bold text-[#27221F]">Datos para Transferencia Bancaria</span>
                           <span className="text-[10px] text-terracotta-600 font-semibold">Monto: ${deposit.toLocaleString("es-CL")} CLP</span>
                         </div>
-                        <div className="space-y-1 text-[#5C524A]">
-                          <div><strong>Banco:</strong> Banco de Chile / Edwards</div>
-                          <div><strong>Tipo de Cuenta:</strong> Cuenta Corriente</div>
-                          <div><strong>Número de Cuenta:</strong> 00-159-83920-01</div>
-                          <div><strong>Titular:</strong> Vortice Integration SpA / Karen Sudzuki</div>
-                          <div><strong>RUT:</strong> 76.842.190-K</div>
-                          <div><strong>Correo para comprobante:</strong> karen.sudzuki@vorticeintegration.com</div>
+                        <div className="space-y-1.5 text-[#5C524A]">
+                          <div><strong>Banco / Institución:</strong> Mercado Pago</div>
+                          <div><strong>Tipo de Cuenta:</strong> Cuenta Vista</div>
+                          <div><strong>Número de Cuenta:</strong> 1038886585</div>
+                          <div><strong>Titular:</strong> Karen Valeria Sudzuki Toro</div>
+                          <div><strong>RUT:</strong> 13.298.884-6</div>
+                          <div><strong>Correo para comprobante:</strong> karen.sudzuki@gmail.com</div>
                           <div><strong>Glosa obligatoria:</strong> {result.ticketId}</div>
                         </div>
 
