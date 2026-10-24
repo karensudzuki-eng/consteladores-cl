@@ -72,9 +72,27 @@ export function AppointmentConfirmationEmail({
               <Text style={{ fontSize: "13px", color: "#5C524A", margin: "0 0 8px" }}>
                 • <strong>Saldo a pagar al constelador (80%):</strong> $36.000 CLP
               </Text>
-              <Text style={{ fontSize: "12px", color: "#8A7E73", margin: "0", lineHeight: "1.4" }}>
+              <Text style={{ fontSize: "12px", color: "#8A7E73", margin: "0 0 10px", lineHeight: "1.4" }}>
                 El saldo del 80% se transfiere directamente al facilitador. Recuerda enviar tu comprobante/voucher de transferencia antes o al finalizar tu constelación.
               </Text>
+
+              <div style={{ textAlign: "center", margin: "10px 0 4px" }}>
+                <Link
+                  href="https://link.mercadopago.cl/reserva20"
+                  style={{
+                    display: "inline-block",
+                    backgroundColor: "#009EE3",
+                    color: "#ffffff",
+                    textDecoration: "none",
+                    padding: "10px 22px",
+                    borderRadius: "50px",
+                    fontWeight: "bold",
+                    fontSize: "13px",
+                  }}
+                >
+                  Link de Cobro Oficial: Pagar $9.000 en Mercado Pago →
+                </Link>
+              </div>
             </Section>
 
             {/* Política de Inasistencia y Reagendamiento */}

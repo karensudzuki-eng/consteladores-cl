@@ -93,7 +93,7 @@ export function HumanInTheLoopModal({
         });
 
         // Si existe un Link de Pago configurado (ej. Mercado Pago o Flow), redirigir de inmediato
-        const customPaymentUrl = process.env.NEXT_PUBLIC_PAYMENT_URL;
+        const customPaymentUrl = process.env.NEXT_PUBLIC_PAYMENT_URL || "https://link.mercadopago.cl/reserva20";
         if (currentMode === "booking" && customPaymentUrl) {
           window.open(customPaymentUrl, "_blank");
         }
@@ -113,19 +113,9 @@ export function HumanInTheLoopModal({
   };
 
   const handleExecutePayment = () => {
-    // Si existe una URL externa de pasarela (Mercado Pago, Flow o Webpay) configurada en las variables de entorno
-    const customPaymentUrl = process.env.NEXT_PUBLIC_PAYMENT_URL;
-    if (customPaymentUrl) {
-      window.open(customPaymentUrl, "_blank");
-      return;
-    }
-
-    // Pasarela interactiva de Webpay Plus
-    setIsProcessingPayment(true);
-    setTimeout(() => {
-      setIsProcessingPayment(false);
-      setPaymentCompleted(true);
-    }, 1600);
+    const paymentUrl = process.env.NEXT_PUBLIC_PAYMENT_URL || "https://link.mercadopago.cl/reserva20";
+    window.open(paymentUrl, "_blank");
+    setPaymentCompleted(true);
   };
 
   return (
@@ -273,35 +263,34 @@ export function HumanInTheLoopModal({
                     {paymentMethod === "webpay" ? (
                       <div className="bg-white border border-[#E7DECE] rounded-2xl p-5 mb-5 text-left">
                         <div className="flex items-center justify-between mb-3">
-                          <span className="text-xs font-bold text-[#27221F] flex items-center gap-1">
-                            <span>Pasarela Webpay Plus</span>
-                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-red-100 text-red-700 font-semibold">Transbank</span>
+                          <span className="text-xs font-bold text-[#27221F] flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#009EE3] inline-block"></span>
+                            <span>Mercado Pago & Webpay Plus</span>
+                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-sky-100 text-[#009EE3] font-semibold">Oficial</span>
                           </span>
                           <span className="text-[11px] text-[#8A7E73]">Pago Seguro SSL 256-bit</span>
                         </div>
 
                         <p className="text-xs text-[#5C524A] leading-relaxed mb-4">
-                          Paga en pesos chilenos con tarjeta de débito (Redcompra), crédito o cuenta prepago (Mercado Pago, MACH, Tenpo) sin comisión adicional.
+                          Paga en pesos chilenos a través de la pasarela oficial de <strong>Mercado Pago</strong> con tarjeta de débito (Redcompra), crédito (hasta en cuotas), cuenta Mercado Pago, MACH o Tenpo.
                         </p>
 
-                        <button
-                          type="button"
-                          onClick={handleExecutePayment}
-                          disabled={isProcessingPayment}
-                          className="w-full py-3.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-medium text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                        <a
+                          href={process.env.NEXT_PUBLIC_PAYMENT_URL || "https://link.mercadopago.cl/reserva20"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setPaymentCompleted(true)}
+                          className="w-full py-3.5 rounded-full bg-[#009EE3] hover:bg-[#0082ba] text-white font-medium text-xs sm:text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
                         >
-                          {isProcessingPayment ? (
-                            <>
-                              <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                              </svg>
-                              <span>Conectando con Transbank Webpay Plus...</span>
-                            </>
-                          ) : (
-                            <span>Pagar ${deposit.toLocaleString("es-CL")} CLP con Webpay Plus</span>
-                          )}
-                        </button>
+                          <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm0 4v10h16V8H4zm2 6h4v2H6v-2z"/>
+                          </svg>
+                          <span>Pagar $9.000 CLP en Mercado Pago / Webpay →</span>
+                        </a>
+
+                        <p className="text-[11px] text-[#8A7E73] text-center mt-2.5">
+                          Al hacer clic se abrirá tu pasarela protegida de Mercado Pago. Al volver, tu sala de Google Meet estará habilitada.
+                        </p>
                       </div>
                     ) : (
                       <div className="bg-white border border-[#E7DECE] rounded-2xl p-5 mb-5 text-left text-xs space-y-2">
