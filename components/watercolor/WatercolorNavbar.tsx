@@ -5,6 +5,7 @@ import Link from "next/link";
 
 interface WatercolorNavbarProps {
   onBookClick: () => void;
+  onOpenTriage: () => void;
 }
 
 export function AmmoniteIcon({ className = "w-7 h-7" }: { className?: string }) {
@@ -16,7 +17,6 @@ export function AmmoniteIcon({ className = "w-7 h-7" }: { className?: string }) 
       className={className}
       aria-hidden="true"
     >
-      {/* Espiral áurea / Amonite sistémico: simboliza el linaje, la memoria y el orden generacional */}
       <circle cx="24" cy="24" r="21" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.25" strokeDasharray="3 3" />
       <path
         d="M24 6C33.941 6 42 14.059 42 24C42 33.941 33.941 42 24 42C14.059 42 7 34.5 7 25.5C7 17.5 13.5 12 21 12C27.5 12 32 16.5 32 23C32 28.5 28 32 23.5 32C19.5 32 17 29 17 25C17 22 19 20 21.5 20C23.5 20 24.5 21.2 24.5 22.8C24.5 24 23.8 24.8 23 24.8"
@@ -25,7 +25,6 @@ export function AmmoniteIcon({ className = "w-7 h-7" }: { className?: string }) 
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Cámaras sutiles de la concha fósil */}
       <path d="M37 13L32 19" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeOpacity="0.7" />
       <path d="M41 24L34 25" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeOpacity="0.7" />
       <path d="M36 35L30 31" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeOpacity="0.7" />
@@ -35,7 +34,7 @@ export function AmmoniteIcon({ className = "w-7 h-7" }: { className?: string }) 
   );
 }
 
-export function WatercolorNavbar({ onBookClick }: WatercolorNavbarProps) {
+export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -56,38 +55,52 @@ export function WatercolorNavbar({ onBookClick }: WatercolorNavbarProps) {
                 consteladores<span className="text-terracotta-500 italic font-serif">.cl</span>
               </span>
               <span className="text-[11px] uppercase tracking-widest text-[#8A7E73] font-medium -mt-1 hidden sm:block">
-                Constelaciones Familiares Online en Chile
+                Directorio y Ecosistema Sistémico en Chile
               </span>
             </div>
           </Link>
 
-          {/* Menú de Navegación en Orden Estricto: Quiénes somos, Servicios, Facilitadores */}
-          <nav className="hidden md:flex items-center space-x-8" aria-label="Navegación principal">
+          {/* Menú de Navegación del Marketplace */}
+          <nav className="hidden lg:flex items-center space-x-7" aria-label="Navegación principal">
+            <a
+              href="#directorio"
+              className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
+            >
+              Directorio de Facilitadores
+            </a>
+            <a
+              href="#filosofia"
+              className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
+            >
+              Cómo funciona
+            </a>
+            <a
+              href="#servicios"
+              className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
+            >
+              Servicios y Valores
+            </a>
             <a
               href="#quienes-somos"
               className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
             >
               Quiénes somos
             </a>
-            <a
-              href="#servicios"
-              className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
-            >
-              Servicios
-            </a>
-            <a
-              href="#facilitadores"
-              className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
-            >
-              Facilitadores
-            </a>
           </nav>
 
           {/* Botones de Acción en Píldora Suave */}
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2.5">
+            <button
+              onClick={onOpenTriage}
+              type="button"
+              className="px-3.5 py-2 text-xs font-medium text-terracotta-600 hover:text-terracotta-700 bg-terracotta-50 hover:bg-terracotta-100 border border-terracotta-200 rounded-full transition-all"
+            >
+              ✦ Test Orientador
+            </button>
+
             <Link
               href="/registro-terapeuta"
-              className="px-4 py-2 text-sm font-medium text-[#5C524A] hover:text-[#27221F] bg-[#F3ECE2]/70 hover:bg-[#F3ECE2] border border-[#E7DECE] rounded-full transition-all"
+              className="px-3.5 py-2 text-xs font-medium text-[#5C524A] hover:text-[#27221F] bg-[#F3ECE2]/70 hover:bg-[#F3ECE2] border border-[#E7DECE] rounded-full transition-all"
             >
               Soy Constelador
             </Link>
@@ -95,7 +108,7 @@ export function WatercolorNavbar({ onBookClick }: WatercolorNavbarProps) {
             <button
               onClick={onBookClick}
               type="button"
-              className="px-5 py-2.5 text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-[0.98]"
+              className="px-5 py-2.5 text-xs sm:text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-[0.98]"
             >
               Reservar sesión
             </button>
@@ -134,43 +147,59 @@ export function WatercolorNavbar({ onBookClick }: WatercolorNavbarProps) {
       {mobileMenuOpen && (
         <div className="sm:hidden bg-[#FAF8F5] border-b border-[#E7DECE] px-4 pt-3 pb-6 space-y-3 animate-fadeIn">
           <a
-            href="#quienes-somos"
+            href="#directorio"
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2 text-base font-medium text-[#5C524A] hover:text-[#27221F] rounded-lg hover:bg-[#F3ECE2]/50"
           >
-            Quiénes somos
+            Directorio de Facilitadores
+          </a>
+          <a
+            href="#filosofia"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 text-base font-medium text-[#5C524A] hover:text-[#27221F] rounded-lg hover:bg-[#F3ECE2]/50"
+          >
+            Cómo funciona
           </a>
           <a
             href="#servicios"
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2 text-base font-medium text-[#5C524A] hover:text-[#27221F] rounded-lg hover:bg-[#F3ECE2]/50"
           >
-            Servicios
+            Servicios y Valores
           </a>
           <a
-            href="#facilitadores"
+            href="#quienes-somos"
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2 text-base font-medium text-[#5C524A] hover:text-[#27221F] rounded-lg hover:bg-[#F3ECE2]/50"
           >
-            Facilitadores
+            Quiénes somos
           </a>
 
           <div className="pt-3 border-t border-[#E7DECE]/60 flex flex-col gap-2">
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenTriage();
+              }}
+              className="text-center py-2.5 px-4 text-xs font-semibold text-terracotta-700 bg-terracotta-100 rounded-full"
+            >
+              ✦ Test Orientador Sistémico (30s)
+            </button>
             <Link
               href="/registro-terapeuta"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-center py-2.5 px-4 text-sm font-medium text-[#5C524A] bg-[#F3ECE2] rounded-full"
+              className="text-center py-2.5 px-4 text-xs font-medium text-[#5C524A] bg-[#F3ECE2] rounded-full"
             >
-              Soy Constelador (Postular)
+              Soy Constelador (Postulaciones)
             </Link>
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
                 onBookClick();
               }}
-              className="text-center py-2.5 px-4 text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full"
+              className="text-center py-2.5 px-4 text-xs font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full"
             >
-              Reservar sesión online
+              Reservar sesión con el 20%
             </button>
           </div>
         </div>

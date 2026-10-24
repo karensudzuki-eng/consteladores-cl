@@ -12,20 +12,44 @@ export function WatercolorTherapistCTA() {
         <div className="bg-[#FDF7F4] border border-terracotta-200/80 rounded-3xl p-8 sm:p-12 shadow-sm relative overflow-hidden">
           
           <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-600 mb-3 block">
-            Espacio para Profesionales Sistémicos
+            Comunidad y Ecosistema para Profesionales Sistémicos
           </span>
 
-          {/* Título de Sección Estrictamente Centrado */}
+          {/* Título de Sección */}
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-[#27221F] mb-5">
             ¿Eres facilitador en constelaciones familiares?
           </h2>
 
-          {/* Copy Cálido y Cercano */}
+          {/* Copy Neuromarketing B2B: Cero venta en frío, enfoque en vocación */}
           <p className="text-base sm:text-lg text-[#5C524A] leading-relaxed max-w-2xl mx-auto mb-8">
-            Si te formaste en una escuela sistémica reconocida y ejerces con vocación ética, te invitamos a ser parte de nuestra red en Chile. Gestionamos el agendamiento, las reservas con el 20% y las salas virtuales para que puedas dedicarte plenamente a acompañar.
+            Sabemos lo agotador que es lidiar con el marketing digital, perseguir pagos y vender en frío.
+            En <strong>consteladores.cl</strong> conectamos tu experiencia con personas que ya comprenden y buscan activamente la mirada sistémica,
+            gestionando tu agenda, el cobro de la reserva del 20% y la difusión de tus talleres presenciales y online.
           </p>
 
-          {/* Botón que dice estrictamente "Postular como facilitador" SIN el texto secundario de 24 a 48 hrs */}
+          {/* Ventajas para el Facilitador */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-9 text-left">
+            <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#E7DECE]">
+              <span className="text-terracotta-600 font-bold text-sm block mb-1">01. Cero No-Shows</span>
+              <p className="text-xs text-[#5C524A]">
+                El consultante abona el 20% para asegurar el horario, garantizando asistencia real y compromiso con su proceso.
+              </p>
+            </div>
+            <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#E7DECE]">
+              <span className="text-terracotta-600 font-bold text-sm block mb-1">02. Difusión de Talleres</span>
+              <p className="text-xs text-[#5C524A]">
+                Publica tus jornadas vivenciales en Santiago y regiones en nuestro calendario nacional sin comisiones ocultas.
+              </p>
+            </div>
+            <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#E7DECE]">
+              <span className="text-terracotta-600 font-bold text-sm block mb-1">03. Sello Ético Verificado</span>
+              <p className="text-xs text-[#5C524A]">
+                Respaldamos tu formación acreditada frente a un mercado saturado de pseudoterapias sin fundamento.
+              </p>
+            </div>
+          </div>
+
+          {/* Botón que dice estrictamente "Postular como facilitador" */}
           <div className="flex flex-col items-center justify-center">
             <Link
               href="/registro-terapeuta"
@@ -43,11 +67,11 @@ export function WatercolorTherapistCTA() {
             </span>
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-terracotta-500" />
-              Experiencia en sesiones individuales online
+              Sesiones individuales o talleres en Chile
             </span>
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-terracotta-500" />
-              Adhesión a código de ética y contención
+              Adhesión al código de ética sistémica
             </span>
           </div>
 
