@@ -11,8 +11,8 @@ export function WatercolorFAQ() {
       a: "En la modalidad online individual, el facilitador trabaja a través de videollamada por Google Meet utilizando figuras sistémicas (como muñecos de madera o anclajes espaciales), visualizaciones guiadas y frases sanadoras. El campo cuántico y la información del inconsciente familiar se manifiestan con la misma claridad y profundidad que en una sesión presencial.",
     },
     {
-      q: "¿Por qué se paga solo el 20% al reservar?",
-      a: "El modelo de reserva del 20% busca brindar tranquilidad y flexibilidad al consultante: aseguras tu bloque horario en la agenda del terapeuta con un pago inicial mínimo. El 80% restante lo cancelas directamente antes de ingresar a la sesión o al comenzar.",
+      q: "¿Por qué se abona el 20% al reservar?",
+      a: "Para poder reservar la cita se debe abonar el 20%, el cual se descuenta del valor total al momento de pagar. Este abono asegura tu espacio en la agenda de tu facilitador y cubre la gestión de plataforma. El 80% restante se cancela directamente al constelador antes o al finalizar la sesión.",
     },
     {
       q: "¿Qué necesito tener preparado para el día de mi sesión?",
@@ -33,7 +33,7 @@ export function WatercolorFAQ() {
   ];
 
   return (
-    <section id="faq" className="py-16 sm:py-24 bg-[#FAF8F5] border-t border-[#E7DECE]/60">
+    <section id="faq" className="py-16 sm:py-24 bg-[#FBF7F2] border-t border-[#E7DECE]/60">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Cabecera Estrictamente Centrada */}

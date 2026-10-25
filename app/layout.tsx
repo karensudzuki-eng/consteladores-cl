@@ -36,7 +36,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${geist.variable} ${cormorant.variable} scroll-smooth`}>
-      <body className="font-sans antialiased bg-cream-100 text-charcoal-900 selection:bg-ochre-100 selection:text-ochre-800">
+      <body className="font-sans antialiased bg-cream-100 text-[#27221F] selection:bg-terracotta-100 selection:text-terracotta-800">
         {children}
       </body>
     </html>

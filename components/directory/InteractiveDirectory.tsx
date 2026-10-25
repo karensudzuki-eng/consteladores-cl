@@ -70,7 +70,7 @@ export function InteractiveDirectory({
   };
 
   return (
-    <section id="directorio" className="py-16 sm:py-24 bg-[#FCFAF7] border-t border-[#E7DECE]/60">
+    <section id="directorio" className="py-16 sm:py-24 bg-[#FBF7F2] border-t border-[#E7DECE]/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Cabecera del Marketplace */}
@@ -386,7 +386,7 @@ export function InteractiveDirectory({
                           </div>
                           <div className="text-right">
                             <span className="text-[11px] text-terracotta-600 font-semibold block">
-                              Reserva hoy (20%):
+                              Abono de reserva (20%):
                             </span>
                             <span className="text-base font-bold text-terracotta-700">
                               ${facilitator.depositPriceClp.toLocaleString("es-CL")}
@@ -405,9 +405,9 @@ export function InteractiveDirectory({
                           <button
                             onClick={() => onSelectFacilitator(facilitator)}
                             type="button"
-                            className="py-2.5 px-3 text-xs font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all text-center"
+                            className="py-2.5 px-3 text-xs font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all text-center btn-breathe"
                           >
-                            Reservar (20%)
+                            Reservar cita
                           </button>
                         </div>
                       </div>

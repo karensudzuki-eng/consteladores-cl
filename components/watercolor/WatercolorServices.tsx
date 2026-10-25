@@ -9,7 +9,7 @@ interface WatercolorServicesProps {
 
 export function WatercolorServices({ onSelectService }: WatercolorServicesProps) {
   return (
-    <section id="servicios" className="py-16 sm:py-24 bg-[#FCFAF7] border-t border-[#E7DECE]/60">
+    <section id="servicios" className="py-16 sm:py-24 bg-[#FBF7F2] border-t border-[#E7DECE]/60">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Cabecera Estrictamente Centrada */}
@@ -20,8 +20,8 @@ export function WatercolorServices({ onSelectService }: WatercolorServicesProps)
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-[#27221F] mb-4">
             Servicios y valores de sesión
           </h2>
-          <p className="text-base sm:text-lg text-[#5C524A] leading-relaxed">
-            Puedes reservar tu sesión pagando solo el <strong className="text-[#27221F] font-semibold">20% inicial</strong> para asegurar la fecha en agenda. El saldo restante (80%) se cancela antes o al comenzar tu sesión con el facilitador.
+          <p className="text-base sm:text-lg text-[#38322E] leading-relaxed">
+            Para poder reservar la cita se debe abonar el <strong className="text-[#27221F] font-semibold">20% inicial</strong>, el cual se descontará del valor total al momento de pagar. El saldo restante (80%) se cancela directamente al constelador antes o al finalizar la sesión.
           </p>
         </div>
 

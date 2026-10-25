@@ -5,16 +5,16 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    background-color: #FAF8F5;
+    background-color: #FBF7F2;
   }
   body {
-    background-color: #FAF8F5;
+    background-color: #FBF7F2;
     color: #27221F;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Estados de foco accesibles en terracota cálido */
+  /* Estados de foco accesibles WCAG AA en terracota cálido */
   a:focus-visible,
   button:focus-visible,
   input:focus-visible,
@@ -28,7 +28,7 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -36,6 +36,59 @@
   }
 }
 
+@keyframes gentleSway {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(1.2deg) scale(1.01);
+  }
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 14px rgba(214, 104, 71, 0.25);
+  }
+  50% {
+    transform: scale(1.025);
+    box-shadow: 0 8px 24px rgba(214, 104, 71, 0.38);
+  }
+}
+
 .animate-fadeIn {
-  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-gentleSway {
+  animation: gentleSway 14s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* Efecto de respiración sutil al pasar el mouse por los CTA principales */
+.btn-breathe {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.btn-breathe:hover {
+  animation: breathe 2.5s ease-in-out infinite;
+}
+
+/* Respeto estricto a prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-fadeIn,
+  .animate-gentleSway,
+  .btn-breathe:hover,
+  .animate-pulse {
+    animation: none !important;
+    transform: none !important;
+  }
 }

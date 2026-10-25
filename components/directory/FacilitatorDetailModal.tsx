@@ -173,7 +173,7 @@ export function FacilitatorDetailModal({
                 <span className="text-xs font-sans font-normal text-[#8A7E73]">CLP</span>
               </span>
               <span className="text-xs text-terracotta-600 block font-medium">
-                Reserva hoy 20%: ${facilitator.depositPriceClp.toLocaleString("es-CL")} · Saldo en sesión: ${facilitator.balancePriceClp.toLocaleString("es-CL")}
+                Abono de reserva (20%): ${facilitator.depositPriceClp.toLocaleString("es-CL")} · Saldo restante: ${facilitator.balancePriceClp.toLocaleString("es-CL")}
               </span>
             </div>
 
@@ -192,9 +192,9 @@ export function FacilitatorDetailModal({
                   onClose();
                   onBook(facilitator);
                 }}
-                className="px-6 py-2.5 text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all text-center"
+                className="px-6 py-2.5 text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all text-center btn-breathe"
               >
-                Agendar sesión (20%)
+                Agendar sesión
               </button>
             </div>
           </div>

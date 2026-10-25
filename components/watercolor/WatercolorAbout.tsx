@@ -23,13 +23,13 @@ export function WatercolorAbout() {
       initials: "P.V.",
       city: "Valparaíso",
       quote:
-        "El sistema de pagar solo el 20% para asegurar la hora me dio mucha confianza. Todo el proceso fue transparente, respetuoso y con mucha calidez humana.",
+        "El sistema de abonar el 20% para asegurar la hora y que se descuente del total me dio mucha confianza. Todo el proceso fue transparente, respetuoso y con mucha calidez humana.",
       service: "Constelación Individual",
     },
   ];
 
   return (
-    <section id="quienes-somos" className="py-16 sm:py-24 bg-[#FCFAF7] border-t border-[#E7DECE]/60">
+    <section id="quienes-somos" className="py-16 sm:py-24 bg-[#FBF7F2] border-t border-[#E7DECE]/60">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Cabecera Estrictamente Centrada */}

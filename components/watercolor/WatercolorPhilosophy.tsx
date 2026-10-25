@@ -49,7 +49,7 @@ export function WatercolorPhilosophy() {
   ];
 
   return (
-    <section id="filosofia" className="py-16 sm:py-24 bg-[#FAF8F5] relative border-t border-[#E7DECE]/60">
+    <section id="filosofia" className="py-16 sm:py-24 bg-[#FBF7F2] relative border-t border-[#E7DECE]/60">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Cabecera de Sección Centrada */}

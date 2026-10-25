@@ -6,7 +6,7 @@ import { AmmoniteIcon } from "./WatercolorNavbar";
 
 export function WatercolorFooter() {
   return (
-    <footer className="bg-[#F3ECE2]/60 border-t border-[#E7DECE] text-[#5C524A] pt-16 pb-20 sm:pb-14">
+    <footer className="bg-[#FAF7F2] border-t border-[#E7DECE] text-[#5C524A] pt-16 pb-20 sm:pb-14">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Cabecera del Footer */}
@@ -30,8 +30,11 @@ export function WatercolorFooter() {
           <a href="#servicios" className="hover:text-[#27221F] transition-colors">
             Servicios
           </a>
-          <a href="#facilitadores" className="hover:text-[#27221F] transition-colors">
+          <a href="#directorio" className="hover:text-[#27221F] transition-colors">
             Facilitadores
+          </a>
+          <a href="#comunidad" className="hover:text-[#27221F] transition-colors flex items-center gap-1">
+            <span>Comunidad</span>
           </a>
           <a href="#faq" className="hover:text-[#27221F] transition-colors">
             Preguntas frecuentes

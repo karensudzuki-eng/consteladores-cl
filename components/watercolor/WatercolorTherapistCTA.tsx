@@ -5,14 +5,14 @@ import Link from "next/link";
 
 export function WatercolorTherapistCTA() {
   return (
-    <section id="soy-constelador" className="py-16 sm:py-24 bg-[#FAF8F5] border-t border-[#E7DECE]/60">
+    <section id="soy-constelador" className="py-16 sm:py-24 bg-[#FBF7F2] border-t border-[#E7DECE]/60">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         
         {/* Contenedor en Terracota Pastel Suave */}
         <div className="bg-[#FDF7F4] border border-terracotta-200/80 rounded-3xl p-8 sm:p-12 shadow-sm relative overflow-hidden">
           
           <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-600 mb-3 block">
-            Comunidad y Ecosistema para Profesionales Sistémicos
+            Ecosistema de Formación y Respaldo para Profesionales Sistémicos
           </span>
 
           {/* Título de Sección */}
@@ -29,19 +29,19 @@ export function WatercolorTherapistCTA() {
 
           {/* Ventajas para el Facilitador */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-9 text-left">
-            <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#E7DECE]">
+            <div className="bg-[#FCFAF7] p-4 rounded-2xl border border-[#E7DECE]">
               <span className="text-terracotta-600 font-bold text-sm block mb-1">01. Cero No-Shows</span>
               <p className="text-xs text-[#5C524A]">
                 El consultante abona el 20% para asegurar el horario, garantizando asistencia real y compromiso con su proceso.
               </p>
             </div>
-            <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#E7DECE]">
+            <div className="bg-[#FCFAF7] p-4 rounded-2xl border border-[#E7DECE]">
               <span className="text-terracotta-600 font-bold text-sm block mb-1">02. Difusión de Talleres</span>
               <p className="text-xs text-[#5C524A]">
                 Publica tus jornadas vivenciales en Santiago y regiones en nuestro calendario nacional sin comisiones ocultas.
               </p>
             </div>
-            <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#E7DECE]">
+            <div className="bg-[#FCFAF7] p-4 rounded-2xl border border-[#E7DECE]">
               <span className="text-terracotta-600 font-bold text-sm block mb-1">03. Sello Ético Verificado</span>
               <p className="text-xs text-[#5C524A]">
                 Respaldamos tu formación acreditada frente a un mercado saturado de pseudoterapias sin fundamento.

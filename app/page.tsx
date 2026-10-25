@@ -12,6 +12,7 @@ import { WatercolorFAQ } from "@/components/watercolor/WatercolorFAQ";
 import { WatercolorFooter } from "@/components/watercolor/WatercolorFooter";
 import { WatercolorFloatingWhatsApp } from "@/components/watercolor/WatercolorFloatingWhatsApp";
 import { WatercolorStickyMobileBar } from "@/components/watercolor/WatercolorStickyMobileBar";
+import { CommunitySection } from "@/components/community/CommunitySection";
 
 // Componentes del Directorio y Ecosistema Marketplace
 import { InteractiveDirectory } from "@/components/directory/InteractiveDirectory";
@@ -96,7 +97,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-[#27221F] font-sans antialiased selection:bg-terracotta-100 selection:text-terracotta-800 pb-16 sm:pb-0">
+    <div className="min-h-screen bg-[#FBF7F2] text-[#27221F] font-sans antialiased selection:bg-terracotta-100 selection:text-terracotta-800 pb-16 sm:pb-0">
       
       {/* 1. Barra de Navegación con Amonite y Enlaces al Marketplace */}
       <WatercolorNavbar
@@ -129,16 +130,19 @@ export default function HomePage() {
       {/* 6. ¿Cómo funciona el pago del 20% y la garantía de reprogramación? */}
       <WatercolorPaymentExplainer />
 
-      {/* 7. Comunidad B2B para Facilitadores (Sin venta en frío, cero no-shows) */}
+      {/* 7. Comunidad de Acompañamiento entre Pares para Consteladores */}
+      <CommunitySection />
+
+      {/* 8. Comunidad B2B para Facilitadores (Postulaciones y Difusión) */}
       <WatercolorTherapistCTA />
 
-      {/* 8. Quiénes Somos y Testimonios Reales */}
+      {/* 9. Quiénes Somos y Testimonios Reales */}
       <WatercolorAbout />
 
-      {/* 9. Preguntas Frecuentes en Acordeón Suave */}
+      {/* 10. Preguntas Frecuentes en Acordeón Suave */}
       <WatercolorFAQ />
 
-      {/* 10. Pie de Página Ético con Disclaimer y Línea *4141 */}
+      {/* 11. Pie de Página Ético con Disclaimer y Línea *4141 */}
       <WatercolorFooter />
 
       {/* Botón Flotante de WhatsApp en Terracota Cálido */}

@@ -10,9 +10,24 @@ const config: Config = {
     extend: {
       colors: {
         // Paleta Acuarela Orgánica & Refugio Cálido
+        cream: {
+          50: "#FDFBF7",
+          100: "#FBF7F2", // Fondo crema suave principal (reemplaza blanco puro)
+          200: "#F5EFE6",
+          300: "#ECE3D5",
+        },
+        sage: {
+          50: "#F4F7F5",
+          100: "#E5ECE7",
+          200: "#CCD9CF",
+          500: "#6E8B76", // Verde salvia suave
+          600: "#5B7B66",
+          700: "#486352",
+          800: "#394E41",
+        },
         parchment: {
           50: "#FCFAF7",
-          100: "#FAF8F5", // Fondo principal marfil pergamino
+          100: "#FBF7F2", // Fondo principal marfil pergamino unificado
           200: "#F3EFE9",
           300: "#E8E2D8",
         },
@@ -65,6 +80,25 @@ const config: Config = {
         watercolor: "0 4px 20px -2px rgba(214, 104, 71, 0.08), 0 2px 6px -1px rgba(46, 58, 90, 0.04)",
         card: "0 2px 12px rgba(56, 50, 46, 0.05)",
         hover: "0 8px 24px -4px rgba(214, 104, 71, 0.12), 0 2px 6px rgba(46, 58, 90, 0.04)",
+      },
+      keyframes: {
+        gentleSway: {
+          "0%, 100%": { transform: "rotate(0deg) scale(1)" },
+          "50%": { transform: "rotate(1.2deg) scale(1.01)" },
+        },
+        breathe: {
+          "0%, 100%": { transform: "scale(1)", boxShadow: "0 4px 14px rgba(214, 104, 71, 0.25)" },
+          "50%": { transform: "scale(1.025)", boxShadow: "0 8px 24px rgba(214, 104, 71, 0.38)" },
+        },
+        fadeSlideUp: {
+          "0%": { opacity: "0", transform: "translateY(16px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        "gentle-sway": "gentleSway 14s ease-in-out infinite",
+        "breathe-slow": "breathe 3.5s ease-in-out infinite",
+        "fade-slide-up": "fadeSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
       },
     },
   },

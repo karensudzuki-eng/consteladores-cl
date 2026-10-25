@@ -319,7 +319,7 @@ export function SystemicTriageModal({
                       ${recommendedFacilitator.totalPriceClp.toLocaleString("es-CL")}
                     </span>
                     <span className="text-[10px] text-terracotta-600 block">
-                      Reserva 20%: ${recommendedFacilitator.depositPriceClp.toLocaleString("es-CL")}
+                      Abono 20%: ${recommendedFacilitator.depositPriceClp.toLocaleString("es-CL")}
                     </span>
                   </div>
                 </div>
@@ -352,10 +352,10 @@ export function SystemicTriageModal({
                   onSelectFacilitator(recommendedFacilitator || undefined);
                 }}
                 type="button"
-                className="w-full py-3.5 px-6 text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md hover:shadow-lg transition-all"
+                className="w-full py-3.5 px-6 text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md hover:shadow-lg transition-all btn-breathe"
               >
                 {recommendedFacilitator
-                  ? `Agendar con ${recommendedFacilitator.name} (Reserva 20%)`
+                  ? `Agendar sesión con ${recommendedFacilitator.name}`
                   : "Solicitar sesión y evaluación de mi caso"}
               </button>
               

@@ -38,7 +38,7 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FAF8F5]/92 backdrop-blur-md border-b border-[#E7DECE]/80 transition-colors">
+    <header className="sticky top-0 z-40 bg-[#FBF7F2]/92 backdrop-blur-md border-b border-[#E7DECE]/80 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
@@ -79,6 +79,13 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
               className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
             >
               Servicios y Valores
+            </a>
+            <a
+              href="#comunidad"
+              className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1 flex items-center gap-1.5"
+            >
+              <span>Comunidad</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-sage-500" />
             </a>
             <a
               href="#quienes-somos"
@@ -166,6 +173,13 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
             className="block px-3 py-2 text-base font-medium text-[#5C524A] hover:text-[#27221F] rounded-lg hover:bg-[#F3ECE2]/50"
           >
             Servicios y Valores
+          </a>
+          <a
+            href="#comunidad"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 text-base font-medium text-[#5C524A] hover:text-[#27221F] rounded-lg hover:bg-[#F3ECE2]/50"
+          >
+            Comunidad de Consteladores
           </a>
           <a
             href="#quienes-somos"

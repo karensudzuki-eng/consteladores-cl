@@ -14,9 +14,9 @@ export function WatercolorPaymentExplainer() {
     },
     {
       step: "02",
-      title: "Aseguras con el 20% de reserva",
+      title: "Abonas el 20% deducible del total",
       description:
-        "Pagas únicamente el 20% inicial a través de Webpay (débito, crédito) o transferencia bancaria para bloquear tu cita en el calendario del facilitador.",
+        "Para reservar la cita se abona el 20% inicial (vía Mercado Pago o transferencia bancaria), el cual se descuenta del valor total al momento de pagar.",
       bgClass: "bg-[#FDF7F4] border-terracotta-200/80",
       accent: "text-terracotta-600",
     },
@@ -31,7 +31,7 @@ export function WatercolorPaymentExplainer() {
   ];
 
   return (
-    <section className="py-16 sm:py-20 bg-[#FAF8F5] border-t border-[#E7DECE]/60">
+    <section className="py-16 sm:py-20 bg-[#FBF7F2] border-t border-[#E7DECE]/60">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Cabecera Centrada */}
