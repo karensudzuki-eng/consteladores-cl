@@ -29,18 +29,18 @@ export function WatercolorAbout() {
   ];
 
   return (
-    <section id="quienes-somos" className="py-16 sm:py-24 bg-[#FBF7F2] border-t border-[#E7DECE]/60">
+    <section id="quienes-somos" className="py-24 sm:py-32 bg-[#E9EFEA] border-t border-[#D9664A]/30 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Cabecera Estrictamente Centrada */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-500 mb-2 block">
+          <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-white/75 border border-[#CCD9CF] text-sage-800 text-xs font-semibold uppercase tracking-wider mb-4 mx-auto shadow-sm">
             Nuestro Propósito
-          </span>
+          </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-[#27221F] mb-6">
             Quiénes somos
           </h2>
-          <p className="text-base sm:text-lg text-[#5C524A] leading-relaxed">
+          <p className="text-base sm:text-lg text-[#38322E] leading-relaxed">
             <strong className="text-[#27221F] font-semibold">consteladores.cl</strong> nació con una vocación honesta: 
             tender un puente seguro, cálido y transparente entre personas que buscan sanar dinámicas familiares y 
             facilitadores acreditados en Chile. Creemos en una terapia sistémica con los pies en la tierra, sin 
@@ -53,7 +53,7 @@ export function WatercolorAbout() {
           {experiences.map((exp, idx) => (
             <div
               key={idx}
-              className="bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-sm"
+              className="bg-[#FCFAF7] border border-[#CCD9CF] rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-sm card-hover-elevate"
             >
               <div>
                 {/* Comillas sutiles en terracota */}

@@ -9,14 +9,14 @@ interface WatercolorServicesProps {
 
 export function WatercolorServices({ onSelectService }: WatercolorServicesProps) {
   return (
-    <section id="servicios" className="py-16 sm:py-24 bg-[#FBF7F2] border-t border-[#E7DECE]/60">
+    <section id="servicios" className="py-24 sm:py-32 bg-[#FBF7F2] border-t border-[#D9664A]/30 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Cabecera Estrictamente Centrada */}
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-500 mb-2 block">
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-cream-200 border border-[#E7DECE] text-terracotta-700 text-xs font-semibold uppercase tracking-wider mb-4 mx-auto shadow-sm">
             Modalidad 100% Online · Google Meet
-          </span>
+          </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-[#27221F] mb-4">
             Servicios y valores de sesión
           </h2>
@@ -33,7 +33,7 @@ export function WatercolorServices({ onSelectService }: WatercolorServicesProps)
             return (
               <div
                 key={service.id}
-                className={`rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-md ${
+                className={`rounded-2xl p-6 sm:p-8 flex flex-col justify-between card-hover-elevate ${
                   isPopular
                     ? "bg-[#FDF7F4] border-2 border-terracotta-200 shadow-sm ring-1 ring-terracotta-200/50"
                     : "bg-[#FAF8F5] border border-[#E7DECE] shadow-sm"

@@ -33,14 +33,14 @@ export function WatercolorFAQ() {
   ];
 
   return (
-    <section id="faq" className="py-16 sm:py-24 bg-[#FBF7F2] border-t border-[#E7DECE]/60">
+    <section id="faq" className="py-24 sm:py-32 bg-[#FBF7F2] border-t border-[#D9664A]/30 relative">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Cabecera Estrictamente Centrada */}
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-500 mb-2 block">
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-cream-200 border border-[#E7DECE] text-terracotta-700 text-xs font-semibold uppercase tracking-wider mb-4 mx-auto shadow-sm">
             Claridad y Respuestas
-          </span>
+          </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-[#27221F] mb-4">
             Preguntas frecuentes
           </h2>

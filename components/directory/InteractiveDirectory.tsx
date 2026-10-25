@@ -70,12 +70,12 @@ export function InteractiveDirectory({
   };
 
   return (
-    <section id="directorio" className="py-16 sm:py-24 bg-[#FBF7F2] border-t border-[#E7DECE]/60">
+    <section id="directorio" className="py-24 sm:py-32 bg-[#F3E9DC] border-t border-[#D9664A]/30 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Cabecera del Marketplace */}
-        <div className="text-center max-w-3xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-[#F3ECE2] border border-[#E7DECE] text-[#5C524A] text-xs font-semibold uppercase tracking-wider mb-3">
+        {/* Cabecera del Marketplace Estrictamente Centrada */}
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-[#E8C58A]/35 border border-[#D5C8B4] text-[#4A423D] text-xs font-semibold uppercase tracking-wider mb-4 mx-auto shadow-sm">
             Ecosistema y Directorio Nacional
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-[#27221F] mb-4">
@@ -314,7 +314,7 @@ export function InteractiveDirectory({
                   return (
                     <div
                       key={facilitator.id}
-                      className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-300"
+                      className="bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-sm card-hover-elevate"
                     >
                       <div>
                         {/* Cabecera de la tarjeta con Monograma y Badge */}
@@ -455,7 +455,7 @@ export function InteractiveDirectory({
                 {upcomingWorkshopsList.map((ws) => (
                   <div
                     key={ws.id}
-                    className="bg-[#FAF8F5] border border-ochre-300 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between"
+                    className="bg-[#FCFAF7] border border-ochre-300 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between card-hover-elevate"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-3">

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 
 export function WatercolorPhilosophy() {
   const principles = [
@@ -49,18 +50,37 @@ export function WatercolorPhilosophy() {
   ];
 
   return (
-    <section id="filosofia" className="py-16 sm:py-24 bg-[#FBF7F2] relative border-t border-[#E7DECE]/60">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="filosofia" className="py-24 sm:py-32 bg-[#E9EFEA] relative border-t border-[#D9664A]/30 overflow-hidden">
+      {/* Fondo con imagen propia y velo salvia/crema con opacidad controlada por variable CSS */}
+      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+        <Image
+          src="/images/mirar-historia-sanar.png"
+          alt="Ilustración sistémica de cinco personas mirando su historia para sanar vínculos"
+          fill
+          loading="lazy"
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        {/* Capa de velo suave (#E9EFEA) para garantizar contraste WCAG AA riguroso */}
+        <div
+          className="absolute inset-0 bg-[#E9EFEA] transition-opacity"
+          style={{ opacity: "var(--overlay-philosophy-opacity, 0.78)" }}
+        />
+        {/* Suave degradado para fundir armónicamente */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#E9EFEA]/80 via-transparent to-[#E9EFEA]/90" />
+      </div>
+
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Cabecera de Sección Centrada */}
+        {/* Cabecera de Sección Estrictamente Centrada */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-500 mb-3 block">
-            Pedagogía y Desmitificación Sistémica (MOFU)
-          </span>
+          <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-white/75 border border-[#CCD9CF] text-sage-800 text-xs font-semibold uppercase tracking-wider mb-4 mx-auto shadow-sm backdrop-blur-sm">
+            Pedagogía y Desmitificación Sistémica
+          </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-[#27221F] mb-6">
             ¿Qué es una constelación familiar?
           </h2>
-          <p className="text-base sm:text-lg text-[#5C524A] leading-relaxed">
+          <p className="text-base sm:text-lg text-[#38322E] leading-relaxed">
             Una constelación no es una predicción mágica ni una creencia esotérica. Es un abordaje fenomenológico y terapéutico desarrollado por Bert Hellinger que 
             permite hacer visible la imagen interna de tu sistema familiar. 
             Al ordenar los vínculos y mirar con compasión lo que no pudo ser visto en el pasado, 
@@ -73,7 +93,7 @@ export function WatercolorPhilosophy() {
           {principles.map((p) => (
             <div
               key={p.number}
-              className={`rounded-3xl p-6 sm:p-8 border shadow-sm transition-all duration-300 hover:shadow-md flex flex-col items-center text-center ${p.bgClass}`}
+              className={`rounded-3xl p-6 sm:p-8 border shadow-sm card-hover-elevate flex flex-col items-center text-center ${p.bgClass}`}
             >
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-serif text-lg font-bold mb-4 ${p.tagBg}`}>
                 {p.number}

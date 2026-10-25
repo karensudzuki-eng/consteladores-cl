@@ -55,7 +55,7 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
                 consteladores<span className="text-terracotta-500 italic font-serif">.cl</span>
               </span>
               <span className="text-[11px] uppercase tracking-widest text-[#8A7E73] font-medium -mt-1 hidden sm:block">
-                Directorio y Ecosistema Sistémico en Chile
+                Tu punto de encuentro sistémico en Chile
               </span>
             </div>
           </Link>

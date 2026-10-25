@@ -6,7 +6,7 @@ import { AmmoniteIcon } from "./WatercolorNavbar";
 
 export function WatercolorFooter() {
   return (
-    <footer className="bg-[#FAF7F2] border-t border-[#E7DECE] text-[#5C524A] pt-16 pb-20 sm:pb-14">
+    <footer className="bg-[#FAF7F2] border-t border-[#D9664A]/30 text-[#5C524A] pt-16 pb-20 sm:pb-14">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Cabecera del Footer */}

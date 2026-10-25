@@ -31,14 +31,14 @@ export function WatercolorPaymentExplainer() {
   ];
 
   return (
-    <section className="py-16 sm:py-20 bg-[#FBF7F2] border-t border-[#E7DECE]/60">
+    <section className="py-24 sm:py-32 bg-[#F3E9DC] border-t border-[#D9664A]/30 relative">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Cabecera Centrada */}
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <span className="text-xs uppercase tracking-widest font-semibold text-ochre-600 mb-2 block">
+        {/* Cabecera Estrictamente Centrada */}
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-[#E8C58A]/35 border border-[#D5C8B4] text-ochre-800 text-xs font-semibold uppercase tracking-wider mb-4 mx-auto shadow-sm">
             Transparencia y Tranquilidad
-          </span>
+          </div>
           <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-[#27221F] mb-4">
             ¿Cómo funciona el pago del 20%?
           </h2>
@@ -52,7 +52,7 @@ export function WatercolorPaymentExplainer() {
           {steps.map((s) => (
             <div
               key={s.step}
-              className={`rounded-2xl p-6 sm:p-7 border shadow-sm flex flex-col items-center text-center ${s.bgClass}`}
+              className={`rounded-2xl p-6 sm:p-7 border shadow-sm flex flex-col items-center text-center card-hover-elevate ${s.bgClass}`}
             >
               <span className={`text-2xl font-serif font-bold mb-3 ${s.accent}`}>
                 {s.step}

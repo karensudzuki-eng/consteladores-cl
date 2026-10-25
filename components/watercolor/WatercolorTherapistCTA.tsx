@@ -5,15 +5,15 @@ import Link from "next/link";
 
 export function WatercolorTherapistCTA() {
   return (
-    <section id="soy-constelador" className="py-16 sm:py-24 bg-[#FBF7F2] border-t border-[#E7DECE]/60">
+    <section id="soy-constelador" className="py-24 sm:py-32 bg-[#FBF7F2] border-t border-[#D9664A]/30 relative">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         
         {/* Contenedor en Terracota Pastel Suave */}
-        <div className="bg-[#FDF7F4] border border-terracotta-200/80 rounded-3xl p-8 sm:p-12 shadow-sm relative overflow-hidden">
+        <div className="bg-[#FDF7F4] border border-terracotta-200/80 rounded-3xl p-8 sm:p-12 shadow-sm relative overflow-hidden card-hover-elevate">
           
-          <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-600 mb-3 block">
-            Ecosistema de Formación y Respaldo para Profesionales Sistémicos
-          </span>
+          <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-cream-200 border border-[#E7DECE] text-terracotta-700 text-xs font-semibold uppercase tracking-wider mb-5 mx-auto shadow-sm">
+            Ecosistema de Formación y Respaldo
+          </div>
 
           {/* Título de Sección */}
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-[#27221F] mb-5">

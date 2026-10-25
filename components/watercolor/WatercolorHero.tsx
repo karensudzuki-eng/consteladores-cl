@@ -13,29 +13,35 @@ export function WatercolorHero({ onBookClick, onOpenTriage }: WatercolorHeroProp
   const [showDepositTooltip, setShowDepositTooltip] = useState(false);
 
   return (
-    <section className="relative overflow-hidden pt-12 pb-20 sm:pt-16 sm:pb-28 bg-[#FBF7F2]">
-      {/* Fondo orgánico con textura y opacidad reducida para garantizar contraste WCAG AA */}
-      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden opacity-15">
+    <section className="relative overflow-hidden pt-16 pb-24 sm:pt-24 sm:pb-32 bg-[#FBF7F2]">
+      {/* Fondo con imagen propia y velo crema con opacidad controlada por variable CSS */}
+      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
         <Image
-          src="/images/media_1792558542382_d9e48020.webp"
-          alt="Vínculos familiares e ilustración de acuarela"
+          src="/images/mirar-historia-sanar.png"
+          alt="Mirar la historia para sanar - Ilustración en acuarela de raíces familiares y vínculos sistémicos"
           fill
           priority
-          className="object-cover object-center filter blur-[1px] mix-blend-multiply"
+          sizes="100vw"
+          className="object-cover object-center"
         />
-        {/* Degradado envolvente en crema suave (#FBF7F2) */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#FBF7F2]/90 via-[#FBF7F2]/65 to-[#FBF7F2]" />
+        {/* Capa de velo crema (#FBF7F2) para garantizar contraste WCAG AA riguroso */}
+        <div
+          className="absolute inset-0 bg-[#FBF7F2] transition-opacity"
+          style={{ opacity: "var(--overlay-hero-opacity, 0.80)" }}
+        />
+        {/* Suave degradado para fundir perfectamente con los bordes */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FBF7F2]/90 via-transparent to-[#FBF7F2]" />
       </div>
 
       {/* Símbolo vivo en filigrana ambiental detrás del texto */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-5 text-terracotta-700">
-        <FamilyTreeIcon className="w-[420px] h-[420px] sm:w-[540px] sm:h-[540px]" isAnimated={true} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-10 text-terracotta-700">
+        <FamilyTreeIcon className="w-[420px] h-[420px] sm:w-[560px] sm:h-[560px]" isAnimated={true} />
       </div>
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fadeIn">
         
-        {/* Insignia con el Símbolo Vivo de las Raíces Familiares */}
-        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-cream-50/95 border border-[#E7DECE] text-[#5C524A] text-xs sm:text-sm font-medium mb-6 backdrop-blur-sm shadow-sm">
+        {/* Insignia Centrada con el Símbolo Vivo de las Raíces Familiares */}
+        <div className="inline-flex items-center justify-center gap-2.5 px-4 py-1.5 rounded-full bg-cream-50/95 border border-terracotta-200/90 text-terracotta-700 text-xs sm:text-sm font-semibold mb-6 backdrop-blur-sm shadow-sm mx-auto">
           <span className="text-terracotta-500 flex items-center justify-center">
             <FamilyTreeIcon className="w-4 h-4" isAnimated={true} />
           </span>

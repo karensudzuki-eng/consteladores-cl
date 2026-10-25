@@ -12,17 +12,20 @@ const config: Config = {
         // Paleta Acuarela Orgánica & Refugio Cálido
         cream: {
           50: "#FDFBF7",
-          100: "#FBF7F2", // Fondo crema suave principal (reemplaza blanco puro)
+          100: "#FBF7F2", // Fondo crema suave principal
           200: "#F5EFE6",
           300: "#ECE3D5",
         },
         sage: {
           50: "#F4F7F5",
+          soft: "#E9EFEA", // Verde salvia suave para alternar secciones
           100: "#E5ECE7",
           200: "#CCD9CF",
           500: "#6E8B76", // Verde salvia suave
+          deep: "#5E7A6A", // Verde salvia profundo para acentos e íconos
           600: "#5B7B66",
           700: "#486352",
+          dark: "#2F3E36", // Verde salvia muy oscuro para la sección comunidad
           800: "#394E41",
         },
         parchment: {
@@ -35,12 +38,16 @@ const config: Config = {
           50: "#FDF7F4",
           100: "#F9ECE6",
           200: "#F2D8CC",
+          300: "#E8A793",
+          400: "#DE7E64",
+          accent: "#D9664A", // Terracota principal de acento
           500: "#D66847", // Terracota cálida
           600: "#BF5435",
           700: "#A34327",
         },
         ochre: {
           50: "#FEF9EE",
+          soft: "#E8C58A", // Ocre suave para destellos y fondos
           100: "#FCF2DA",
           200: "#F7E1B0",
           500: "#D49B4B", // Ocre suave de acuarela
@@ -55,12 +62,14 @@ const config: Config = {
         },
         sand: {
           50: "#FAF7F2",
+          soft: "#F3E9DC", // Tono arena suave para alternancia
           100: "#F3ECE2",
           200: "#E7DECE",
           300: "#D5C8B4",
           500: "#9E8C76",
         },
         earth: {
+          700: "#4A423D",
           800: "#38322E", // Texto de lectura noble
           900: "#27221F", // Tinta profunda y cálida
         },
