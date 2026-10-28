@@ -51,7 +51,7 @@ export default function CancelacionPage() {
             <li>La devolución se realiza exclusivamente mediante transferencia bancaria a la cuenta indicada por el consultante.</li>
             <li>Se emitirá el respectivo comprobante bancario oficial de respaldo.</li>
             <li>
-              Plazo de devolución: dentro de un plazo máximo de <strong>{CONFIG.REFUND_BUSINESS_DAYS} días hábiles</strong> desde la recepción de la solicitud formal. <span className="text-[#8A7E73]">[PENDIENTE: definir plazo exacto de días hábiles.]</span>
+              Plazo de devolución: dentro de un plazo máximo de <strong>{CONFIG.REFUND_BUSINESS_DAYS} días hábiles</strong> desde la recepción de la solicitud formal.
             </li>
           </ul>
         </section>

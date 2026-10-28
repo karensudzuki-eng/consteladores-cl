@@ -313,6 +313,21 @@ export function HumanInTheLoopModal({
               </select>
             </div>
 
+            {/* Resumen de Valor Referencial */}
+            {CONFIG.PRICING_ENABLED && (
+              <div className="mb-4 bg-[#FAF8F5] border border-[#E7DECE] rounded-xl p-3 text-xs flex items-center justify-between">
+                <div>
+                  <span className="text-[#8A7E73] block text-[11px]">Valor de sesión (referencial):</span>
+                  <span className="font-bold text-[#27221F] text-sm">${total.toLocaleString("es-CL")} CLP</span>
+                  <span className="text-[10px] text-[#8A7E73] block mt-0.5">* Sujeto a cambios según facilitador</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-terracotta-600 font-semibold block text-[11px]">Abono inicial 20%:</span>
+                  <span className="font-bold text-terracotta-700 text-sm">${deposit.toLocaleString("es-CL")} CLP</span>
+                </div>
+              </div>
+            )}
+
             {/* Fecha y Hora */}
             <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>

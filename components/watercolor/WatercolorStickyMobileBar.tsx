@@ -18,7 +18,7 @@ export function WatercolorStickyMobileBar({ onBookClick }: WatercolorStickyMobil
           Acompañamiento sistémico
         </span>
         <span className="text-sm font-serif font-bold text-[#27221F]">
-          {isPricingEnabled ? "Desde $45.000 CLP" : "Valor: por definir"}
+          {isPricingEnabled ? "Desde $45.000 CLP (Ref.)" : "Valor: por definir"}
         </span>
       </div>
 

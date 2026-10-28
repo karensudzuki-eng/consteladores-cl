@@ -125,7 +125,7 @@ export function WatercolorPaymentExplainer() {
             </p>
             <div className="border-t border-[#E7DECE]/80 pt-2 flex items-center justify-between text-xs">
               <span className="text-[#8A7E73] text-[11px]">
-                Plazo de restitución: [PENDIENTE: definir plazo de días hábiles]
+                Plazo de restitución: {CONFIG.REFUND_BUSINESS_DAYS} días hábiles por transferencia
               </span>
               <Link
                 href="/cancelacion"

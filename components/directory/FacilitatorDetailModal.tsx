@@ -149,6 +149,9 @@ export function FacilitatorDetailModal({
                   <span className="text-xs text-terracotta-600 block font-medium">
                     Abono 20%: ${facilitator.depositPriceClp.toLocaleString("es-CL")} · Saldo: ${facilitator.balancePriceClp.toLocaleString("es-CL")}
                   </span>
+                  <span className="text-[10px] text-[#8A7E73] block mt-0.5">
+                    * Valores referenciales sujetos a cambio
+                  </span>
                 </>
               ) : (
                 <span className="text-base font-serif font-semibold text-[#27221F] block">

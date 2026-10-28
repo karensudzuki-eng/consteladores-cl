@@ -168,7 +168,7 @@ export default function ConfirmacionPage() {
             </span>
           </div>
           <p className="text-[11px] text-[#8A7E73] pt-1">
-            * El saldo restante del 80% se transfiere directamente a la cuenta del facilitador. Recuerda enviar tu comprobante antes o al finalizar la sesión.
+            * El saldo restante del 80% se transfiere directamente a la cuenta del facilitador. Recuerda enviar tu comprobante antes o al finalizar la sesión (valores referenciales sujetos a cambio).
           </p>
         </div>
 

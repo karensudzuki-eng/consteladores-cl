@@ -43,11 +43,16 @@ export default function CriteriosPage() {
               Por esta razón, la seriedad de un facilitador depende exclusivamente del rigor de su centro formador, de las horas de práctica vivencial supervisada y de su adhesión estricta a un código ético.
             </p>
             <p>
-              <strong>Respaldo de Icalma Constelaciones:</strong> Icalma (constelacionesfamiliares.cl) es una institución con más de 20 años de docencia continua en Chile. Su proceso evalúa la profundidad teórica, el respeto por los órdenes sistémicos y la capacidad de sostener un espacio sin juicios ni promesas milagrosas.
+              <strong>Respaldo de Icalma Constelaciones:</strong> Icalma (constelacionesfamiliares.cl) es una institución pionera con formación continua en Chile desde 2006. Su proceso evalúa la profundidad teórica, el respeto por los órdenes sistémicos y la capacidad de sostener un espacio sin juicios ni promesas milagrosas.
             </p>
-            <p className="text-xs text-[#8A7E73] bg-[#FAF8F5] p-3 rounded-xl border border-[#E7DECE]">
-              [PENDIENTE: texto exacto de la certificación de Icalma emitido por dirección académica.]
-            </p>
+            <div className="text-xs text-[#5C524A] bg-[#FAF8F5] p-4 rounded-xl border border-[#E7DECE] space-y-1.5">
+              <span className="font-semibold text-[#27221F] block text-xs">
+                Certificación Formativa de Icalma Constelaciones:
+              </span>
+              <p>
+                Acredita que el facilitador cursó y aprobó el programa integral de formación en Constelaciones Familiares y Enfoque Sistémico, cumpliendo satisfactoriamente los módulos teórico-vivenciales, horas de práctica guiada y la adhesión formal al código de confidencialidad, neutralidad y respeto fenomenológico.
+              </p>
+            </div>
           </div>
         </section>
 

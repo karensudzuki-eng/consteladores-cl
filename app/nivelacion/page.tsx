@@ -34,30 +34,30 @@ export default function NivelacionPage() {
         {/* Cabecera */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-cream-200 border border-[#E7DECE] text-terracotta-700 text-xs font-semibold uppercase tracking-wider mb-4 mx-auto">
-            Ruta de Reintegro Profesional
+            Encuentro Integrativo y Homologación
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-[#27221F] mb-4">
-            Nivelación y Reintegro a la Práctica Sistémica
+            Espacio de Homologación e Integración Sistémica
           </h1>
           <p className="text-base sm:text-lg text-[#38322E] leading-relaxed">
-            Un camino de acompañamiento y actualización metodológica para personas que completaron formación en constelaciones hace años o que desean retomar su práctica con supervisión rigurosa.
+            Un puente de encuentro entre escuelas y tradiciones formativas. Porque nadie tiene el monopolio de la verdad sistémica, promovemos un espacio integrativo, lúdico y respetuoso para homologar saberes, actualizar herramientas y acompañar tu práctica.
           </p>
         </div>
 
         {/* Vocabulario y Enfoque */}
         <section className="bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-9 mb-12 shadow-sm space-y-4">
           <h2 className="text-2xl font-serif font-semibold text-[#27221F]">
-            Quiénes participan en este proceso
+            Una mirada integrativa y colaborativa
           </h2>
           <p className="text-sm text-[#5C524A] leading-relaxed">
-            Esta ruta está dirigida a personas <strong>en proceso de nivelación</strong> o que se encuentran <strong>retomando su práctica</strong>. Por respeto a los consultantes, los facilitadores en este estado no utilizan los sellos de acreditado hasta concluir satisfactoriamente el ciclo de horas clínicas y supervisión.
+            Esta ruta está abierta tanto a facilitadores <strong>en proceso de nivelación</strong> como a quienes están <strong>retomando su práctica</strong> o provienen de otros centros formativos nacionales o internacionales. Nuestro compromiso no es competir entre escuelas ni imponer dogmas, sino ofrecer un entorno cálido de supervisión entre pares y homologación transparente.
           </p>
         </section>
 
         {/* Dos Opciones con Igual Peso Visual */}
         <section className="mb-14 space-y-6">
           <h2 className="text-2xl font-serif font-semibold text-[#27221F] text-center mb-8">
-            Opciones Formativas para la Nivelación
+            Vías de Integración y Práctica
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
@@ -66,19 +66,19 @@ export default function NivelacionPage() {
             <div className="bg-[#FCFAF7] border-2 border-sage-500/40 rounded-3xl p-6 sm:p-8 flex flex-col justify-between card-hover-elevate">
               <div className="space-y-3">
                 <span className="text-xs px-3 py-1 rounded-full bg-sage-50 text-sage-800 border border-sage-200 font-semibold inline-block">
-                  Opción A · Icalma Constelaciones
+                  Vía A · Espacio Icalma Constelaciones
                 </span>
                 
                 <h3 className="text-xl font-serif font-semibold text-[#27221F]">
-                  Curso de práctica avanzada de Icalma
+                  Laboratorio de Práctica y Homologación
                 </h3>
 
                 <p className="text-xs text-[#5C524A] leading-relaxed">
-                  Programa de actualización metodológica, profundización fenomenológica y supervisión clínica continua impartido por docentes titulares de Icalma Constelaciones.
+                  Espacio vivencial de intercambio práctico, revisión de casos clínicos y actualización de órdenes sistémicos con docentes formadores de Icalma (formación continua desde 2006).
                 </p>
 
-                <div className="bg-[#FAF8F5] p-3 rounded-xl border border-[#E7DECE] text-[11px] text-[#8A7E73]">
-                  [PENDIENTE: enlace y descripción verificada del curso de práctica avanzada de Icalma.]
+                <div className="bg-[#FAF8F5] p-3 rounded-xl border border-[#E7DECE] text-[11px] text-[#5C524A]">
+                  Prácticas dinámicas en grupo, trabajo con figuras de madera, anclajes y supervisión respetuosa de sesiones individuales y grupales.
                 </div>
               </div>
 
@@ -98,19 +98,19 @@ export default function NivelacionPage() {
             <div className="bg-[#FCFAF7] border-2 border-terracotta-300/60 rounded-3xl p-6 sm:p-8 flex flex-col justify-between card-hover-elevate">
               <div className="space-y-3">
                 <span className="text-xs px-3 py-1 rounded-full bg-cream-200 text-terracotta-800 border border-terracotta-200 font-semibold inline-block">
-                  Opción B · Vía Externa Homologada
+                  Vía B · Homologación de Escuelas y Linajes
                 </span>
                 
                 <h3 className="text-xl font-serif font-semibold text-[#27221F]">
-                  Otra opción de nivelación verificada
+                  Homologación Abierta de Trayectoria
                 </h3>
 
                 <p className="text-xs text-[#5C524A] leading-relaxed">
-                  Si estás realizando o completaste un programa de actualización o supervisión en otra institución nacional o internacional reconocida, puedes presentar tus antecedentes para homologación de horas.
+                  Si te formaste en otra institución nacional o extranjera, valoramos tu linaje formativo. Puedes postular tus antecedentes, diplomas y horas de experiencia para integrarte a la red.
                 </p>
 
                 <div className="bg-[#FAF8F5] p-3 rounded-xl border border-[#E7DECE] text-[11px] text-[#5C524A]">
-                  Revisión individual de programa académico, horas clínicas y docente supervisor a cargo.
+                  Revisión integrativa y sin sesgos de escuela, orientada a resguardar la ética fenomenológica y el cuidado del consultante.
                 </div>
               </div>
 

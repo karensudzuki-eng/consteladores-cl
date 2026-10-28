@@ -4,8 +4,9 @@
  */
 
 export const CONFIG = {
-  // Flag de visualización de precios. Mientras sea false, ningún valor en CLP se muestra al consultante.
-  PRICING_ENABLED: false,
+  // Flag de visualización de precios. Activado con indicación de valores referenciales.
+  PRICING_ENABLED: true,
+  PRICING_NOTE: "Valores referenciales sujetos a cambio según facilitador y disponibilidad.",
 
   // Método de pago para el abono del 20%: "transfer" (transferencia bancaria) | "gateway" (pasarela oficial)
   PAYMENT_DEPOSIT_METHOD: "transfer" as "transfer" | "gateway",
@@ -16,8 +17,8 @@ export const CONFIG = {
 
   // Relación y respaldo de Icalma Constelaciones
   ICALMA_URL: "https://constelacionesfamiliares.cl",
-  ICALMA_FOUNDATION_YEAR: "[AÑO]", // [PENDIENTE: año exacto de inicio de Icalma, ej. 2004]
-  ICALMA_BACKING_NOTICE: "consteladores.cl es impulsado por Icalma Constelaciones (formación desde [AÑO]).",
+  ICALMA_FOUNDATION_YEAR: "2006",
+  ICALMA_BACKING_NOTICE: "consteladores.cl es impulsado por Icalma Constelaciones (formación desde 2006).",
 
   // Escala única de estados (prohibido usar "certificado" como sinónimo de "acreditado")
   FACILITATOR_STATUS: {
@@ -48,5 +49,5 @@ export const CONFIG = {
 
   // Política de cancelación
   CANCELLATION_HOURS_NOTICE: 24, // horas mínimas de anticipación
-  REFUND_BUSINESS_DAYS: "[X]", // [PENDIENTE: definir plazo exacto de días hábiles para devolución por transferencia]
+  REFUND_BUSINESS_DAYS: "3 a 5", // Plazo de 3 a 5 días hábiles para devolución por transferencia bancaria
 };

@@ -158,6 +158,9 @@ export function WatercolorServices({ onSelectService }: WatercolorServicesProps)
                             </span>
                           </div>
                         </div>
+                        <p className="text-[10px] text-[#8A7E73] text-center mt-2">
+                          * Valores referenciales sujetos a cambio según disponibilidad.
+                        </p>
                       </div>
                     ) : (
                       <div className="text-center py-2">
