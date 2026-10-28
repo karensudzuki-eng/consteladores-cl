@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { confirmAppointmentPaymentAction } from "@/app/actions/appointments";
+import { CONFIG } from "@/lib/config";
 
 interface BookingData {
   ticketId: string;
@@ -141,7 +142,7 @@ export default function ConfirmacionPage() {
         {/* Resumen del Encuentro y Finanzas */}
         <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-5 text-left text-xs space-y-2.5 mb-8">
           <div className="flex justify-between border-b border-[#E7DECE] pb-2">
-            <span className="text-[#8A7E73]">Facilitadora:</span>
+            <span className="text-[#8A7E73]">Facilitador(a):</span>
             <span className="font-semibold text-[#27221F]">{facilitatorName}</span>
           </div>
           <div className="flex justify-between border-b border-[#E7DECE] pb-2">
@@ -151,22 +152,30 @@ export default function ConfirmacionPage() {
             </span>
           </div>
           <div className="flex justify-between border-b border-[#E7DECE] pb-2">
-            <span className="text-[#8A7E73]">Abono pagado (20% - Plataforma):</span>
-            <span className="font-bold text-emerald-700">${deposit.toLocaleString("es-CL")} CLP (Pagado)</span>
+            <span className="text-[#8A7E73]">Abono inicial (20%):</span>
+            <span className="font-bold text-emerald-700">
+              {CONFIG.PRICING_ENABLED
+                ? `$${deposit.toLocaleString("es-CL")} CLP (Registrado)`
+                : "20% reservado"}
+            </span>
           </div>
           <div className="flex justify-between pt-1">
-            <span className="text-[#8A7E73]">Saldo restante al constelador (80%):</span>
-            <span className="font-semibold text-[#27221F]">${balance.toLocaleString("es-CL")} CLP</span>
+            <span className="text-[#8A7E73]">Saldo restante al facilitador (80%):</span>
+            <span className="font-semibold text-[#27221F]">
+              {CONFIG.PRICING_ENABLED
+                ? `$${balance.toLocaleString("es-CL")} CLP`
+                : "80% restante directo al facilitador"}
+            </span>
           </div>
           <p className="text-[11px] text-[#8A7E73] pt-1">
-            * El saldo restante del 80% se transfiere directamente a la cuenta del constelador. Recuerda enviar tu comprobante/voucher antes o al finalizar la sesión.
+            * El saldo restante del 80% se transfiere directamente a la cuenta del facilitador. Recuerda enviar tu comprobante antes o al finalizar la sesión.
           </p>
         </div>
 
         {/* Recomendaciones para la Sesión */}
         <div className="bg-[#FEF9EE] border border-ochre-300 rounded-2xl p-5 mb-8 text-left text-xs text-[#9A6523] space-y-2">
           <div className="font-bold text-sm text-[#7C5217] flex items-center gap-2">
-            <span>🌿 Consejos para tu encuentro sistémico:</span>
+            <span>Orientaciones para tu encuentro sistémico:</span>
           </div>
           <ul className="space-y-1.5 text-[11px] leading-relaxed text-[#7C5217]">
             <li>• <strong>Espacio privado:</strong> Busca un lugar tranquilo y cómodo donde puedas hablar con libertad y sin interrupciones.</li>
@@ -178,14 +187,14 @@ export default function ConfirmacionPage() {
         {/* Botones de Soporte y WhatsApp */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
           <a
-            href={`https://wa.me/56963730998?text=${encodeURIComponent(
-              `Hola Karen, acabo de confirmar mi abono para la constelación con ticket ${ticketId}. Mi fecha es ${scheduledDate} a las ${scheduledHour} hrs.`
+            href={`https://wa.me/${CONFIG.WHATSAPP_NUMBER.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+              `Hola, tengo una consulta respecto a mi reserva con ticket ${ticketId} para el ${scheduledDate} a las ${scheduledHour} hrs.`
             )}`}
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-3 rounded-full bg-[#128C7E] hover:bg-[#075E54] text-white text-xs font-semibold shadow transition-all flex items-center justify-center gap-2"
           >
-            <span>WhatsApp de Soporte (+56 9 6373 0998)</span>
+            <span>Contactar por WhatsApp</span>
           </a>
 
           <Link
@@ -196,9 +205,19 @@ export default function ConfirmacionPage() {
           </Link>
         </div>
 
-        <p className="text-[11px] text-[#8A7E73]">
+        <p className="text-[11px] text-[#8A7E73] mb-6">
           También hemos enviado un respaldo con estos mismos datos a tu correo electrónico.
         </p>
+
+        {/* Avisos éticos y de crisis */}
+        <div className="border-t border-[#E7DECE] pt-6 space-y-2 text-left">
+          <p className="text-[10px] text-[#8A7E73] leading-relaxed">
+            {CONFIG.DISCLAIMER_NOTICE}
+          </p>
+          <p className="text-[10px] text-terracotta-700 font-medium">
+            {CONFIG.CRISIS_LINE_NOTICE}
+          </p>
+        </div>
       </div>
     </div>
   );

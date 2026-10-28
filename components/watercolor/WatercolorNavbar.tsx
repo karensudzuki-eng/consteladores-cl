@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { CONFIG } from "@/lib/config";
 
 interface WatercolorNavbarProps {
-  onBookClick: () => void;
-  onOpenTriage: () => void;
+  onBookClick?: () => void;
+  onOpenTriage?: () => void;
 }
 
 export function AmmoniteIcon({ className = "w-7 h-7" }: { className?: string }) {
@@ -37,12 +38,14 @@ export function AmmoniteIcon({ className = "w-7 h-7" }: { className?: string }) 
 export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const primaryCtaLabel = CONFIG.PRICING_ENABLED ? "Reservar sesión" : "Consultar disponibilidad";
+
   return (
-    <header className="sticky top-0 z-40 bg-[#FBF7F2]/92 backdrop-blur-md border-b border-[#E7DECE]/80 transition-colors">
+    <header className="sticky top-0 z-40 bg-[#FBF7F2]/95 backdrop-blur-md border-b border-[#E7DECE]/80 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* Logo Principal con Amonite y Cursiva Armoniosa */}
+          {/* Logo Principal con Amonite */}
           <Link
             href="/"
             className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500 rounded-lg p-1"
@@ -60,16 +63,10 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
             </div>
           </Link>
 
-          {/* Menú de Navegación del Marketplace */}
+          {/* Menú de Navegación: Cómo funciona · Servicios · Facilitadores · Practica con nosotros */}
           <nav className="hidden lg:flex items-center space-x-7" aria-label="Navegación principal">
             <a
-              href="#directorio"
-              className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
-            >
-              Directorio de Facilitadores
-            </a>
-            <a
-              href="#filosofia"
+              href="#como-funciona"
               className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
             >
               Cómo funciona
@@ -78,58 +75,68 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
               href="#servicios"
               className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
             >
-              Servicios y Valores
+              Servicios
             </a>
             <a
-              href="#comunidad"
-              className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1 flex items-center gap-1.5"
-            >
-              <span>Comunidad</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-sage-500" />
-            </a>
-            <a
-              href="#quienes-somos"
+              href="#facilitadores"
               className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
             >
-              Quiénes somos
+              Facilitadores
             </a>
+            <Link
+              href="/practica"
+              className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1 flex items-center gap-1.5"
+            >
+              <span>Practica con nosotros</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-sage-500" />
+            </Link>
           </nav>
 
-          {/* Botones de Acción en Píldora Suave */}
-          <div className="hidden sm:flex items-center gap-2.5">
-            <button
-              onClick={onOpenTriage}
-              type="button"
-              className="px-3.5 py-2 text-xs font-medium text-terracotta-600 hover:text-terracotta-700 bg-terracotta-50 hover:bg-terracotta-100 border border-terracotta-200 rounded-full transition-all"
-            >
-              ✦ Test Orientador
-            </button>
-
+          {/* Botones de Acción: Primario y Secundario discreto */}
+          <div className="hidden sm:flex items-center gap-3">
             <Link
               href="/registro-terapeuta"
-              className="px-3.5 py-2 text-xs font-medium text-[#5C524A] hover:text-[#27221F] bg-[#F3ECE2]/70 hover:bg-[#F3ECE2] border border-[#E7DECE] rounded-full transition-all"
+              className="px-3 py-1.5 text-xs text-[#5C524A] hover:text-[#27221F] transition-colors"
             >
-              Soy Constelador
+              Soy facilitador
             </Link>
 
-            <button
-              onClick={onBookClick}
-              type="button"
-              className="px-5 py-2.5 text-xs sm:text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-[0.98]"
-            >
-              Reservar sesión
-            </button>
+            {onBookClick ? (
+              <button
+                onClick={onBookClick}
+                type="button"
+                className="px-5 py-2.5 text-xs sm:text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-[0.98]"
+              >
+                {primaryCtaLabel}
+              </button>
+            ) : (
+              <Link
+                href="/#servicios"
+                className="px-5 py-2.5 text-xs sm:text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-[0.98]"
+              >
+                {primaryCtaLabel}
+              </Link>
+            )}
           </div>
 
           {/* Botón Menú Móvil */}
           <div className="flex sm:hidden items-center gap-2">
-            <button
-              onClick={onBookClick}
-              type="button"
-              className="px-3.5 py-1.5 text-xs font-medium text-white bg-terracotta-500 rounded-full shadow-sm"
-            >
-              Reservar
-            </button>
+            {onBookClick ? (
+              <button
+                onClick={onBookClick}
+                type="button"
+                className="px-3.5 py-1.5 text-xs font-medium text-white bg-terracotta-500 rounded-full shadow-sm"
+              >
+                {CONFIG.PRICING_ENABLED ? "Reservar" : "Consultar"}
+              </button>
+            ) : (
+              <Link
+                href="/#servicios"
+                className="px-3.5 py-1.5 text-xs font-medium text-white bg-terracotta-500 rounded-full shadow-sm"
+              >
+                {CONFIG.PRICING_ENABLED ? "Reservar" : "Consultar"}
+              </Link>
+            )}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -148,76 +155,77 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
           </div>
 
         </div>
-      </div>
 
-      {/* Menú Móvil Desplegable */}
-      {mobileMenuOpen && (
-        <div className="sm:hidden bg-[#FAF8F5] border-b border-[#E7DECE] px-4 pt-3 pb-6 space-y-3 animate-fadeIn">
-          <a
-            href="#directorio"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-base font-medium text-[#5C524A] hover:text-[#27221F] rounded-lg hover:bg-[#F3ECE2]/50"
-          >
-            Directorio de Facilitadores
-          </a>
-          <a
-            href="#filosofia"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-base font-medium text-[#5C524A] hover:text-[#27221F] rounded-lg hover:bg-[#F3ECE2]/50"
-          >
-            Cómo funciona
-          </a>
-          <a
-            href="#servicios"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-base font-medium text-[#5C524A] hover:text-[#27221F] rounded-lg hover:bg-[#F3ECE2]/50"
-          >
-            Servicios y Valores
-          </a>
-          <a
-            href="#comunidad"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-base font-medium text-[#5C524A] hover:text-[#27221F] rounded-lg hover:bg-[#F3ECE2]/50"
-          >
-            Comunidad de Consteladores
-          </a>
-          <a
-            href="#quienes-somos"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 text-base font-medium text-[#5C524A] hover:text-[#27221F] rounded-lg hover:bg-[#F3ECE2]/50"
-          >
-            Quiénes somos
-          </a>
-
-          <div className="pt-3 border-t border-[#E7DECE]/60 flex flex-col gap-2">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenTriage();
-              }}
-              className="text-center py-2.5 px-4 text-xs font-semibold text-terracotta-700 bg-terracotta-100 rounded-full"
-            >
-              ✦ Test Orientador Sistémico (30s)
-            </button>
-            <Link
-              href="/registro-terapeuta"
+        {/* Menú Desplegable Móvil */}
+        {mobileMenuOpen && (
+          <div className="sm:hidden border-t border-[#E7DECE] py-4 space-y-3 animate-fadeIn">
+            <a
+              href="#como-funciona"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-center py-2.5 px-4 text-xs font-medium text-[#5C524A] bg-[#F3ECE2] rounded-full"
+              className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
             >
-              Soy Constelador (Postulaciones)
+              Cómo funciona
+            </a>
+            <a
+              href="#servicios"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
+            >
+              Servicios
+            </a>
+            <a
+              href="#facilitadores"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
+            >
+              Facilitadores
+            </a>
+            <Link
+              href="/practica"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
+            >
+              Practica con nosotros
             </Link>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onBookClick();
-              }}
-              className="text-center py-2.5 px-4 text-xs font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full"
+            <Link
+              href="/criterios"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
             >
-              Reservar sesión con el 20%
-            </button>
+              Criterios de acreditación
+            </Link>
+            <div className="pt-2 border-t border-[#E7DECE] flex flex-col gap-2">
+              <Link
+                href="/registro-terapeuta"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-xs text-[#5C524A] py-1"
+              >
+                Soy facilitador
+              </Link>
+              {onBookClick ? (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onBookClick();
+                  }}
+                  className="w-full py-2.5 text-xs font-medium text-white bg-terracotta-500 rounded-full"
+                >
+                  {primaryCtaLabel}
+                </button>
+              ) : (
+                <Link
+                  href="/#servicios"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full block text-center py-2.5 text-xs font-medium text-white bg-terracotta-500 rounded-full"
+                >
+                  {primaryCtaLabel}
+                </Link>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+      </div>
     </header>
   );
 }

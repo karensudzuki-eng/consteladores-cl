@@ -398,7 +398,7 @@ export async function getApprovedTherapists(): Promise<FacilitatorProfile[]> {
 
     return data.map((item: any) => {
       const profile = Array.isArray(item.profiles) ? item.profiles[0] : item.profiles;
-      const fullName = profile?.full_name || "Facilitador Certificado";
+      const fullName = profile?.full_name || "Facilitador Acreditado";
       const price = Number(item.price_clp) || 45000;
       const deposit = Math.round(price * 0.2);
       const balance = price - deposit;
@@ -428,6 +428,7 @@ export async function getApprovedTherapists(): Promise<FacilitatorProfile[]> {
         name: fullName,
         headline: item.headline || "Facilitador en Constelaciones Familiares",
         schoolAndYear: item.approach || "Escuela formativa acreditada",
+        status: (item.status === "supervised" ? "SUPERVISADO" : "ACREDITADO") as any,
         specialties,
         modalities,
         city: item.location || "Online en todo Chile",
@@ -439,7 +440,7 @@ export async function getApprovedTherapists(): Promise<FacilitatorProfile[]> {
         completedSessions: 0,
         rating: 5.0,
         reviewCount: 0,
-        bio: item.bio || "Facilitador certificado en constelaciones familiares sistémicas.",
+        bio: item.bio || "Facilitador acreditado en constelaciones familiares sistémicas.",
         approachDetails: item.approach || "Acompañamiento sistémico y fenomenológico.",
         nextAvailableDate: "Por coordinar en agenda",
         isValidated: true,

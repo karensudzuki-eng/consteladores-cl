@@ -37,7 +37,7 @@ export async function bookAndConfirmAppointment(
       };
     }
 
-    let therapistName = "Facilitador Certificado de la Red";
+    let therapistName = "Facilitador Acreditado de la Red";
     let therapistEmail = "contacto@consteladores.cl";
     let durationMinutes = 75;
     const appointmentDate = new Date(input.scheduledAt);
@@ -74,7 +74,7 @@ export async function bookAndConfirmAppointment(
     }
 
     // Si no se obtuvo de Supabase, asegurar los datos desde el directorio local
-    if (!therapistName || therapistName === "Facilitador Certificado de la Red") {
+    if (!therapistName || therapistName === "Facilitador Acreditado de la Red") {
       const fallbackTherapist = directoryFacilitators.find((f) => f.id === input.therapistId) || directoryFacilitators[0];
       if (fallbackTherapist) {
         therapistName = fallbackTherapist.name;

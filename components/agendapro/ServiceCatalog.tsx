@@ -21,7 +21,7 @@ export const servicesData: ServiceItem[] = [
     durationMinutes: 75,
     priceClp: 45000,
     description:
-      "Encuentro uno a uno por Google Meet. Exploramos con respeto tu motivo de consulta (relación con madre/padre, duelos, bloqueos personales o síntomas) mediante figuras y sintonía sistémica profunda.",
+      "Encuentro uno a uno por Google Meet. Exploramos con respeto tu motivo de consulta (relación con madre/padre, duelos o dinámicas relacionales) mediante figuras y sintonía sistémica profunda.",
     modality: "Online vía Google Meet • Todo Chile",
     popular: true,
   },

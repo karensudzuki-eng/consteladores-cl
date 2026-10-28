@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { FacilitatorProfile, specialtiesList } from "@/lib/data/directory";
+import { CONFIG } from "@/lib/config";
 
 interface SystemicTriageModalProps {
   isOpen: boolean;
@@ -27,7 +28,7 @@ export function SystemicTriageModal({
     if (step < 3) {
       setStep(step + 1);
     } else {
-      setStep(4); // Mostrar recomendación
+      setStep(4);
     }
   };
 
@@ -35,7 +36,6 @@ export function SystemicTriageModal({
     setStep(1);
   };
 
-  // Encontrar el facilitador que mejor calce en los datos reales de la base de datos
   const recommendedFacilitator =
     facilitators.find((f) => f.specialties.includes(selectedSpecialty)) ||
     (facilitators.length > 0 ? facilitators[0] : null);
@@ -50,7 +50,7 @@ export function SystemicTriageModal({
         <button
           onClick={onClose}
           type="button"
-          className="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#F3ECE2] text-[#5C524A] hover:text-[#27221F] flex items-center justify-center transition-colors"
+          className="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#F3ECE2] text-[#5C524A] hover:text-[#27221F] flex items-center justify-center transition-colors cursor-pointer"
           aria-label="Cerrar orientador"
         >
           ✕
@@ -72,18 +72,18 @@ export function SystemicTriageModal({
           </div>
         )}
 
-        {/* PASO 1: Identificación del Dolor Emocional / Área */}
+        {/* PASO 1: Identificación del Área a Mirar */}
         {step === 1 && (
           <div>
             <div className="text-center mb-6">
               <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-600 mb-1 block">
-                Neuromarketing Sistémico · Paso 1
+                Test Orientador · Paso 1
               </span>
               <h3 className="text-2xl font-serif font-semibold text-[#27221F]">
-                ¿Qué área de tu vida siente hoy el mayor peso o repetición?
+                ¿Qué área de tu vida sientes que requiere mayor orden o comprensión hoy?
               </h3>
               <p className="text-xs sm:text-sm text-[#5C524A] mt-2">
-                El síntoma o bloqueo es la puerta de entrada para mirar el orden de tu sistema familiar.
+                La situación que te inquieta es el punto de partida para mirar el orden de tu sistema familiar.
               </p>
             </div>
 
@@ -99,15 +99,10 @@ export function SystemicTriageModal({
                       : "bg-[#FCFAF7] border-[#E7DECE] hover:bg-[#F3ECE2]/60"
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-serif font-semibold text-base text-[#27221F]">
-                      {item.name}
-                    </span>
-                    {selectedSpecialty === item.id && (
-                      <span className="text-terracotta-600 font-bold text-sm">✓</span>
-                    )}
-                  </div>
-                  <p className="text-xs text-[#5C524A] mt-1 font-sans">
+                  <span className="font-serif font-semibold text-sm sm:text-base text-[#27221F] mb-1">
+                    {item.name}
+                  </span>
+                  <p className="text-xs text-[#5C524A] leading-relaxed">
                     {item.painPoint}
                   </p>
                 </button>
@@ -115,27 +110,27 @@ export function SystemicTriageModal({
             </div>
 
             <button
-              onClick={handleNext}
               type="button"
-              className="w-full py-3.5 text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md transition-all active:scale-[0.99]"
+              onClick={handleNext}
+              className="w-full py-3.5 text-sm font-semibold text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md transition-all cursor-pointer"
             >
-              Continuar
+              Continuar al siguiente paso
             </button>
           </div>
         )}
 
-        {/* PASO 2: Nivel de Intimidad y Formato Preferido */}
+        {/* PASO 2: Formato Preferido */}
         {step === 2 && (
           <div>
             <div className="text-center mb-6">
               <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-600 mb-1 block">
-                Contención Emocional · Paso 2
+                Modalidad · Paso 2
               </span>
               <h3 className="text-2xl font-serif font-semibold text-[#27221F]">
-                ¿Qué formato te brinda mayor seguridad y tranquilidad?
+                ¿Qué formato de acompañamiento resuena mejor contigo?
               </h3>
               <p className="text-xs sm:text-sm text-[#5C524A] mt-2">
-                Cada persona tiene su propio ritmo para exponer y mirar su historia personal.
+                Ambos formatos respetan los mismos órdenes sistémicos con máxima contención.
               </p>
             </div>
 
@@ -143,21 +138,18 @@ export function SystemicTriageModal({
               {[
                 {
                   id: "individual_online",
-                  title: "Sesión Individual 100% Online (Google Meet)",
-                  desc: "Máxima intimidad desde tu casa. El facilitador utiliza figuras sistémicas y frases sanadoras en privado.",
-                  badge: "Recomendado para primerizos",
+                  title: "Sesión Individual Online (Google Meet)",
+                  desc: "Máxima intimidad, figuras sistémicas y visualizaciones guiadas desde tu hogar.",
                 },
                 {
                   id: "individual_presencial",
-                  title: "Sesión Individual Presencial (Consulta privada)",
-                  desc: "Encuentro personal cara a cara en consulta terapéutica con figuras y anclajes en el suelo.",
-                  badge: "Santiago / Viña del Mar",
+                  title: "Sesión Individual Presencial (Consulta)",
+                  desc: "Trabajo en sala en Santiago, Viña del Mar o Concepción con anclajes espaciales.",
                 },
                 {
                   id: "taller_grupal",
-                  title: "Taller Vivencial Grupal con Representantes",
-                  desc: "Experiencia de campo profundo donde otras personas del grupo prestan su cuerpo para representar tu linaje.",
-                  badge: "Fuerza fenomenológica grupal",
+                  title: "Taller Vivencial con Representantes",
+                  desc: "Trabajo grupal con otras personas que representan los elementos de tu sistema.",
                 },
               ].map((fmt) => (
                 <button
@@ -166,19 +158,14 @@ export function SystemicTriageModal({
                   onClick={() => setSelectedFormat(fmt.id)}
                   className={`w-full p-4 rounded-2xl border text-left transition-all ${
                     selectedFormat === fmt.id
-                      ? "bg-[#FEF9EE] border-ochre-400 ring-2 ring-ochre-200"
+                      ? "bg-[#FDF7F4] border-terracotta-400 ring-2 ring-terracotta-200"
                       : "bg-[#FCFAF7] border-[#E7DECE] hover:bg-[#F3ECE2]/60"
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-serif font-semibold text-base text-[#27221F]">
-                      {fmt.title}
-                    </span>
-                    <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-[#F3ECE2] text-[#5C524A]">
-                      {fmt.badge}
-                    </span>
-                  </div>
-                  <p className="text-xs text-[#5C524A] leading-relaxed">
+                  <span className="font-serif font-semibold text-base text-[#27221F] block mb-1">
+                    {fmt.title}
+                  </span>
+                  <p className="text-xs text-[#5C524A]">
                     {fmt.desc}
                   </p>
                 </button>
@@ -196,7 +183,7 @@ export function SystemicTriageModal({
               <button
                 type="button"
                 onClick={handleNext}
-                className="w-2/3 py-3.5 text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md"
+                className="w-2/3 py-3.5 text-sm font-semibold text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md"
               >
                 Continuar
               </button>
@@ -204,7 +191,7 @@ export function SystemicTriageModal({
           </div>
         )}
 
-        {/* PASO 3: Ubicación y Disponibilidad */}
+        {/* PASO 3: Ubicación */}
         {step === 3 && (
           <div>
             <div className="text-center mb-6">
@@ -215,7 +202,7 @@ export function SystemicTriageModal({
                 ¿Dónde te gustaría realizar tu proceso?
               </h3>
               <p className="text-xs sm:text-sm text-[#5C524A] mt-2">
-                Conectamos con consteladores validados tanto online para todo Chile como presencial.
+                Atención online para todo Chile y presencial en ciudades principales.
               </p>
             </div>
 
@@ -223,18 +210,18 @@ export function SystemicTriageModal({
               {[
                 {
                   id: "online",
-                  title: "100% Online (Desde cualquier lugar de Chile o el mundo)",
-                  desc: "Horarios flexibles, sin traslados. Sesiones confidenciales por Google Meet.",
+                  title: "Online (Todo Chile y extranjero)",
+                  desc: "Sin traslados, a través de Google Meet en enlace privado.",
                 },
                 {
                   id: "santiago",
-                  title: "Presencial en Santiago (Providencia, Las Condes o Vitacura)",
-                  desc: "Consultorios accesibles con metro y estacionamiento.",
+                  title: "Presencial en Santiago",
+                  desc: "Consulta privada en la Región Metropolitana.",
                 },
                 {
                   id: "regiones",
-                  title: "Presencial en Regiones (Viña del Mar / Concepción)",
-                  desc: "Facilitadores acreditados con atención clínica en regiones.",
+                  title: "Presencial en Viña del Mar o Concepción",
+                  desc: "Facilitadores acreditados con atención en regiones.",
                 },
               ].map((loc) => (
                 <button
@@ -268,43 +255,38 @@ export function SystemicTriageModal({
               <button
                 type="button"
                 onClick={handleNext}
-                className="w-2/3 py-3.5 text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md"
+                className="w-2/3 py-3.5 text-sm font-semibold text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md"
               >
-                Ver Recomendación Sistémica
+                Ver Orientación
               </button>
             </div>
           </div>
         )}
 
-        {/* PASO 4: RECOMENDACIÓN SISTÉMICA PERSONALIZADA (BOFU) */}
+        {/* PASO 4: RECOMENDACIÓN */}
         {step === 4 && (
           <div className="text-center py-2 animate-fadeIn">
-            <div className="w-14 h-14 rounded-full bg-[#FEF9EE] border-2 border-ochre-400 text-ochre-600 flex items-center justify-center mx-auto mb-4 text-2xl font-serif">
-              ✦
-            </div>
-
             <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-600 mb-1 block">
-              Diagnóstico Sistémico Recomendado
+              Orientación Sistémica Sugerida
             </span>
             <h3 className="text-2xl sm:text-3xl font-serif font-semibold text-[#27221F] mb-2">
-              Orientación para: {specialtyInfo.name}
+              Tema sugerido: {specialtyInfo.name}
             </h3>
             
             <p className="text-xs sm:text-sm text-[#5C524A] max-w-md mx-auto mb-6 leading-relaxed">
-              Basado en tus respuestas, el abordaje más indicado para tu motivo es una{" "}
+              Basado en tus respuestas, el acompañamiento recomendado es una{" "}
               <strong className="text-[#27221F]">
                 {selectedFormat === "taller_grupal" ? "constelación en taller vivencial" : "sesión individual online o presencial"}
               </strong>{" "}
-              enfocada en mirar el origen inconsciente y restablecer el equilibrio en tu sistema.
+              enfocada en reconocer las dinámicas de origen y dar lugar a lo no dicho.
             </p>
 
-            {/* Si hay un facilitador real recomendado de la BD */}
             {recommendedFacilitator ? (
               <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-2xl p-5 mb-6 text-left shadow-sm">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <span className="text-[11px] font-semibold text-ochre-600 uppercase tracking-wider block">
-                      Facilitador(a) Recomendado(a)
+                    <span className="text-[11px] font-semibold text-sage-800 uppercase tracking-wider block">
+                      Facilitadora Acreditada
                     </span>
                     <h4 className="text-xl font-serif font-semibold text-[#27221F]">
                       {recommendedFacilitator.name}
@@ -314,13 +296,18 @@ export function SystemicTriageModal({
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs text-[#8A7E73] block">Valor sesión:</span>
-                    <span className="text-lg font-serif font-bold text-[#27221F]">
-                      ${recommendedFacilitator.totalPriceClp.toLocaleString("es-CL")}
-                    </span>
-                    <span className="text-[10px] text-terracotta-600 block">
-                      Abono 20%: ${recommendedFacilitator.depositPriceClp.toLocaleString("es-CL")}
-                    </span>
+                    {CONFIG.PRICING_ENABLED ? (
+                      <>
+                        <span className="text-xs text-[#8A7E73] block">Valor sesión:</span>
+                        <span className="text-lg font-serif font-bold text-[#27221F]">
+                          ${recommendedFacilitator.totalPriceClp.toLocaleString("es-CL")}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-xs text-[#8A7E73] block">
+                        Valor: por definir
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -329,22 +316,21 @@ export function SystemicTriageModal({
                 </p>
 
                 <div className="flex items-center justify-between text-xs text-[#8A7E73] pt-2 border-t border-[#E7DECE]/60">
-                  <span>📍 {recommendedFacilitator.locationDetails}</span>
-                  <span>Verificado ✓</span>
+                  <span>Modalidad: {recommendedFacilitator.locationDetails}</span>
+                  <span className="font-semibold text-sage-800">Acreditada Icalma</span>
                 </div>
               </div>
             ) : (
               <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-5 mb-6 text-center text-xs text-[#5C524A]">
                 <p className="mb-2 font-medium text-[#27221F]">
-                  Estamos asignando facilitadores certificados en tiempo real para este tema.
+                  Estamos coordinando facilitadores acreditados para este tema.
                 </p>
                 <p className="text-[#8A7E73]">
-                  Puedes solicitar tu sesión y nuestro equipo te conectará con el constelador idóneo para tu caso.
+                  Puedes consultar disponibilidad y nuestro equipo te informará los horarios vigentes.
                 </p>
               </div>
             )}
 
-            {/* Acciones */}
             <div className="space-y-3">
               <button
                 onClick={() => {
@@ -352,17 +338,17 @@ export function SystemicTriageModal({
                   onSelectFacilitator(recommendedFacilitator || undefined);
                 }}
                 type="button"
-                className="w-full py-3.5 px-6 text-sm font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md hover:shadow-lg transition-all btn-breathe"
+                className="w-full py-3.5 px-6 text-sm font-semibold text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md hover:shadow-lg transition-all cursor-pointer"
               >
-                {recommendedFacilitator
-                  ? `Agendar sesión con ${recommendedFacilitator.name}`
-                  : "Solicitar sesión y evaluación de mi caso"}
+                {CONFIG.PRICING_ENABLED
+                  ? (recommendedFacilitator ? `Reservar sesión con ${recommendedFacilitator.name}` : "Solicitar sesión")
+                  : "Consultar disponibilidad de sesión"}
               </button>
               
               <button
                 onClick={handleReset}
                 type="button"
-                className="text-xs text-[#8A7E73] hover:text-[#27221F] underline block mx-auto"
+                className="text-xs text-[#8A7E73] hover:text-[#27221F] underline block mx-auto cursor-pointer"
               >
                 Volver a realizar el test
               </button>

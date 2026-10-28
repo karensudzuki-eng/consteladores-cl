@@ -8,6 +8,7 @@ import {
   upcomingWorkshopsList,
   SystemicWorkshop,
 } from "@/lib/data/directory";
+import { CONFIG } from "@/lib/config";
 
 interface InteractiveDirectoryProps {
   facilitators: FacilitatorProfile[];
@@ -32,24 +33,23 @@ export function InteractiveDirectory({
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Filtrado reactivo en tiempo real sobre los datos reales de la base de datos
+  const isPricingEnabled = CONFIG.PRICING_ENABLED;
+  const selectButtonLabel = isPricingEnabled ? "Reservar cita" : "Consultar disponibilidad";
+
+  // Filtrado reactivo en tiempo real
   const filteredFacilitators = useMemo(() => {
     return facilitators.filter((f) => {
-      // Filtro especialidad
       if (selectedSpecialty !== "all" && !f.specialties.includes(selectedSpecialty)) {
         return false;
       }
-      // Filtro modalidad
       if (selectedModality !== "all") {
         if (selectedModality === "online" && !f.modalities.includes("online")) return false;
         if (selectedModality === "presencial" && !f.modalities.includes("presencial")) return false;
         if (selectedModality === "taller_grupal" && !f.modalities.includes("taller_grupal")) return false;
       }
-      // Filtro ciudad
       if (selectedCity !== "all") {
         if (!f.city.toLowerCase().includes(selectedCity.toLowerCase())) return false;
       }
-      // Búsqueda por texto
       if (searchQuery.trim() !== "") {
         const q = searchQuery.toLowerCase();
         const matchesName = f.name.toLowerCase().includes(q);
@@ -70,239 +70,194 @@ export function InteractiveDirectory({
   };
 
   return (
-    <section id="directorio" className="py-24 sm:py-32 bg-[#F3E9DC] border-t border-[#D9664A]/30 relative">
+    <section id="facilitadores" className="py-24 sm:py-32 bg-[#F3E9DC] border-t border-[#D9664A]/30 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Cabecera del Marketplace Estrictamente Centrada */}
+        {/* Cabecera del Directorio Centrada */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-[#E8C58A]/35 border border-[#D5C8B4] text-[#4A423D] text-xs font-semibold uppercase tracking-wider mb-4 mx-auto shadow-sm">
-            Ecosistema y Directorio Nacional
+          <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-[#E8C58A]/35 border border-[#D5C8B4] text-[#4A423D] text-xs font-semibold uppercase tracking-wider mb-4 mx-auto shadow-sm">
+            Ecosistema y Directorio
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-[#27221F] mb-4">
-            Facilitadores Certificados en Chile
+            Facilitadores Acreditados en Chile
           </h2>
           <p className="text-base sm:text-lg text-[#5C524A] leading-relaxed">
-            Directorio conectado en tiempo real con nuestra base de datos de facilitadores acreditados.
-            Cada constelador visible ha superado la validación manual de diploma y compromiso ético.
+            Cada profesional visible cuenta con verificación manual de formación y compromiso ético respaldado por Icalma Constelaciones.
           </p>
 
-          {/* Banner de Orientador Rápido / Triage */}
-          <div className="mt-6 inline-flex flex-col sm:flex-row items-center gap-3 bg-[#FAF8F5] border border-terracotta-200/80 rounded-2xl p-3 sm:px-6 shadow-sm">
+          {/* Banner de Orientador Rápido sin emojis */}
+          <div className="mt-6 inline-flex flex-col sm:flex-row items-center gap-3 bg-[#FCFAF7] border border-terracotta-200/80 rounded-2xl p-3 sm:px-6 shadow-sm">
             <span className="text-xs text-[#5C524A]">
-              💡 ¿No sabes cuál elegir o qué formato necesitas?
+              ¿Tienes dudas sobre qué facilitador o modalidad necesitas?
             </span>
             <button
               onClick={onOpenTriage}
               type="button"
-              className="text-xs font-semibold text-terracotta-600 hover:text-terracotta-700 underline"
+              className="text-xs font-semibold text-terracotta-600 hover:text-terracotta-700 underline cursor-pointer"
             >
-              Hacer el test orientador en 30 segundos →
+              Hacer test orientador en 30 segundos →
             </button>
           </div>
         </div>
 
-        {/* Pestañas Principales: Facilitadores vs Talleres Grupales */}
-        <div className="flex justify-center mb-8">
-          <div className="inline-flex p-1.5 rounded-full bg-[#F3ECE2] border border-[#E7DECE]">
-            <button
-              type="button"
-              onClick={() => setActiveTab("facilitadores")}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
-                activeTab === "facilitadores"
-                  ? "bg-terracotta-500 text-white shadow-sm"
-                  : "text-[#5C524A] hover:text-[#27221F]"
-              }`}
-            >
-              Facilitadores Acreditados ({facilitators.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("talleres")}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
-                activeTab === "talleres"
-                  ? "bg-terracotta-500 text-white shadow-sm"
-                  : "text-[#5C524A] hover:text-[#27221F]"
-              }`}
-            >
-              Talleres Vivenciales ({upcomingWorkshopsList.length})
-            </button>
-          </div>
-        </div>
-
-        {/* Estado de Carga (Skeleton) */}
-        {isLoading && activeTab === "facilitadores" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-6 h-80 flex flex-col justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-[#E7DECE]" />
-                  <div className="space-y-2 flex-1">
-                    <div className="h-4 bg-[#E7DECE] rounded w-3/4" />
-                    <div className="h-3 bg-[#E7DECE] rounded w-1/2" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="h-3 bg-[#E7DECE] rounded w-full" />
-                  <div className="h-3 bg-[#E7DECE] rounded w-5/6" />
-                </div>
-                <div className="h-10 bg-[#E7DECE] rounded-full w-full" />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Estado Vacío: Cuando la Base de Datos aún no tiene facilitadores aprobados */}
-        {!isLoading && activeTab === "facilitadores" && facilitators.length === 0 && (
-          <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-8 sm:p-14 text-center max-w-2xl mx-auto shadow-sm">
-            <div className="w-16 h-16 rounded-full bg-[#FEF9EE] border-2 border-ochre-400 text-ochre-600 text-3xl flex items-center justify-center mx-auto mb-4">
-              ⏳
-            </div>
-
-            <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-600 block mb-2">
-              Validación en Curso
+        {/* REGLA: Si hay menos de 3 perfiles verificados, no mostrar listado en home */}
+        {!isLoading && facilitators.length < 3 ? (
+          <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-8 sm:p-14 text-center max-w-2xl mx-auto shadow-sm">
+            <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-600 block mb-3">
+              Directorio en Verificación Continua
             </span>
-            <h3 className="text-2xl sm:text-3xl font-serif font-semibold text-[#27221F] mb-3">
-              Facilitadores en proceso de acreditación
+            <h3 className="text-2xl sm:text-3xl font-serif font-semibold text-[#27221F] mb-4">
+              Estamos sumando perfiles verificados.
             </h3>
             
             <p className="text-sm text-[#5C524A] leading-relaxed mb-8 max-w-lg mx-auto">
-              Actualmente nuestro equipo ético se encuentra revisando las postulaciones y diplomas de consteladores en Chile. A medida que se aprueben en la base de datos, sus perfiles aparecerán automáticamente en este directorio público.
+              Solo publicamos facilitadores que han acreditado fehacientemente su formación y supervisión clínica según nuestros criterios públicos. Si deseas consultar disponibilidad directamente o postular como facilitador, utiliza las siguientes opciones:
             </p>
 
-            <div className="bg-[#FCFAF7] border border-terracotta-200/80 rounded-2xl p-6 mb-6 text-left">
-              <h4 className="font-serif font-semibold text-lg text-[#27221F] mb-1">
-                ¿Te formaste como constelador(a) familiar?
-              </h4>
-              <p className="text-xs text-[#5C524A] leading-relaxed mb-4">
-                Sube tu certificado y antecedentes formativos para unirte a la red y comenzar a recibir consultantes validados con el modelo de reserva del 20%.
-              </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                onClick={() => onSelectFacilitator(facilitators[0] || null as any)}
+                type="button"
+                className="w-full sm:w-auto px-6 py-3 rounded-full text-xs sm:text-sm font-semibold text-white bg-terracotta-500 hover:bg-terracotta-600 transition-all shadow-sm"
+              >
+                Consultar disponibilidad de sesión
+              </button>
+              
+              <Link
+                href="/criterios"
+                className="w-full sm:w-auto px-6 py-3 rounded-full text-xs sm:text-sm font-medium text-[#5C524A] bg-[#F3ECE2] hover:bg-[#E7DECE] border border-[#E7DECE] transition-all"
+              >
+                Ver criterios de acreditación
+              </Link>
+
               <Link
                 href="/registro-terapeuta"
-                className="inline-flex items-center justify-center px-6 py-3 text-xs font-semibold text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all"
+                className="w-full sm:w-auto px-6 py-3 rounded-full text-xs sm:text-sm font-medium text-terracotta-700 bg-terracotta-50 hover:bg-terracotta-100 border border-terracotta-200 transition-all"
               >
-                Postular como facilitador verificado →
+                Soy facilitador: postular
               </Link>
             </div>
-
-            <p className="text-xs text-[#8A7E73]">
-              ¿Tienes dudas o buscas una sesión prioritaria? Escríbenos directamente a través del botón de WhatsApp.
-            </p>
           </div>
-        )}
-
-        {/* Barra de Filtros Reactivos para Facilitadores cuando hay registros */}
-        {!isLoading && activeTab === "facilitadores" && facilitators.length > 0 && (
-          <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-5 sm:p-6 mb-10 shadow-sm">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-              
-              {/* Filtro Especialidad / Dolor */}
-              <div>
-                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#8A7E73] mb-1">
-                  Tema o Dolor Sistémico
-                </label>
-                <select
-                  value={selectedSpecialty}
-                  onChange={(e) => setSelectedSpecialty(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#FCFAF7] border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
-                >
-                  <option value="all">Todas las especialidades</option>
-                  {specialtiesList.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.shortLabel}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Filtro Modalidad */}
-              <div>
-                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#8A7E73] mb-1">
-                  Modalidad de Atención
-                </label>
-                <select
-                  value={selectedModality}
-                  onChange={(e) => setSelectedModality(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#FCFAF7] border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
-                >
-                  <option value="all">Todas las modalidades</option>
-                  <option value="online">💻 Online (Google Meet)</option>
-                  <option value="presencial">📍 Presencial (Consulta)</option>
-                  <option value="taller_grupal">👥 Talleres Vivenciales</option>
-                </select>
-              </div>
-
-              {/* Filtro Ciudad */}
-              <div>
-                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#8A7E73] mb-1">
-                  Ciudad o Región
-                </label>
-                <select
-                  value={selectedCity}
-                  onChange={(e) => setSelectedCity(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#FCFAF7] border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
-                >
-                  <option value="all">Todo Chile & Online</option>
-                  <option value="santiago">Santiago</option>
-                  <option value="viña">Viña del Mar / Valparaíso</option>
-                  <option value="concepción">Concepción</option>
-                  <option value="online">Online</option>
-                </select>
-              </div>
-
-              {/* Búsqueda Libre */}
-              <div>
-                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#8A7E73] mb-1">
-                  Buscar por nombre o palabra clave
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ej. nombre, linaje, ciudad..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#FCFAF7] border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
-                />
-              </div>
-
-            </div>
-
-            {/* Micro-resumen de resultados y botón reset */}
-            <div className="flex items-center justify-between text-xs text-[#8A7E73] pt-3 border-t border-[#E7DECE]/60">
-              <span>
-                Mostrando <strong>{filteredFacilitators.length}</strong> de {facilitators.length} facilitadores certificados
-              </span>
-              {(selectedSpecialty !== "all" || selectedModality !== "all" || selectedCity !== "all" || searchQuery !== "") && (
-                <button
-                  onClick={resetFilters}
-                  type="button"
-                  className="text-terracotta-600 hover:text-terracotta-700 underline"
-                >
-                  Limpiar filtros
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* TAB 1: GRILLA DE FACILITADORES DINÁMICOS */}
-        {!isLoading && activeTab === "facilitadores" && facilitators.length > 0 && (
+        ) : (
+          /* VISTA COMPLETA CUANDO HAY 3 O MÁS PERFILES */
           <div>
-            {filteredFacilitators.length === 0 ? (
-              <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-12 text-center max-w-xl mx-auto">
-                <span className="text-3xl block mb-2">🔍</span>
-                <h4 className="font-serif font-semibold text-xl text-[#27221F] mb-2">
-                  No hay facilitadores que coincidan con estos filtros
-                </h4>
-                <p className="text-xs text-[#5C524A] mb-4">
-                  Prueba restableciendo los filtros para ver todos los consteladores activos.
-                </p>
+            {/* Pestañas Principales sin emojis */}
+            <div className="flex justify-center mb-8">
+              <div className="inline-flex p-1.5 rounded-full bg-[#F3ECE2] border border-[#E7DECE]">
                 <button
-                  onClick={resetFilters}
-                  className="px-5 py-2 text-xs font-medium text-white bg-terracotta-500 rounded-full"
+                  type="button"
+                  onClick={() => setActiveTab("facilitadores")}
+                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                    activeTab === "facilitadores"
+                      ? "bg-terracotta-500 text-white shadow-sm"
+                      : "text-[#5C524A] hover:text-[#27221F]"
+                  }`}
                 >
-                  Restablecer filtros
+                  Facilitadores Acreditados ({facilitators.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("talleres")}
+                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                    activeTab === "talleres"
+                      ? "bg-terracotta-500 text-white shadow-sm"
+                      : "text-[#5C524A] hover:text-[#27221F]"
+                  }`}
+                >
+                  Talleres Vivenciales ({upcomingWorkshopsList.length})
                 </button>
               </div>
-            ) : (
+            </div>
+
+            {/* Barra de Filtros */}
+            {activeTab === "facilitadores" && (
+              <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-5 sm:p-6 mb-10 shadow-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#8A7E73] mb-1">
+                      Área o Tema
+                    </label>
+                    <select
+                      value={selectedSpecialty}
+                      onChange={(e) => setSelectedSpecialty(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-[#FCFAF7] border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                    >
+                      <option value="all">Todas las áreas</option>
+                      {specialtiesList.map((sp) => (
+                        <option key={sp.id} value={sp.id}>
+                          {sp.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#8A7E73] mb-1">
+                      Modalidad
+                    </label>
+                    <select
+                      value={selectedModality}
+                      onChange={(e) => setSelectedModality(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-[#FCFAF7] border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                    >
+                      <option value="all">Todas las modalidades</option>
+                      <option value="online">Online (Google Meet)</option>
+                      <option value="presencial">Presencial (Consulta)</option>
+                      <option value="taller_grupal">Talleres Vivenciales</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#8A7E73] mb-1">
+                      Ciudad o Región
+                    </label>
+                    <select
+                      value={selectedCity}
+                      onChange={(e) => setSelectedCity(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-[#FCFAF7] border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                    >
+                      <option value="all">Todo Chile y Online</option>
+                      <option value="santiago">Santiago</option>
+                      <option value="viña">Viña del Mar / Valparaíso</option>
+                      <option value="concepción">Concepción</option>
+                      <option value="online">Online</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#8A7E73] mb-1">
+                      Búsqueda
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Nombre, linaje o ciudad..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-[#FCFAF7] border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                    >
+                    </input>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-[#8A7E73] pt-3 mt-3 border-t border-[#E7DECE]/60">
+                  <span>
+                    Mostrando <strong>{filteredFacilitators.length}</strong> de {facilitators.length} facilitadores acreditados
+                  </span>
+                  {(selectedSpecialty !== "all" || selectedModality !== "all" || selectedCity !== "all" || searchQuery !== "") && (
+                    <button
+                      onClick={resetFilters}
+                      type="button"
+                      className="text-terracotta-600 hover:text-terracotta-700 underline cursor-pointer"
+                    >
+                      Limpiar filtros
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Grilla de Facilitadores */}
+            {activeTab === "facilitadores" && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                 {filteredFacilitators.map((facilitator) => {
                   const initials = facilitator.name
@@ -317,28 +272,23 @@ export function InteractiveDirectory({
                       className="bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-sm card-hover-elevate"
                     >
                       <div>
-                        {/* Cabecera de la tarjeta con Monograma y Badge */}
                         <div className="flex items-start justify-between mb-4">
                           <div className="relative">
-                            <div className="w-16 h-16 rounded-full bg-[#F3ECE2] border-2 border-terracotta-200 flex items-center justify-center text-terracotta-700 font-serif text-xl font-bold shadow-inner">
+                            <div className="w-16 h-16 rounded-full bg-[#F3ECE2] border-2 border-terracotta-200 flex items-center justify-center text-terracotta-700 font-serif text-xl font-bold">
                               {initials}
                             </div>
-                            <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-ochre-500 text-white flex items-center justify-center text-[10px] shadow" title="Certificación Acreditada">
-                              ✓
-                            </span>
                           </div>
 
                           <div className="text-right">
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-ochre-100 text-ochre-800 text-[11px] font-semibold">
-                              Certificado ✓
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sage-100 text-sage-800 text-[11px] font-semibold">
+                              Acreditado
                             </span>
                             <span className="text-[10px] text-[#8A7E73] block mt-1">
-                              {facilitator.experienceYears} años de experiencia
+                              {facilitator.experienceYears} años de práctica
                             </span>
                           </div>
                         </div>
 
-                        {/* Nombre y Especialidad */}
                         <h3 className="text-2xl font-serif font-semibold text-[#27221F] mb-1">
                           {facilitator.name}
                         </h3>
@@ -346,20 +296,17 @@ export function InteractiveDirectory({
                           {facilitator.headline}
                         </p>
 
-                        {/* Escuela y Ubicación */}
-                        <div className="space-y-1.5 text-xs text-[#5C524A] bg-[#FCFAF7] p-3 rounded-2xl border border-[#E7DECE]/70 mb-4">
-                          <p className="text-[#8A7E73] line-clamp-1">🎓 {facilitator.schoolAndYear}</p>
-                          <p className="font-medium text-[#27221F] flex items-center gap-1">
-                            📍 {facilitator.city}
+                        <div className="space-y-1.5 text-xs text-[#5C524A] bg-[#FAF8F5] p-3 rounded-2xl border border-[#E7DECE]/70 mb-4">
+                          <p className="text-[#8A7E73] line-clamp-1">Formación: {facilitator.schoolAndYear}</p>
+                          <p className="font-medium text-[#27221F]">
+                            Modalidad: {facilitator.city}
                           </p>
                         </div>
 
-                        {/* Extracto de Bio */}
                         <p className="text-xs text-[#5C524A] leading-relaxed line-clamp-3 mb-5">
                           {facilitator.bio}
                         </p>
 
-                        {/* Badges de Especialidades */}
                         <div className="flex flex-wrap gap-1.5 mb-5">
                           {facilitator.specialties.map((sp) => {
                             const found = specialtiesList.find((s) => s.id === sp);
@@ -375,145 +322,52 @@ export function InteractiveDirectory({
                         </div>
                       </div>
 
-                      {/* Pie de Tarjeta con Precios y Botones */}
                       <div className="pt-4 border-t border-[#E7DECE]/70">
-                        <div className="flex items-baseline justify-between mb-4">
-                          <div>
-                            <span className="text-[11px] text-[#8A7E73] block">Valor sesión:</span>
-                            <span className="text-lg font-serif font-bold text-[#27221F]">
-                              ${facilitator.totalPriceClp.toLocaleString("es-CL")}
+                        <div className="mb-4 text-center">
+                          {isPricingEnabled ? (
+                            <div className="flex items-baseline justify-between">
+                              <div>
+                                <span className="text-[11px] text-[#8A7E73] block">Valor sesión:</span>
+                                <span className="text-lg font-serif font-bold text-[#27221F]">
+                                  ${facilitator.totalPriceClp.toLocaleString("es-CL")}
+                                </span>
+                              </div>
+                              <div className="text-right">
+                                <span className="text-[11px] text-terracotta-600 font-semibold block">
+                                  Abono 20%:
+                                </span>
+                                <span className="text-base font-bold text-terracotta-700">
+                                  ${facilitator.depositPriceClp.toLocaleString("es-CL")}
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-[#8A7E73] font-medium block">
+                              Valor: por definir. Consulta antes de reservar.
                             </span>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-[11px] text-terracotta-600 font-semibold block">
-                              Abono de reserva (20%):
-                            </span>
-                            <span className="text-base font-bold text-terracotta-700">
-                              ${facilitator.depositPriceClp.toLocaleString("es-CL")}
-                            </span>
-                          </div>
+                          )}
                         </div>
 
                         <div className="grid grid-cols-2 gap-2">
                           <button
                             onClick={() => onOpenDetail(facilitator)}
                             type="button"
-                            className="py-2.5 px-3 text-xs font-medium text-[#5C524A] bg-[#F3ECE2] hover:bg-[#E7DECE] rounded-full transition-colors text-center"
+                            className="py-2.5 px-3 text-xs font-medium text-[#5C524A] bg-[#F3ECE2] hover:bg-[#E7DECE] rounded-full transition-colors text-center cursor-pointer"
                           >
                             Ver Perfil
                           </button>
                           <button
                             onClick={() => onSelectFacilitator(facilitator)}
                             type="button"
-                            className="py-2.5 px-3 text-xs font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all text-center btn-breathe"
+                            className="py-2.5 px-3 text-xs font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all text-center cursor-pointer"
                           >
-                            Reservar cita
+                            {selectButtonLabel}
                           </button>
                         </div>
                       </div>
                     </div>
                   );
                 })}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* TAB 2: TALLERES VIVENCIALES GRUPALES */}
-        {activeTab === "talleres" && (
-          <div className="max-w-4xl mx-auto space-y-6">
-            <div className="text-center mb-6">
-              <span className="text-xs uppercase tracking-widest font-semibold text-ochre-700 block mb-1">
-                La Fuerza del Campo Grupal
-              </span>
-              <h3 className="text-2xl font-serif font-semibold text-[#27221F]">
-                Talleres Vivenciales en Chile
-              </h3>
-              <p className="text-xs sm:text-sm text-[#5C524A] max-w-lg mx-auto mt-1">
-                Participa como consultante (para constelar tu propio tema) o como representante en una experiencia vivencial profunda.
-              </p>
-            </div>
-
-            {upcomingWorkshopsList.length === 0 ? (
-              <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-8 sm:p-12 text-center max-w-xl mx-auto">
-                <span className="text-3xl block mb-2">🗓️</span>
-                <h4 className="font-serif font-semibold text-xl text-[#27221F] mb-2">
-                  Próximas fechas en coordinación
-                </h4>
-                <p className="text-xs text-[#5C524A] leading-relaxed mb-6">
-                  Actualmente estamos organizando las próximas jornadas presenciales y online para este ciclo. Si eres facilitador(a) y programas talleres vivenciales, puedes sumarte a la red para publicarlos aquí.
-                </p>
-                <Link
-                  href="/registro-terapeuta"
-                  className="inline-flex px-6 py-2.5 text-xs font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full"
-                >
-                  Postular y publicar talleres →
-                </Link>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {upcomingWorkshopsList.map((ws) => (
-                  <div
-                    key={ws.id}
-                    className="bg-[#FCFAF7] border border-ochre-300 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col justify-between card-hover-elevate"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-ochre-100 text-ochre-800">
-                          👥 Taller Vivencial
-                        </span>
-                        <span className="text-xs font-bold text-terracotta-600 bg-[#FDF7F4] px-2.5 py-0.5 rounded-full border border-terracotta-200">
-                          {ws.spotsLeft} cupos libres
-                        </span>
-                      </div>
-
-                      <h4 className="text-2xl font-serif font-semibold text-[#27221F] mb-2">
-                        {ws.title}
-                      </h4>
-
-                      <p className="text-xs text-[#8A7E73] mb-4">
-                        Facilitado por <strong className="text-[#27221F]">{ws.facilitatorName}</strong>
-                      </p>
-
-                      <div className="bg-[#FCFAF7] p-3.5 rounded-2xl border border-[#E7DECE] space-y-1.5 text-xs text-[#5C524A] mb-4">
-                        <p>📅 <strong>Fecha:</strong> {ws.date}</p>
-                        <p>📍 <strong>Lugar:</strong> {ws.location} ({ws.city})</p>
-                        <p>🎯 <strong>Enfoque:</strong> {ws.theme}</p>
-                      </div>
-
-                      <p className="text-xs text-[#5C524A] leading-relaxed mb-5">
-                        {ws.description}
-                      </p>
-                    </div>
-
-                    <div className="pt-4 border-t border-[#E7DECE]/80">
-                      <div className="flex items-baseline justify-between mb-4">
-                        <div>
-                          <span className="text-[11px] text-[#8A7E73] block">Valor del cupo:</span>
-                          <span className="text-xl font-serif font-bold text-[#27221F]">
-                            ${ws.totalPriceClp.toLocaleString("es-CL")} CLP
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-[11px] text-terracotta-600 font-semibold block">
-                            Reserva tu cupo (20%):
-                          </span>
-                          <span className="text-base font-bold text-terracotta-700">
-                            ${ws.depositPriceClp.toLocaleString("es-CL")} CLP
-                          </span>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={() => onOpenWorkshopQuote(ws)}
-                        type="button"
-                        className="w-full py-3 text-xs font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-sm hover:shadow transition-all"
-                      >
-                        Asegurar cupo en el taller (Reserva 20%)
-                      </button>
-                    </div>
-                  </div>
-                ))}
               </div>
             )}
           </div>

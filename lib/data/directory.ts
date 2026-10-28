@@ -1,3 +1,5 @@
+export type FacilitatorStatusType = "FORMADO" | "SUPERVISADO" | "ACREDITADO";
+
 export interface SpecialtyOption {
   id: string;
   name: string;
@@ -11,36 +13,29 @@ export const specialtiesList: SpecialtyOption[] = [
     id: "pareja",
     name: "Pareja y Vínculos Afectivos",
     shortLabel: "Pareja y Vínculos",
-    description: "Repetición de patrones afectivos, rupturas dolorosas, celos, infidelidades y dificultad para consolidar un vínculo.",
-    painPoint: "¿Sientes que siempre atraes el mismo tipo de relación o que das mucho más de lo que recibes?",
+    description: "Reconocimiento de dinámicas vinculares, rupturas, distancia afectiva y reciprocidad entre iguales.",
+    painPoint: "¿Sientes que repites dinámicas en tus relaciones o que te cuesta encontrar tu lugar con la pareja?",
   },
   {
     id: "dinero",
-    name: "Prosperidad, Vocación y Dinero",
-    shortLabel: "Dinero y Éxito",
-    description: "Lealtades de carencia, autosabotaje profesional, miedo al éxito y bloqueos para retener o hacer crecer el dinero.",
-    painPoint: "¿Trabajas incansablemente pero el dinero se te escapa o sientes culpa inconsciente al prosperar?",
+    name: "Vocación, Proyectos y Trabajo",
+    shortLabel: "Trabajo y Vocación",
+    description: "Mirada sistémica hacia el desarrollo profesional, lealtades familiares con el esfuerzo y reconocimiento del valor propio.",
+    painPoint: "¿Sientes que tu trabajo no avanza como esperas o que te cuesta tomar la fuerza para tus proyectos?",
   },
   {
     id: "ancestros",
-    name: "Linaje Familiar, Padres y Duelo",
-    shortLabel: "Familia y Linaje",
-    description: "Sanación del vínculo con la madre y el padre, duelos no cerrados, secretos familiares e hijos no reconocidos.",
-    painPoint: "¿Cargas con una tristeza o enojo que intuyes que no empezó en ti sino en tus padres o abuelos?",
-  },
-  {
-    id: "sintomas",
-    name: "Síntomas Físicos y Emocionales",
-    shortLabel: "Síntomas y Salud",
-    description: "Comprensión del sentido biológico y sistémico detrás de ansiedades crónicas, fobias o malestares corporales recurrentes.",
-    painPoint: "¿Tu cuerpo te está pidiendo a gritos que mires algo del sistema que fue silenciado en el pasado?",
+    name: "Familia de Origen y Linaje",
+    shortLabel: "Familia y Origen",
+    description: "Acompañamiento en el vínculo con madre y padre, duelos pendientes, secretos familiares e inclusión de quienes fueron apartados.",
+    painPoint: "¿Sientes que cargas con historias de tu familia que necesitas comprender y dejar en su lugar?",
   },
   {
     id: "organizacional",
     name: "Sistémica Organizacional y Equipos",
-    shortLabel: "Empresas y Proyectos",
-    description: "Diagnóstico sistémico de empresas familiares, conflictos societarios, liderazgo y alineación de equipos.",
-    painPoint: "¿Tu emprendimiento o equipo está estancado por dinámicas jerárquicas o desorden entre socios?",
+    shortLabel: "Empresas y Equipos",
+    description: "Mirada del orden, jerarquía y pertenencia en empresas familiares, sociedades y proyectos compartidos.",
+    painPoint: "¿Tu equipo o emprendimiento experimenta tensiones de liderazgo o desorden en los roles?",
   },
 ];
 
@@ -49,6 +44,8 @@ export interface FacilitatorProfile {
   name: string;
   headline: string;
   schoolAndYear: string;
+  status: FacilitatorStatusType;
+  supervisorName?: string;
   specialties: string[];
   modalities: ("online" | "presencial" | "taller_grupal")[];
   city: string;
@@ -66,11 +63,20 @@ export interface FacilitatorProfile {
   isValidated: boolean;
   availableHours?: string[];
   googleCalendarUrl?: string;
+  bankDetails?: {
+    beneficiaryName: string;
+    rut: string;
+    bank: string;
+    accountType: string;
+    accountNumber: string;
+    email: string;
+  };
   reviews: {
     author: string;
     city: string;
     text: string;
     theme: string;
+    date: string;
   }[];
   upcomingWorkshops?: {
     id: string;
@@ -84,13 +90,14 @@ export interface FacilitatorProfile {
   }[];
 }
 
-// Lista de facilitadores certificados (perfil de Karen Sudzuki verificado por Centro Icalma + facilitadores aprobados)
+// Lista de facilitadores acreditados según criterios públicos
 export const directoryFacilitators: FacilitatorProfile[] = [
   {
     id: "karen-sudzuki-icalma",
     name: "Karen Sudzuki",
-    headline: "Facilitadora en Constelaciones Familiares y Organizacionales",
+    headline: "Facilitadora Acreditada en Constelaciones Familiares y Organizacionales",
     schoolAndYear: "Centro de Formación Icalma · Formación Sistémica",
+    status: "ACREDITADO",
     specialties: ["ancestros", "pareja", "dinero", "organizacional"],
     modalities: ["online"],
     city: "Santiago / Online Chile",
@@ -102,24 +109,34 @@ export const directoryFacilitators: FacilitatorProfile[] = [
     completedSessions: 92,
     rating: 5.0,
     reviewCount: 24,
-    bio: "Consteladora familiar y organizacional con más de 6 años de experiencia en acompañamiento individual y empresarial. Ayudo a mirar con respeto y amor los nudos del sistema familiar, desarticulando lealtades inconscientes y abriendo camino a la paz y la prosperidad.",
+    bio: "Facilitadora con más de 6 años de experiencia en acompañamiento individual y organizacional. Mi labor consiste en abrir un espacio de respeto y escucha para mirar el orden en el sistema familiar, reconociendo a quienes llegaron antes y permitiendo que cada persona ocupe su propio lugar en la vida.",
     approachDetails: "Formada en Centro de Formación Icalma con enfoque sistémico y fenomenológico.",
     nextAvailableDate: "A coordinar en agenda",
     isValidated: true,
     availableHours: ["10:00", "11:30", "15:00", "16:30", "18:00", "19:30"],
-    googleCalendarUrl: "", // Enlace opcional de Google Calendar Appointment Schedule de Karen
+    googleCalendarUrl: "",
+    bankDetails: {
+      beneficiaryName: "Karen Valeria Sudzuki Toro",
+      rut: "13.298.884-6",
+      bank: "Mercado Pago",
+      accountType: "Cuenta Vista",
+      accountNumber: "1038886585",
+      email: "karen.sudzuki@gmail.com",
+    },
     reviews: [
       {
-        author: "Camila R.",
-        city: "Santiago",
-        text: "La constelación con Karen me permitió ver con total claridad un nudo que llevaba años cargando en mis relaciones. Su mirada fue súper acogedora, respetuosa y certera.",
+        author: "Consultante",
+        city: "Región Metropolitana",
+        text: "La sesión me permitió observar con claridad una dinámica que llevaba años repitiendo en mis vínculos. El espacio fue de mucho respeto y contención.",
         theme: "Pareja y Vínculos",
+        date: "marzo 2026",
       },
       {
-        author: "Marcelo T.",
-        city: "Viña del Mar",
-        text: "Pudimos mirar un bloqueo laboral y familiar muy profundo. Me sentí completamente sostenido en todo el proceso por Google Meet. Muy agradecido.",
-        theme: "Vocación y Dinero",
+        author: "Consultante",
+        city: "Región de Valparaíso",
+        text: "Pudimos mirar un aspecto familiar y vocacional complejo. Me sentí acompañado durante todo el proceso por Google Meet.",
+        theme: "Vocación y Trabajo",
+        date: "enero 2026",
       },
     ],
   },
@@ -142,5 +159,4 @@ export interface SystemicWorkshop {
   description: string;
 }
 
-// Talleres dinámicos (inicialmente vacío hasta que los facilitadores publiquen en base de datos)
 export const upcomingWorkshopsList: SystemicWorkshop[] = [];

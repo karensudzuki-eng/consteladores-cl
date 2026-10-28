@@ -19,7 +19,7 @@ const topics: TopicItem[] = [
     icon: "🕊️",
     title: "Repeticiones y lealtades invisibles",
     description:
-      "Patrones de quiebra financiera, soledad reiterada o bloqueos profesionales que se repiten generación tras generación como una forma inconsciente de solidaridad familiar.",
+      "Patrones de quiebra financiera, soledad reiterada o dificultades profesionales que se repiten generación tras generación como una forma inconsciente de solidaridad familiar.",
     echo: "Cargar el destino de un ancestro no lo alivia; mirarlo con honra y dejarlo con él nos libera a ambos.",
   },
   {

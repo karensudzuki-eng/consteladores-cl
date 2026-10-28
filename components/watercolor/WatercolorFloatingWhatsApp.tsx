@@ -1,11 +1,13 @@
 "use client";
 
 import React from "react";
+import { CONFIG } from "@/lib/config";
 
 export function WatercolorFloatingWhatsApp() {
-  const whatsappNumber = "56987654321"; // Reemplazable por el número oficial
+  // El número se toma de la configuración oficial y no se muestra como texto visible en pantalla
+  const rawNumber = CONFIG.WHATSAPP_NUMBER.replace(/[^0-9]/g, "");
   const message = encodeURIComponent(
-    "Hola, estoy en consteladores.cl y me gustaría hacer una consulta sobre las sesiones online y la reserva del 20%."
+    "Hola, te escribo desde consteladores.cl para consultar disponibilidad y dudas sobre las sesiones."
   );
 
   return (
@@ -13,18 +15,18 @@ export function WatercolorFloatingWhatsApp() {
       aria-label="Contacto por WhatsApp"
       className="fixed bottom-6 right-6 z-40 flex items-center gap-3"
     >
-      {/* Tooltip / Píldora de ayuda visible en escritorio */}
+      {/* Tooltip de ayuda visible en escritorio (sin exponer el número en texto) */}
       <div className="hidden sm:block bg-[#FAF8F5] text-[#27221F] border border-[#E7DECE] shadow-md px-3.5 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm">
-        ¿Dudas con tu sesión? Escríbenos
+        Consultas por WhatsApp
       </div>
 
-      {/* Botón Flotante en Terracota Cálido (Cero verde chillón) */}
+      {/* Botón Flotante en Terracota Cálido */}
       <a
-        href={`https://wa.me/${whatsappNumber}?text=${message}`}
+        href={`https://wa.me/${rawNumber}?text=${message}`}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Contactar por WhatsApp a consteladores.cl"
-        className="w-13 h-13 sm:w-14 sm:h-14 bg-terracotta-500 hover:bg-terracotta-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+        aria-label="Escribir por WhatsApp a consteladores.cl"
+        className="w-13 h-13 sm:w-14 sm:h-14 bg-terracotta-500 hover:bg-terracotta-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer"
       >
         <svg
           className="w-7 h-7 fill-current"

@@ -11,7 +11,7 @@ export function WatercolorPhilosophy() {
       subtitle: "Nadie puede ser excluido",
       bgClass: "bg-[#FEF9EE] border-[#F7E1B0]/80 text-[#9A6523]",
       tagBg: "bg-[#FCF2DA] text-[#9A6523]",
-      text: "Todos los miembros de un sistema familiar tienen el mismo derecho inalienable a formar parte. Cuando alguien es olvidado, silenciado, juzgado o apartado (por dolor, vergüenza o tragedia), las generaciones posteriores suelen manifestar síntomas, bloqueos o repeticiones inconscientes en un intento ciego de incluirlo.",
+      text: "Todos los miembros de un sistema familiar tienen el mismo derecho inalienable a formar parte. Cuando alguien es olvidado, silenciado, juzgado o apartado (por dolor, vergüenza o tragedia), las generaciones posteriores suelen manifestar dificultades vinculares o repeticiones inconscientes en un intento de inclusión.",
     },
     {
       number: "2",

@@ -17,15 +17,16 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Constelaciones Familiares Online en Chile | Facilitadores Certificados",
+  title: "Constelaciones Familiares Online en Chile | Facilitadores Acreditados",
   description:
-    "Sesiones de constelación familiar online por Google Meet. Facilitadores validados, precios claros y reserva con 20%.",
+    "Espacio sistémico complementario en Chile. Facilitadores acreditados y supervisados, atención online vía Google Meet y presencial.",
   keywords: [
     "constelaciones familiares online chile",
-    "consteladores certificados chile",
-    "terapia sistemica online google meet",
-    "constelaciones familiares santiago valparaiso concepcion",
+    "consteladores acreditados chile",
+    "mirada sistemica online google meet",
+    "constelaciones familiares santiago vina del mar concepcion",
     "bert hellinger chile",
+    "espacio sistemico chile",
   ],
 };
 

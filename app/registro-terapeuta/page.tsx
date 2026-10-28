@@ -257,7 +257,7 @@ export default function RegistroTerapeutaPage() {
 
                 <div>
                   <label className="block text-xs font-semibold text-[#5C524A] mb-1">
-                    Escuela, linaje formativo o institución certificadora *
+                    Escuela, linaje o institución formativa *
                   </label>
                   <input
                     type="text"
