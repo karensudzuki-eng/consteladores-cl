@@ -57,6 +57,17 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
               <span className="text-2xl sm:text-3xl font-serif font-semibold tracking-tight text-[#27221F] group-hover:text-terracotta-600 transition-colors">
                 consteladores<span className="text-terracotta-500 italic font-serif">.cl</span>
               </span>
+              <a
+                href="https://constelacionesfamiliares.cl"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-[11px] sm:text-xs text-[#8A7E73] hover:text-terracotta-600 transition-colors font-medium -mt-1 inline-flex items-center gap-1"
+                title="Ir al Centro de Formación Icalma"
+              >
+                <span>Formación Continua Icalma</span>
+                <span className="text-[10px]">↗</span>
+              </a>
             </div>
           </Link>
 
@@ -75,10 +86,10 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
               Sesión Individual
             </a>
             <a
-              href="#comunidad-telegram"
+              href="#comunidad"
               className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1 flex items-center gap-1.5"
             >
-              <span>Telegram</span>
+              <span>Comunidad</span>
               <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
             </a>
             <a
@@ -173,11 +184,11 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
               Sesión Individual Online
             </a>
             <a
-              href="#comunidad-telegram"
+              href="#comunidad"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
             >
-              Comunidad Telegram
+              Comunidad
             </a>
             <a
               href="#facilitadores"

@@ -11,6 +11,7 @@ import { WatercolorWhatIsAndIsNot } from "@/components/watercolor/WatercolorWhat
 import { WatercolorPaymentExplainer } from "@/components/watercolor/WatercolorPaymentExplainer";
 import { WatercolorTestimonials } from "@/components/watercolor/WatercolorTestimonials";
 import { InteractiveDirectory } from "@/components/directory/InteractiveDirectory";
+import { CommunitySection } from "@/components/community/CommunitySection";
 import { WatercolorPractitionersCTA } from "@/components/watercolor/WatercolorPractitionersCTA";
 import { WatercolorAbout } from "@/components/watercolor/WatercolorAbout";
 import { WatercolorFAQ } from "@/components/watercolor/WatercolorFAQ";
@@ -121,6 +122,9 @@ function HomeInner() {
         }}
         onOpenTriage={() => handleOpenBooking()}
       />
+
+      {/* 9. Comunidad de Consteladores en Telegram (Al final de la página, junto a facilitadores) */}
+      <CommunitySection />
 
       {/* Sección de practicantes */}
       <WatercolorPractitionersCTA />

@@ -9,6 +9,7 @@ export interface CMSWorkshop {
   address: string;
   city: string;
   price: string;
+  modality?: "presencial" | "online";
   logoType: "icalma" | "vortice" | "custom";
   logoUrl?: string;
   flyerUrl: string;

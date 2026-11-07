@@ -92,9 +92,9 @@ export function WorkshopDetailModal({
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-[#E7DECE]/80 pb-2">
-            <span className="text-[#8A7E73] font-medium">Ubicación:</span>
+            <span className="text-[#8A7E73] font-medium">Modalidad y Lugar:</span>
             <span className="font-semibold text-[#27221F]">
-              {workshop.address}
+              {workshop.modality === "online" ? "Online vía Google Meet" : `${workshop.address} (${workshop.city})`}
             </span>
           </div>
 

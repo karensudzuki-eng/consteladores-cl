@@ -10,13 +10,6 @@ export function WatercolorPractitionersCTA() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="bg-[#FCFAF7] border-2 border-sage-500/30 rounded-3xl p-8 sm:p-12 shadow-sm text-center relative card-hover-elevate">
-          
-          {/* Insignia de Sección */}
-          <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-sage-50 border border-sage-200 text-sage-800 text-xs font-semibold uppercase tracking-wider mb-5 mx-auto">
-            <FamilyTreeIcon className="w-4 h-4" />
-            <span>Formación y Aprendizaje Clínico</span>
-          </div>
-
           <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-[#27221F] mb-4">
             Practica con nosotros: Sesiones en formación supervisada
           </h2>

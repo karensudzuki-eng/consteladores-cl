@@ -74,10 +74,7 @@ export function InteractiveDirectory({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Cabecera del Directorio Centrada */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-[#E8C58A]/35 border border-[#D5C8B4] text-[#4A423D] text-xs font-semibold uppercase tracking-wider mb-4 mx-auto shadow-sm">
-            Ecosistema y Directorio
-          </div>
+        <div className="text-center max-w-3xl mx-auto mb-10">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-[#27221F] mb-4">
             Facilitadores Acreditados en Chile
           </h2>
@@ -100,47 +97,8 @@ export function InteractiveDirectory({
           </div>
         </div>
 
-        {/* REGLA: Si hay menos de 3 perfiles verificados, no mostrar listado en home */}
-        {!isLoading && facilitators.length < 3 ? (
-          <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-8 sm:p-14 text-center max-w-2xl mx-auto shadow-sm">
-            <span className="text-xs uppercase tracking-widest font-semibold text-terracotta-600 block mb-3">
-              Directorio en Verificación Continua
-            </span>
-            <h3 className="text-2xl sm:text-3xl font-serif font-semibold text-[#27221F] mb-4">
-              Estamos sumando perfiles verificados.
-            </h3>
-            
-            <p className="text-sm text-[#5C524A] leading-relaxed mb-8 max-w-lg mx-auto">
-              Solo publicamos facilitadores que han acreditado fehacientemente su formación y supervisión clínica según nuestros criterios públicos. Si deseas consultar disponibilidad directamente o postular como facilitador, utiliza las siguientes opciones:
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button
-                onClick={() => onSelectFacilitator(facilitators[0] || null as any)}
-                type="button"
-                className="w-full sm:w-auto px-6 py-3 rounded-full text-xs sm:text-sm font-semibold text-white bg-terracotta-500 hover:bg-terracotta-600 transition-all shadow-sm"
-              >
-                Consultar disponibilidad de sesión
-              </button>
-              
-              <Link
-                href="/criterios"
-                className="w-full sm:w-auto px-6 py-3 rounded-full text-xs sm:text-sm font-medium text-[#5C524A] bg-[#F3ECE2] hover:bg-[#E7DECE] border border-[#E7DECE] transition-all"
-              >
-                Ver criterios de acreditación
-              </Link>
-
-              <Link
-                href="/registro-terapeuta"
-                className="w-full sm:w-auto px-6 py-3 rounded-full text-xs sm:text-sm font-medium text-terracotta-700 bg-terracotta-50 hover:bg-terracotta-100 border border-terracotta-200 transition-all"
-              >
-                Soy facilitador: postular
-              </Link>
-            </div>
-          </div>
-        ) : (
-          /* VISTA COMPLETA CUANDO HAY 3 O MÁS PERFILES */
-          <div>
+        {/* LISTADO DE FACILITADORES */}
+        <div>
             {/* Pestañas Principales sin emojis */}
             <div className="flex justify-center mb-8">
               <div className="inline-flex p-1.5 rounded-full bg-[#F3ECE2] border border-[#E7DECE]">
@@ -370,8 +328,48 @@ export function InteractiveDirectory({
                 })}
               </div>
             )}
+
+            {/* SECCIÓN: Postulación de Facilitadores y Profundización en Icalma */}
+            <div className="mt-14 bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-8 sm:p-10 text-center max-w-3xl mx-auto shadow-sm">
+              <h3 className="text-2xl sm:text-3xl font-serif font-semibold text-[#27221F] mb-3">
+                ¿Eres facilitador y quieres pertenecer al equipo?
+              </h3>
+              <p className="text-sm sm:text-base text-[#5C524A] leading-relaxed max-w-2xl mx-auto mb-6">
+                Postula como facilitador previo a revisar nuestros criterios de acreditación. En caso de que no estés acreditado, puedes consultar por WhatsApp y realizar el proceso de profundización a través del Centro de Constelaciones Icalma.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <Link
+                  href="/registro-terapeuta"
+                  className="px-6 py-3 rounded-full text-xs sm:text-sm font-semibold text-white bg-terracotta-500 hover:bg-terracotta-600 transition-all shadow-sm"
+                >
+                  Postular como facilitador
+                </Link>
+                <Link
+                  href="/criterios"
+                  className="px-6 py-3 rounded-full text-xs sm:text-sm font-medium text-[#5C524A] bg-[#F3ECE2] hover:bg-[#E7DECE] border border-[#E7DECE] transition-all"
+                >
+                  Ver criterios de acreditación
+                </Link>
+                <a
+                  href="https://wa.me/56941939363?text=Hola,%20soy%20facilitador(a)%20y%20deseo%20consultar%20sobre%20el%20proceso%20de%20profundizaci%C3%B3n%20en%20el%20Centro%20Icalma%20para%20acreditarme%20en%20consteladores.cl."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 rounded-full text-xs sm:text-sm font-medium text-[#128C7E] bg-[#EBF7F2] hover:bg-[#D8F0E5] border border-[#BDE3D1] transition-all flex items-center gap-1.5"
+                >
+                  <span>Consultar al WhatsApp</span>
+                </a>
+                <a
+                  href="https://constelacionesfamiliares.cl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 rounded-full text-xs sm:text-sm font-medium text-terracotta-700 bg-terracotta-50 hover:bg-terracotta-100 border border-terracotta-200 transition-all flex items-center gap-1"
+                >
+                  <span>Centro de Constelaciones Icalma</span>
+                  <span>↗</span>
+                </a>
+              </div>
+            </div>
           </div>
-        )}
 
       </div>
     </section>

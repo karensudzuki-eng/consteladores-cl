@@ -213,6 +213,7 @@ export default function AdminPage() {
       address: "Edmundo Eluchans 3047, of. 22, Concón",
       city: "Concón / Valparaíso",
       price: "$35.000",
+      modality: "presencial",
       logoType: "icalma",
       logoUrl: "",
       flyerUrl: "/images/arbol-generaciones.png",
@@ -694,14 +695,32 @@ export default function AdminPage() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                          Modalidad *
+                        </label>
+                        <select
+                          value={currentWorkshop.modality || "presencial"}
+                          onChange={(e) => {
+                            const updated = [...content.workshops];
+                            updated[selectedWorkshopIndex].modality = e.target.value as any;
+                            setContent({ ...content, workshops: updated });
+                          }}
+                          className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] border border-[#E7DECE] text-xs sm:text-sm text-[#27221F] font-semibold"
+                        >
+                          <option value="presencial">Presencial (Sala)</option>
+                          <option value="online">Online (Google Meet)</option>
+                        </select>
+                      </div>
+
                       <div>
                         <label className="block text-xs font-bold text-[#5C524A] mb-1">
                           Dirección / Lugar *
                         </label>
                         <input
                           type="text"
-                          placeholder="Ej. Edmundo Eluchans 3047, ofic. 22, Concón"
+                          placeholder={currentWorkshop.modality === "online" ? "Online vía Google Meet" : "Ej. Edmundo Eluchans 3047, of. 22"}
                           value={currentWorkshop.address}
                           onChange={(e) => {
                             const updated = [...content.workshops];
@@ -714,11 +733,11 @@ export default function AdminPage() {
 
                       <div>
                         <label className="block text-xs font-bold text-[#5C524A] mb-1">
-                          Ciudad
+                          Ciudad / Cobertura
                         </label>
                         <input
                           type="text"
-                          placeholder="Ej. Concón, Valparaíso"
+                          placeholder={currentWorkshop.modality === "online" ? "Todo Chile y Exterior" : "Concón, Valparaíso"}
                           value={currentWorkshop.city}
                           onChange={(e) => {
                             const updated = [...content.workshops];

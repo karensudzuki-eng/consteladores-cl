@@ -185,9 +185,9 @@ export async function bookAndConfirmAppointment(
 
               <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #E7DECE;">
                 <p style="font-size: 13px; color: #8A7E73; margin: 0 0 6px;"><strong>Sala de Google Meet pre-generada para este encuentro:</strong></p>
-                <a href="${meetLink}" style="color: #D66847; font-size: 14px; word-break: break-all;">${meetLink}</a>
-                <p style="font-size: 11px; color: #8A7E73; margin: 4px 0 0;">
-                  (Por seguridad, este enlace NO fue expuesto al consultante en la web y solo se validará al confirmar su abono de $9.000 CLP).
+                <a href="${meetLink}" style="color: #D66847; font-size: 14px; word-break: break-all; font-weight: bold;">${meetLink}</a>
+                <p style="font-size: 11px; color: #166534; margin: 4px 0 0;">
+                  (Por seguridad, este enlace NO fue expuesto al consultante en la web. Reenvíaselo a su correo una vez que valide su comprobante de pago por WhatsApp).
                 </p>
               </div>
             </div>

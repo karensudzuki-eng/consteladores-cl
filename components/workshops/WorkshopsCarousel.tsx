@@ -34,14 +34,11 @@ export function WorkshopsCarousel({
         
         {/* Cabecera del Carrusel */}
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-          <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-cream-200 border border-[#E7DECE] text-terracotta-700 text-xs font-semibold uppercase tracking-wider mb-3 mx-auto shadow-sm">
-            Encuentros Vivenciales y Presenciales
-          </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold text-[#27221F] mb-4">
             Talleres de Constelaciones
           </h2>
           <p className="text-base sm:text-lg text-[#5C524A] leading-relaxed">
-            Espacios grupales para escenificar dinámicas, mirar historias familiares y experimentar que cuando uno constela, todos constelamos.
+            Espacios grupales (presenciales y online) para escenificar dinámicas, mirar historias familiares y experimentar que cuando uno constela, todos constelamos.
           </p>
         </div>
 
@@ -99,6 +96,11 @@ export function WorkshopsCarousel({
                         logoType={workshop.logoType}
                         logoUrl={workshop.logoUrl}
                       />
+                    </div>
+
+                    {/* Modalidad Badge: Presencial u Online */}
+                    <div className="absolute top-3 right-3 z-10 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide shadow-sm backdrop-blur-sm bg-black/60 text-white">
+                      {workshop.modality === "online" ? "🌐 Online (Meet)" : "📍 Presencial"}
                     </div>
 
                     {/* Fecha badge */}

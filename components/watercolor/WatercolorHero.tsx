@@ -55,13 +55,6 @@ export function WatercolorHero({ onBookClick, onOpenTriage }: WatercolorHeroProp
       </div>
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fadeIn">
-        
-        {/* Insignia Centrada */}
-        <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-cream-50/95 border border-terracotta-200/90 text-terracotta-700 text-xs sm:text-sm font-semibold mb-6 backdrop-blur-sm shadow-sm mx-auto">
-          <FamilyTreeIcon className="w-4 h-4" isAnimated={true} />
-          <span>Acompañamiento Sistémico y Mirada al Origen</span>
-        </div>
-
         {/* Titular como pregunta emocional */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-semibold text-[#27221F] tracking-tight leading-[1.18] mb-6">
           {heroTitle}
@@ -73,7 +66,7 @@ export function WatercolorHero({ onBookClick, onOpenTriage }: WatercolorHeroProp
         </p>
 
         {/* Acciones Principales */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
           <button
             onClick={onBookClick}
             type="button"
@@ -87,47 +80,6 @@ export function WatercolorHero({ onBookClick, onOpenTriage }: WatercolorHeroProp
             className="w-full sm:w-auto px-8 py-4 text-base font-medium text-[#27221F] bg-cream-50 hover:bg-cream-200/90 border-2 border-[#E7DECE] hover:border-terracotta-400 rounded-full shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center cursor-pointer"
           >
             Ver talleres vivenciales
-          </a>
-        </div>
-
-        {/* SECCIÓN DESTACADA REQUERIDA: Imagen destacada conectada a la comunidad de Consteladores en Telegram */}
-        <div id="comunidad-telegram" className="mb-12 scroll-mt-24">
-          <a
-            href={telegramUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group block bg-[#FCFAF7] border-2 border-sage-300/80 hover:border-sage-500 rounded-3xl p-4 sm:p-6 shadow-sm hover:shadow-xl transition-all duration-300 text-left cursor-pointer transform hover:-translate-y-1"
-          >
-            <div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-6">
-              {/* Imagen Destacada de la Comunidad */}
-              <div className="relative w-full sm:w-44 h-36 sm:h-32 rounded-2xl overflow-hidden shrink-0 border border-sage-200 bg-sage-50">
-                <img
-                  src={telegramImage}
-                  alt="Comunidad de Consteladores en Telegram"
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-sky-600 text-white text-[10px] font-bold flex items-center gap-1 shadow-sm">
-                  <span>✈️ Telegram</span>
-                </div>
-              </div>
-
-              {/* Textos y Acceso Directo */}
-              <div className="flex-1 space-y-1.5 text-center sm:text-left">
-                <span className="inline-block text-[11px] font-semibold uppercase tracking-wider text-sage-800 bg-sage-100 px-3 py-0.5 rounded-full border border-sage-200">
-                  {telegramBadge}
-                </span>
-                <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#27221F] group-hover:text-sage-800 transition-colors">
-                  Únete a la Comunidad de Consteladores
-                </h3>
-                <p className="text-xs sm:text-sm text-[#5C524A] leading-relaxed">
-                  {telegramDescription}
-                </p>
-                <div className="pt-2 flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold text-sage-700 group-hover:text-sage-900">
-                  <span>Acceso directo al grupo de Telegram</span>
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </div>
-              </div>
-            </div>
           </a>
         </div>
 

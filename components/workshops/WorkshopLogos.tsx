@@ -51,8 +51,7 @@ export function WorkshopLogoBadge({
         />
         <path d="M12 8C14.209 8 16 9.791 16 12" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
-      <span className="font-serif font-semibold text-terracotta-700">Icalma</span>
-      <span className="text-[#8A7E73] text-[10px]">· Formación Continua</span>
+      <span className="font-serif font-semibold text-terracotta-700">Centro Icalma</span>
     </div>
   );
 }

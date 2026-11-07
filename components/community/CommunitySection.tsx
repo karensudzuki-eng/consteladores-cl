@@ -53,12 +53,6 @@ export function CommunitySection() {
         {/* Tarjeta Cálida tipo Refugio Sagrado con Alto Contraste */}
         <div className="bg-[#FCFAF7] text-[#27221F] border-2 border-[#E7DECE] rounded-3xl p-8 sm:p-14 shadow-2xl text-center relative card-hover-elevate">
           
-          {/* Píldora de Sección Centrada */}
-          <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-sage-50 border border-sage-200 text-sage-800 text-xs font-semibold uppercase tracking-wider mb-6 mx-auto shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-sage-600" />
-            <span>Red Ética de Acompañamiento Sistémico</span>
-          </div>
-
           {/* Ícono Vivo del Árbol de Raíces */}
           <div className="w-16 h-16 rounded-full bg-sage-50 text-sage-600 border border-sage-200 flex items-center justify-center mx-auto mb-5 shadow-sm">
             <FamilyTreeIcon className="w-8 h-8" isAnimated={true} />
