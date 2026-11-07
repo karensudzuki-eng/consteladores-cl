@@ -103,10 +103,7 @@ function HomeInner() {
       {/* 5. "Qué es y qué no es": Enfoque fenomenológico limpio */}
       <WatercolorWhatIsAndIsNot />
 
-      {/* 6. Cómo funciona el pago y coordinación */}
-      <WatercolorPaymentExplainer />
-
-      {/* 7. Testimonios */}
+      {/* 6. Testimonios */}
       <WatercolorTestimonials />
 
       {/* 8. Directorio de Facilitadores */}

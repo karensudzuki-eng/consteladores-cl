@@ -6,6 +6,7 @@ import { CMSContent, DEFAULT_CMS_CONTENT } from "./content";
 interface CMSContextType {
   content: CMSContent;
   isLoading: boolean;
+  setContent: React.Dispatch<React.SetStateAction<CMSContent>>;
   updateContent: (newContent: CMSContent) => Promise<boolean>;
   refresh: () => Promise<void>;
 }
@@ -13,6 +14,7 @@ interface CMSContextType {
 const CMSContext = createContext<CMSContextType>({
   content: DEFAULT_CMS_CONTENT,
   isLoading: true,
+  setContent: () => {},
   updateContent: async () => false,
   refresh: async () => {},
 });
@@ -96,6 +98,7 @@ export function CMSProvider({
       value={{
         content,
         isLoading,
+        setContent,
         updateContent,
         refresh: fetchContent,
       }}

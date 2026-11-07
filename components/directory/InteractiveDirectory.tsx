@@ -81,53 +81,11 @@ export function InteractiveDirectory({
           <p className="text-base sm:text-lg text-[#5C524A] leading-relaxed">
             Cada profesional visible cuenta con verificación manual de formación y compromiso ético respaldado por Icalma Constelaciones.
           </p>
-
-          {/* Banner de Orientador Rápido sin emojis */}
-          <div className="mt-6 inline-flex flex-col sm:flex-row items-center gap-3 bg-[#FCFAF7] border border-terracotta-200/80 rounded-2xl p-3 sm:px-6 shadow-sm">
-            <span className="text-xs text-[#5C524A]">
-              ¿Tienes dudas sobre qué facilitador o modalidad necesitas?
-            </span>
-            <button
-              onClick={onOpenTriage}
-              type="button"
-              className="text-xs font-semibold text-terracotta-600 hover:text-terracotta-700 underline cursor-pointer"
-            >
-              Hacer test orientador en 30 segundos →
-            </button>
-          </div>
         </div>
 
         {/* LISTADO DE FACILITADORES */}
         <div>
-            {/* Pestañas Principales sin emojis */}
-            <div className="flex justify-center mb-8">
-              <div className="inline-flex p-1.5 rounded-full bg-[#F3ECE2] border border-[#E7DECE]">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("facilitadores")}
-                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
-                    activeTab === "facilitadores"
-                      ? "bg-terracotta-500 text-white shadow-sm"
-                      : "text-[#5C524A] hover:text-[#27221F]"
-                  }`}
-                >
-                  Facilitadores Acreditados ({facilitators.length})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("talleres")}
-                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
-                    activeTab === "talleres"
-                      ? "bg-terracotta-500 text-white shadow-sm"
-                      : "text-[#5C524A] hover:text-[#27221F]"
-                  }`}
-                >
-                  Talleres Vivenciales ({upcomingWorkshopsList.length})
-                </button>
-              </div>
-            </div>
-
-            {/* Barra de Filtros */}
+          {/* Barra de Filtros */}
             {activeTab === "facilitadores" && (
               <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-5 sm:p-6 mb-10 shadow-sm">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -281,29 +239,22 @@ export function InteractiveDirectory({
                       </div>
 
                       <div className="pt-4 border-t border-[#E7DECE]/70">
-                        <div className="mb-4 text-center">
-                          {isPricingEnabled ? (
-                            <div className="flex items-baseline justify-between">
-                              <div>
-                                <span className="text-[11px] text-[#8A7E73] block">Valor sesión:</span>
-                                <span className="text-lg font-serif font-bold text-[#27221F]">
-                                  ${facilitator.totalPriceClp.toLocaleString("es-CL")}
-                                </span>
-                              </div>
-                              <div className="text-right">
-                                <span className="text-[11px] text-terracotta-600 font-semibold block">
-                                  Abono 20%:
-                                </span>
-                                <span className="text-base font-bold text-terracotta-700">
-                                  ${facilitator.depositPriceClp.toLocaleString("es-CL")}
-                                </span>
-                              </div>
+                        <div className="mb-4">
+                          <div className="flex items-baseline justify-between">
+                            <div>
+                              <span className="text-[11px] text-[#8A7E73] block">Valor sesión:</span>
+                              <span className="text-xl font-serif font-bold text-terracotta-700">
+                                ${facilitator.totalPriceClp.toLocaleString("es-CL")}{" "}
+                                <span className="text-xs font-sans font-normal text-[#8A7E73]">CLP</span>
+                              </span>
                             </div>
-                          ) : (
-                            <span className="text-xs text-[#8A7E73] font-medium block">
-                              Valor: por definir. Consulta antes de reservar.
-                            </span>
-                          )}
+                            <div className="text-right">
+                              <span className="text-[11px] text-[#8A7E73] block">Modalidad:</span>
+                              <span className="text-xs font-semibold text-[#27221F]">
+                                Online / Presencial
+                              </span>
+                            </div>
+                          </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-2">

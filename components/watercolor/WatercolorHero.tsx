@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { FamilyTreeIcon } from "@/components/icons/FamilyTreeIcon";
+import { HeroRotatingCarousel } from "@/components/hero/HeroRotatingCarousel";
 import { CONFIG } from "@/lib/config";
 import { useCMS } from "@/lib/cms/CMSContext";
 
@@ -61,9 +62,16 @@ export function WatercolorHero({ onBookClick, onOpenTriage }: WatercolorHeroProp
         </h1>
 
         {/* Subtítulo de máximo dos líneas */}
-        <p className="text-lg sm:text-xl text-[#38322E] font-normal leading-relaxed max-w-2xl mx-auto mb-9">
+        <p className="text-lg sm:text-xl text-[#38322E] font-normal leading-relaxed max-w-2xl mx-auto mb-6">
           {heroSubtitle}
         </p>
+
+        {/* Carrusel Giratorio Explicativo con Música Ambiental y Botón Reservar Cupo */}
+        <HeroRotatingCarousel
+          slides={content.heroSlides}
+          musicUrl={settings.heroMusicUrl}
+          onBookClick={onBookClick}
+        />
 
         {/* Acciones Principales */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">

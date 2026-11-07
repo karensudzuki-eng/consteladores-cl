@@ -120,6 +120,10 @@ function mergeWithDefaults(parsed: any): CMSContent {
     settings: {
       ...DEFAULT_CMS_CONTENT.settings,
       ...(parsed.settings || {}),
+      about: {
+        ...DEFAULT_CMS_CONTENT.settings.about,
+        ...(parsed.settings?.about || {}),
+      },
       bankDetails: {
         ...DEFAULT_CMS_CONTENT.settings.bankDetails,
         ...(parsed.settings?.bankDetails || {}),
@@ -129,5 +133,17 @@ function mergeWithDefaults(parsed: any): CMSContent {
       Array.isArray(parsed.workshops) && parsed.workshops.length > 0
         ? parsed.workshops
         : DEFAULT_CMS_CONTENT.workshops,
+    heroSlides:
+      Array.isArray(parsed.heroSlides) && parsed.heroSlides.length > 0
+        ? parsed.heroSlides
+        : DEFAULT_CMS_CONTENT.heroSlides,
+    testimonials:
+      Array.isArray(parsed.testimonials) && parsed.testimonials.length > 0
+        ? parsed.testimonials
+        : DEFAULT_CMS_CONTENT.testimonials,
+    facilitators:
+      Array.isArray(parsed.facilitators) && parsed.facilitators.length > 0
+        ? parsed.facilitators
+        : DEFAULT_CMS_CONTENT.facilitators,
   };
 }
