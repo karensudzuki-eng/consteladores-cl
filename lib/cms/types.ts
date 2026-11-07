@@ -130,7 +130,7 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       "Consteladores: un espacio cuidado para mirar el orden de tu sistema familiar y retomar tu propio lugar con calma.",
     heroBgImage: "/images/mirar-historia-sanar.png",
     heroOverlayOpacity: 0.8,
-    heroMusicUrl: "https://cdn.pixabay.com/download/audio/2022/05/16/audio_c89b2713f0.mp3?filename=meditation-relaxing-ambient-112191.mp3",
+    heroMusicUrl: "/audio/meditacion-armonica.wav",
 
     serviceTitle: "Sesión Individual",
     serviceDescription:

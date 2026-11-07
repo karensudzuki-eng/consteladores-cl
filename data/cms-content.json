@@ -11,7 +11,7 @@
     "heroSubtitle": "Consteladores: un espacio cuidado para mirar el orden de tu sistema familiar y retomar tu propio lugar con calma.",
     "heroBgImage": "/images/mirar-historia-sanar.png",
     "heroOverlayOpacity": 0.8,
-    "heroMusicUrl": "https://cdn.pixabay.com/download/audio/2022/05/16/audio_c89b2713f0.mp3?filename=meditation-relaxing-ambient-112191.mp3",
+    "heroMusicUrl": "/audio/meditacion-armonica.wav",
     "serviceTitle": "Sesión Individual",
     "serviceDescription": "La sesión puede ser individual online, presencial o por videollamada. Su objetivo es identificar y resolver bloqueos emocionales, patrones repetitivos, duelos o conflictos familiares, de pareja y laborales no resueltos, donde un terapeuta constelador te acompañará a mirar tu situación, traer una imagen del conflicto y, desde la comprensión, algo dentro se alivia y se calma el sistema.",
     "servicePrice": "$40.000",

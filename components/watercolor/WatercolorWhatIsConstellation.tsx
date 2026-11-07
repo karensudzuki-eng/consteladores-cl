@@ -85,7 +85,7 @@ export function WatercolorWhatIsConstellation({ onBookClick }: WatercolorWhatIsC
             href="#talleres"
             className="w-full sm:w-auto px-7 py-3 rounded-full bg-white hover:bg-[#F3ECE2] border border-[#E7DECE] text-[#27221F] font-medium text-sm shadow-sm transition-all active:scale-95 text-center"
           >
-            Ver talleres vivenciales
+            Ver talleres
           </a>
         </div>
 
