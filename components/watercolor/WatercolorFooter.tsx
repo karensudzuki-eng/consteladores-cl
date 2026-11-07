@@ -68,6 +68,10 @@ export function WatercolorFooter() {
           <Link href="/registro-terapeuta" className="text-terracotta-600 hover:text-terracotta-700 transition-colors">
             Soy facilitador
           </Link>
+          <Link href="/admin" className="text-[#8A7E73] hover:text-[#27221F] transition-colors flex items-center gap-1">
+            <span>⚙️</span>
+            <span>Admin</span>
+          </Link>
         </div>
 
         {/* Disclaimer Ético y Línea de Crisis Obligatorios */}

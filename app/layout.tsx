@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Geist } from "next/font/google";
 import "./globals.css";
+import { CMSProvider } from "@/lib/cms/CMSContext";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -38,7 +39,9 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${geist.variable} ${cormorant.variable} scroll-smooth`}>
       <body className="font-sans antialiased bg-cream-100 text-[#27221F] selection:bg-terracotta-100 selection:text-terracotta-800">
-        {children}
+        <CMSProvider>
+          {children}
+        </CMSProvider>
       </body>
     </html>
   );

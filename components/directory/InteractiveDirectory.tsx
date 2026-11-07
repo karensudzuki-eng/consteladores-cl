@@ -16,7 +16,7 @@ interface InteractiveDirectoryProps {
   onSelectFacilitator: (facilitator: FacilitatorProfile) => void;
   onOpenDetail: (facilitator: FacilitatorProfile) => void;
   onOpenWorkshopQuote: (workshop: SystemicWorkshop) => void;
-  onOpenTriage: () => void;
+  onOpenTriage?: () => void;
 }
 
 export function InteractiveDirectory({

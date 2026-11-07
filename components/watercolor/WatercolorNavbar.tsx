@@ -57,25 +57,29 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
               <span className="text-2xl sm:text-3xl font-serif font-semibold tracking-tight text-[#27221F] group-hover:text-terracotta-600 transition-colors">
                 consteladores<span className="text-terracotta-500 italic font-serif">.cl</span>
               </span>
-              <span className="text-[11px] uppercase tracking-widest text-[#8A7E73] font-medium -mt-1 hidden sm:block">
-                Tu punto de encuentro sistémico en Chile
-              </span>
             </div>
           </Link>
 
-          {/* Menú de Navegación: Cómo funciona · Servicios · Facilitadores · Practica con nosotros */}
+          {/* Menú de Navegación: Talleres · Sesión Online · Comunidad · Facilitadores */}
           <nav className="hidden lg:flex items-center space-x-7" aria-label="Navegación principal">
             <a
-              href="#como-funciona"
+              href="#talleres"
               className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
             >
-              Cómo funciona
+              Talleres
             </a>
             <a
               href="#servicios"
               className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
             >
-              Servicios
+              Sesión Individual
+            </a>
+            <a
+              href="#comunidad-telegram"
+              className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1 flex items-center gap-1.5"
+            >
+              <span>Telegram</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
             </a>
             <a
               href="#facilitadores"
@@ -83,22 +87,17 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
             >
               Facilitadores
             </a>
-            <Link
-              href="/practica"
-              className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1 flex items-center gap-1.5"
-            >
-              <span>Practica con nosotros</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-sage-500" />
-            </Link>
           </nav>
 
-          {/* Botones de Acción: Primario y Secundario discreto */}
+          {/* Botones de Acción: Primario y Enlace a Panel Admin */}
           <div className="hidden sm:flex items-center gap-3">
             <Link
-              href="/registro-terapeuta"
-              className="px-3 py-1.5 text-xs text-[#5C524A] hover:text-[#27221F] transition-colors"
+              href="/admin"
+              title="Panel de Administración"
+              className="px-3 py-1.5 text-xs text-[#8A7E73] hover:text-terracotta-600 transition-colors flex items-center gap-1"
             >
-              Soy facilitador
+              <span>⚙️</span>
+              <span>Admin</span>
             </Link>
 
             {onBookClick ? (
@@ -160,18 +159,25 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
         {mobileMenuOpen && (
           <div className="sm:hidden border-t border-[#E7DECE] py-4 space-y-3 animate-fadeIn">
             <a
-              href="#como-funciona"
+              href="#talleres"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
             >
-              Cómo funciona
+              Talleres
             </a>
             <a
               href="#servicios"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
             >
-              Servicios
+              Sesión Individual Online
+            </a>
+            <a
+              href="#comunidad-telegram"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
+            >
+              Comunidad Telegram
             </a>
             <a
               href="#facilitadores"
@@ -180,27 +186,13 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
             >
               Facilitadores
             </a>
-            <Link
-              href="/practica"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
-            >
-              Practica con nosotros
-            </Link>
-            <Link
-              href="/criterios"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
-            >
-              Criterios de acreditación
-            </Link>
             <div className="pt-2 border-t border-[#E7DECE] flex flex-col gap-2">
               <Link
-                href="/registro-terapeuta"
+                href="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-xs text-[#5C524A] py-1"
+                className="text-xs text-[#8A7E73] hover:text-[#27221F] py-1 flex items-center gap-1.5"
               >
-                Soy facilitador
+                <span>⚙️ Panel de Administración</span>
               </Link>
               {onBookClick ? (
                 <button

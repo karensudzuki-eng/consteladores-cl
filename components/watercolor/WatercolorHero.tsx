@@ -4,33 +4,47 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { FamilyTreeIcon } from "@/components/icons/FamilyTreeIcon";
 import { CONFIG } from "@/lib/config";
+import { useCMS } from "@/lib/cms/CMSContext";
 
 interface WatercolorHeroProps {
   onBookClick: () => void;
-  onOpenTriage: () => void;
+  onOpenTriage?: () => void;
 }
 
 export function WatercolorHero({ onBookClick, onOpenTriage }: WatercolorHeroProps) {
+  const { content } = useCMS();
+  const settings = content.settings;
+
   const [showDepositTooltip, setShowDepositTooltip] = useState(false);
 
-  const primaryCtaLabel = CONFIG.PRICING_ENABLED ? "Reservar sesión" : "Consultar disponibilidad";
+  const heroTitle = settings.heroTitle || "¿Sientes que cargas con un peso que no te pertenece?";
+  const heroSubtitle =
+    settings.heroSubtitle ||
+    "Un espacio cuidado para mirar el orden de tu sistema familiar y retomar tu propio lugar con calma.";
+  const heroBg = settings.heroBgImage || "/images/mirar-historia-sanar.png";
+
+  const telegramUrl = settings.telegramUrl || "https://web.telegram.org/a/#-5157628559";
+  const telegramImage = settings.telegramImage || "/images/comunidad-encuentro.png";
+  const telegramBadge = settings.telegramBadge || "Comunidad de Consteladores en Telegram";
+  const telegramDescription =
+    settings.telegramDescription ||
+    "Únete a nuestro espacio seguro de acompañamiento, lecturas y encuentros sistémicos entre pares.";
 
   return (
-    <section className="relative overflow-hidden pt-16 pb-20 sm:pt-24 sm:pb-28 bg-[#FBF7F2]">
-      {/* Fondo con imagen propia y velo crema con opacidad controlada por variable CSS */}
+    <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28 bg-[#FBF7F2]">
+      {/* Fondo con imagen propia y velo crema con opacidad controlada */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
         <Image
-          src="/images/mirar-historia-sanar.png"
+          src={heroBg}
           alt="Ilustración sistémica de raíces familiares y vínculos de origen"
           fill
           priority
           sizes="100vw"
           className="object-cover object-center"
         />
-        {/* Capa de velo crema (#FBF7F2) para garantizar contraste WCAG AA */}
         <div
           className="absolute inset-0 bg-[#FBF7F2] transition-opacity"
-          style={{ opacity: "var(--overlay-hero-opacity, 0.80)" }}
+          style={{ opacity: "var(--overlay-hero-opacity, 0.82)" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#FBF7F2]/90 via-transparent to-[#FBF7F2]" />
       </div>
@@ -42,80 +56,92 @@ export function WatercolorHero({ onBookClick, onOpenTriage }: WatercolorHeroProp
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fadeIn">
         
-        {/* Insignia Centrada sin emojis */}
+        {/* Insignia Centrada */}
         <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-cream-50/95 border border-terracotta-200/90 text-terracotta-700 text-xs sm:text-sm font-semibold mb-6 backdrop-blur-sm shadow-sm mx-auto">
           <FamilyTreeIcon className="w-4 h-4" isAnimated={true} />
-          <span>Acompañamiento Sistémico y Mirada al Origen · Chile</span>
+          <span>Acompañamiento Sistémico y Mirada al Origen</span>
         </div>
 
         {/* Titular como pregunta emocional */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-semibold text-[#27221F] tracking-tight leading-[1.18] mb-6">
-          ¿Sientes que cargas con un peso <br className="hidden sm:block" />
-          <span className="italic font-serif text-terracotta-500">que no te pertenece?</span>
+          {heroTitle}
         </h1>
 
         {/* Subtítulo de máximo dos líneas */}
         <p className="text-lg sm:text-xl text-[#38322E] font-normal leading-relaxed max-w-2xl mx-auto mb-9">
-          Un espacio cuidado para mirar el orden de tu sistema familiar, reconocer lo que busca ser visto y retomar tu propio lugar con calma.
+          {heroSubtitle}
         </p>
 
-        {/* Acciones Principales sin emojis */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+        {/* Acciones Principales */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
           <button
             onClick={onBookClick}
             type="button"
-            className="w-full sm:w-auto px-8 py-3.5 text-base font-medium text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center btn-breathe cursor-pointer"
+            className="w-full sm:w-auto px-9 py-4 text-base font-semibold text-white bg-terracotta-500 hover:bg-terracotta-600 rounded-full shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center cursor-pointer"
           >
-            {primaryCtaLabel}
+            Reservar sesión
           </button>
           
-          <button
-            onClick={onOpenTriage}
-            type="button"
-            className="w-full sm:w-auto px-8 py-3.5 text-base font-semibold text-[#27221F] bg-cream-50 hover:bg-cream-200/90 border-2 border-terracotta-500/80 hover:border-terracotta-600 rounded-full shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center cursor-pointer"
+          <a
+            href="#talleres"
+            className="w-full sm:w-auto px-8 py-4 text-base font-medium text-[#27221F] bg-cream-50 hover:bg-cream-200/90 border-2 border-[#E7DECE] hover:border-terracotta-400 rounded-full shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center cursor-pointer"
           >
-            Hacer test orientador, 30 segundos
-          </button>
+            Ver talleres vivenciales
+          </a>
         </div>
 
-        {/* Micro-Garantías de Confianza sin emojis ni precios en CLP */}
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs sm:text-sm text-[#4A423D] font-medium">
-          
-          <div className="relative inline-flex items-center">
-            <button
-              type="button"
-              onClick={() => setShowDepositTooltip(!showDepositTooltip)}
-              onMouseEnter={() => setShowDepositTooltip(true)}
-              onMouseLeave={() => setShowDepositTooltip(false)}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cream-50 border border-[#E7DECE] text-[#38322E] hover:border-terracotta-400 transition-colors text-xs cursor-pointer focus:outline-none"
-              aria-label="Información sobre la reserva del 20%"
-            >
-              <span>Abono de reserva del 20% (descontable del total)</span>
-              <span className="w-4 h-4 rounded-full bg-[#E7DECE] text-[#5C524A] text-[10px] flex items-center justify-center font-bold">i</span>
-            </button>
-
-            {showDepositTooltip && (
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 sm:w-80 p-3 bg-white border border-[#E7DECE] rounded-2xl shadow-xl text-left text-xs text-[#38322E] z-30 animate-fadeIn">
-                <p className="font-semibold text-terracotta-600 mb-1">
-                  Transparencia en tu reserva:
-                </p>
-                <p className="leading-relaxed text-[#5C524A]">
-                  Para reservar se abona el 20% inicial, el cual se descuenta del valor total de la sesión. El saldo restante (80%) se cancela por transferencia bancaria directa a tu facilitador antes o al iniciar el encuentro.
-                </p>
+        {/* SECCIÓN DESTACADA REQUERIDA: Imagen destacada conectada a la comunidad de Consteladores en Telegram */}
+        <div id="comunidad-telegram" className="mb-12 scroll-mt-24">
+          <a
+            href={telegramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group block bg-[#FCFAF7] border-2 border-sage-300/80 hover:border-sage-500 rounded-3xl p-4 sm:p-6 shadow-sm hover:shadow-xl transition-all duration-300 text-left cursor-pointer transform hover:-translate-y-1"
+          >
+            <div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-6">
+              {/* Imagen Destacada de la Comunidad */}
+              <div className="relative w-full sm:w-44 h-36 sm:h-32 rounded-2xl overflow-hidden shrink-0 border border-sage-200 bg-sage-50">
+                <img
+                  src={telegramImage}
+                  alt="Comunidad de Consteladores en Telegram"
+                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-sky-600 text-white text-[10px] font-bold flex items-center gap-1 shadow-sm">
+                  <span>✈️ Telegram</span>
+                </div>
               </div>
-            )}
-          </div>
 
+              {/* Textos y Acceso Directo */}
+              <div className="flex-1 space-y-1.5 text-center sm:text-left">
+                <span className="inline-block text-[11px] font-semibold uppercase tracking-wider text-sage-800 bg-sage-100 px-3 py-0.5 rounded-full border border-sage-200">
+                  {telegramBadge}
+                </span>
+                <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#27221F] group-hover:text-sage-800 transition-colors">
+                  Únete a la Comunidad de Consteladores
+                </h3>
+                <p className="text-xs sm:text-sm text-[#5C524A] leading-relaxed">
+                  {telegramDescription}
+                </p>
+                <div className="pt-2 flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold text-sage-700 group-hover:text-sage-900">
+                  <span>Acceso directo al grupo de Telegram</span>
+                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        {/* Micro-Garantías de Confianza */}
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs sm:text-sm text-[#4A423D] font-medium">
           <span className="inline-flex items-center gap-1.5 text-xs text-[#38322E]">
-            Online (Google Meet) y presencial en Santiago, Viña del Mar y Concepción
+            Online vía videollamada (Zoom o Google Meet) y presencial en Concón y Santiago
           </span>
-
           <span className="inline-flex items-center gap-1.5 text-xs text-[#38322E]">
-            Facilitadores con verificación de formación
+            Atención personalizada y respetuosa
           </span>
         </div>
 
-        {/* Aclaración ética obligatoria en la home */}
+        {/* Aclaración ética obligatoria */}
         <div className="mt-12 pt-6 border-t border-[#E7DECE]/80 max-w-2xl mx-auto space-y-1.5 text-center">
           <p className="text-[12px] text-[#5C524A] leading-relaxed">
             {CONFIG.DISCLAIMER_NOTICE}
