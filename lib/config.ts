@@ -14,6 +14,7 @@ export const CONFIG = {
   // Datos de contacto oficial (el número no debe mostrarse como texto plano en el diseño visual)
   WHATSAPP_NUMBER: "+56941939363",
   SUPPORT_EMAIL: "contacto@consteladores.cl",
+  TELEGRAM_INVITE_URL: "https://t.me/+PjKqj5M9k_wyYjEx",
 
   // Relación y respaldo de Icalma Constelaciones
   ICALMA_URL: "https://constelacionesfamiliares.cl",

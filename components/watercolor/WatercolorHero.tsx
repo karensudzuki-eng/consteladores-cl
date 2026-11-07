@@ -16,20 +16,11 @@ export function WatercolorHero({ onBookClick, onOpenTriage }: WatercolorHeroProp
   const { content } = useCMS();
   const settings = content.settings;
 
-  const [showDepositTooltip, setShowDepositTooltip] = useState(false);
-
   const heroTitle = settings.heroTitle || "¿Sientes que cargas con un peso que no te pertenece?";
   const heroSubtitle =
     settings.heroSubtitle ||
     "Un espacio cuidado para mirar el orden de tu sistema familiar y retomar tu propio lugar con calma.";
   const heroBg = settings.heroBgImage || "/images/mirar-historia-sanar.png";
-
-  const telegramUrl = settings.telegramUrl || "https://web.telegram.org/a/#-5157628559";
-  const telegramImage = settings.telegramImage || "/images/comunidad-encuentro.png";
-  const telegramBadge = settings.telegramBadge || "Comunidad de Consteladores en Telegram";
-  const telegramDescription =
-    settings.telegramDescription ||
-    "Únete a nuestro espacio seguro de acompañamiento, lecturas y encuentros sistémicos entre pares.";
 
   return (
     <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28 bg-[#FBF7F2]">
@@ -94,23 +85,12 @@ export function WatercolorHero({ onBookClick, onOpenTriage }: WatercolorHeroProp
         {/* Micro-Garantías de Confianza */}
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs sm:text-sm text-[#4A423D] font-medium">
           <span className="inline-flex items-center gap-1.5 text-xs text-[#38322E]">
-            Online vía videollamada (Zoom o Google Meet) y presencial en Concón y Santiago
+            Online vía videollamada y presencial en Concón y Santiago
           </span>
           <span className="inline-flex items-center gap-1.5 text-xs text-[#38322E]">
             Atención personalizada y respetuosa
           </span>
         </div>
-
-        {/* Aclaración ética obligatoria */}
-        <div className="mt-12 pt-6 border-t border-[#E7DECE]/80 max-w-2xl mx-auto space-y-1.5 text-center">
-          <p className="text-[12px] text-[#5C524A] leading-relaxed">
-            {CONFIG.DISCLAIMER_NOTICE}
-          </p>
-          <p className="text-[11px] text-[#8A7E73]">
-            {CONFIG.CRISIS_LINE_NOTICE}
-          </p>
-        </div>
-
       </div>
     </section>
   );

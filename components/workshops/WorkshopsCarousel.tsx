@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { CMSWorkshop } from "@/lib/cms/content";
-import { WorkshopLogoBadge } from "./WorkshopLogos";
 
 interface WorkshopsCarouselProps {
   workshops: CMSWorkshop[];
@@ -90,22 +89,9 @@ export function WorkshopsCarousel({
                       </div>
                     )}
 
-                    {/* Logo Flotante */}
-                    <div className="absolute top-3 left-3 z-10">
-                      <WorkshopLogoBadge
-                        logoType={workshop.logoType}
-                        logoUrl={workshop.logoUrl}
-                      />
-                    </div>
-
                     {/* Modalidad Badge: Presencial u Online */}
                     <div className="absolute top-3 right-3 z-10 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide shadow-sm backdrop-blur-sm bg-black/60 text-white">
-                      {workshop.modality === "online" ? "🌐 Online (Meet)" : "📍 Presencial"}
-                    </div>
-
-                    {/* Fecha badge */}
-                    <div className="absolute bottom-3 right-3 z-10 px-3 py-1 rounded-full bg-black/70 backdrop-blur-sm text-white text-[11px] font-medium">
-                      {workshop.date}
+                      {workshop.modality === "online" ? "🌐 Online" : "📍 Presencial"}
                     </div>
                   </div>
 

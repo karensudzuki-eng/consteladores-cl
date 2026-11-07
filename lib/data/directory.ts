@@ -140,6 +140,38 @@ export const directoryFacilitators: FacilitatorProfile[] = [
       },
     ],
   },
+  {
+    id: "erika-alert",
+    name: "Erika Alert",
+    headline: "Facilitadora de Constelaciones Familiares y Talleres Vivenciales",
+    schoolAndYear: "Formación en Constelaciones Sistémicas",
+    status: "ACREDITADO",
+    specialties: ["ancestros", "pareja", "dinero"],
+    modalities: ["online", "presencial"],
+    city: "Concón / Valparaíso y Online",
+    locationDetails: "Edmundo Eluchans 3047, of. 22, Concón y Online",
+    totalPriceClp: 40000,
+    depositPriceClp: 40000,
+    balancePriceClp: 0,
+    experienceYears: 7,
+    completedSessions: 85,
+    rating: 5.0,
+    reviewCount: 19,
+    bio: "Facilitadora con amplia experiencia en constelaciones familiares grupales e individuales. Acompaña procesos de reconciliación y comprensión de nudos familiares en la V Región y vía online.",
+    approachDetails: "Enfoque sistémico vivencial y fenomenológico.",
+    nextAvailableDate: "A coordinar en agenda",
+    isValidated: true,
+    availableHours: ["10:00", "11:30", "15:00", "16:30", "18:00"],
+    reviews: [
+      {
+        author: "Consultante",
+        city: "Concón",
+        text: "El taller vivencial fue una experiencia profunda y conmovedora. Erika crea un espacio de enorme calidez y seguridad.",
+        theme: "Familia y Origen",
+        date: "febrero 2026",
+      },
+    ],
+  },
 ];
 
 export interface SystemicWorkshop {

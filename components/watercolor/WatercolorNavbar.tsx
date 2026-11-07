@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useCMS } from "@/lib/cms/CMSContext";
 import { CONFIG } from "@/lib/config";
 
 interface WatercolorNavbarProps {
@@ -37,6 +38,9 @@ export function AmmoniteIcon({ className = "w-7 h-7" }: { className?: string }) 
 
 export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { content } = useCMS();
+  const settings = content?.settings;
+  const siteLogo = settings?.siteLogoUrl || "/images/logo-consteladores.jpg";
 
   const primaryCtaLabel = CONFIG.PRICING_ENABLED ? "Reservar sesión" : "Consultar disponibilidad";
 
@@ -45,59 +49,44 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* Logo Principal con Amonite */}
+          {/* Logo Principal Oficial de Consteladores */}
           <Link
             href="/"
-            className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500 rounded-lg p-1"
+            className="flex items-center gap-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500 rounded-lg p-1"
           >
-            <div className="text-terracotta-500 group-hover:scale-105 transition-transform duration-300">
-              <AmmoniteIcon className="w-8 h-8 sm:w-9 sm:h-9" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-2xl sm:text-3xl font-serif font-semibold tracking-tight text-[#27221F] group-hover:text-terracotta-600 transition-colors">
-                consteladores<span className="text-terracotta-500 italic font-serif">.cl</span>
-              </span>
-              <a
-                href="https://constelacionesfamiliares.cl"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-[11px] sm:text-xs text-[#8A7E73] hover:text-terracotta-600 transition-colors font-medium -mt-1 inline-flex items-center gap-1"
-                title="Ir al Centro de Formación Icalma"
-              >
-                <span>Formación Continua Icalma</span>
-                <span className="text-[10px]">↗</span>
-              </a>
-            </div>
+            <img
+              src={siteLogo}
+              alt="Consteladores"
+              className="h-10 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-102"
+            />
           </Link>
 
-          {/* Menú de Navegación: Talleres · Sesión Online · Comunidad · Facilitadores */}
+          {/* Menú de Navegación: Quiénes somos · Talleres · Sesión Individual · Facilitadores */}
           <nav className="hidden lg:flex items-center space-x-7" aria-label="Navegación principal">
+            <Link
+              href="/quienes-somos"
+              className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
+            >
+              Quiénes somos
+            </Link>
             <a
-              href="#talleres"
+              href="/#talleres"
               className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
             >
               Talleres
             </a>
             <a
-              href="#servicios"
+              href="/#servicios"
               className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
             >
               Sesión Individual
             </a>
-            <a
-              href="#comunidad"
-              className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1 flex items-center gap-1.5"
-            >
-              <span>Comunidad</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
-            </a>
-            <a
-              href="#facilitadores"
+            <Link
+              href="/facilitadores"
               className="text-[15px] font-medium text-[#5C524A] hover:text-[#27221F] transition-colors py-1"
             >
               Facilitadores
-            </a>
+            </Link>
           </nav>
 
           {/* Botones de Acción: Primario y Enlace a Panel Admin */}
@@ -169,34 +158,34 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
         {/* Menú Desplegable Móvil */}
         {mobileMenuOpen && (
           <div className="sm:hidden border-t border-[#E7DECE] py-4 space-y-3 animate-fadeIn">
+            <Link
+              href="/quienes-somos"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
+            >
+              Quiénes somos
+            </Link>
             <a
-              href="#talleres"
+              href="/#talleres"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
             >
               Talleres
             </a>
             <a
-              href="#servicios"
+              href="/#servicios"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
             >
-              Sesión Individual Online
+              Sesión Individual
             </a>
-            <a
-              href="#comunidad"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
-            >
-              Comunidad
-            </a>
-            <a
-              href="#facilitadores"
+            <Link
+              href="/facilitadores"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-[#5C524A] hover:text-[#27221F] py-1.5"
             >
               Facilitadores
-            </a>
+            </Link>
             <div className="pt-2 border-t border-[#E7DECE] flex flex-col gap-2">
               <Link
                 href="/admin"

@@ -10,7 +10,7 @@ export interface CMSWorkshop {
   city: string;
   price: string;
   modality?: "presencial" | "online";
-  logoType: "icalma" | "vortice" | "custom";
+  logoType: "consteladores" | "icalma" | "vortice" | "custom";
   logoUrl?: string;
   flyerUrl: string;
   phoneContact: string;
@@ -50,6 +50,7 @@ export interface CMSFacilitator {
 }
 
 export interface CMSSettings {
+  siteLogoUrl: string;
   whatsappNumber: string;
   supportEmail: string;
   telegramUrl: string;
@@ -71,6 +72,13 @@ export interface CMSSettings {
   serviceImage: string;
   serviceOnlineMaterials: string[];
   serviceOnlineRequirements: string;
+
+  // Si eres facilitador y quieres pertenecer al equipo
+  joinTeamTitle: string;
+  joinTeamDescription: string;
+  joinTeamImageUrl: string;
+  joinTeamPostulateUrl: string;
+  joinTeamPostulateLabel: string;
 
   about: CMSAbout;
 
@@ -94,6 +102,7 @@ export interface CMSContent {
 
 export const DEFAULT_CMS_CONTENT: CMSContent = {
   settings: {
+    siteLogoUrl: "/images/logo-consteladores.jpg",
     whatsappNumber: "+56 9 4193 9363",
     supportEmail: "contacto@consteladores.cl",
     telegramUrl: "https://web.telegram.org/a/#-5157628559",
@@ -121,6 +130,13 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
     ],
     serviceOnlineRequirements:
       "Contar con un espacio privado e internet a través de computador o teléfono móvil.",
+
+    joinTeamTitle: "Si eres facilitador y quieres pertenecer al equipo",
+    joinTeamDescription:
+      "Buscamos facilitadores comprometidos con la ética sistémica y el cuidado humano. Postula para formar parte de nuestra red, o únete a nuestros espacios comunitarios de profundización.",
+    joinTeamImageUrl: "/images/comunidad-encuentro.png",
+    joinTeamPostulateUrl: "/registro-terapeuta",
+    joinTeamPostulateLabel: "Postular como facilitador",
 
     about: {
       title: "Quiénes somos",

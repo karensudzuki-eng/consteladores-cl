@@ -64,37 +64,43 @@ export default function AdminPage() {
     }
   };
 
-  // Función utilitaria para optimizar imágenes y convertir a Data URL
+  // Función utilitaria robusta para optimizar imágenes y convertir a Data URL sin fallos
   const optimizeImageFile = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.readAsDataURL(file);
       reader.onload = () => {
+        const rawResult = (reader.result as string) || "";
         const img = new Image();
-        img.src = reader.result as string;
         img.onload = () => {
-          const maxDim = 1200;
-          let width = img.width;
-          let height = img.height;
-          if (width > maxDim || height > maxDim) {
-            if (width > height) {
-              height = Math.round((height * maxDim) / width);
-              width = maxDim;
-            } else {
-              width = Math.round((width * maxDim) / height);
-              height = maxDim;
+          try {
+            const maxDim = 1200;
+            let width = img.width;
+            let height = img.height;
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              } else {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
             }
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx?.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.88);
+            resolve(dataUrl || rawResult);
+          } catch {
+            resolve(rawResult);
           }
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          ctx?.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL("image/jpeg", 0.88));
         };
-        img.onerror = reject;
+        img.onerror = () => resolve(rawResult);
+        img.src = rawResult;
       };
-      reader.onerror = reject;
+      reader.onerror = () => resolve("");
+      reader.readAsDataURL(file);
     });
   };
 
@@ -970,7 +976,7 @@ export default function AdminPage() {
           <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
             <div className="pb-4 border-b border-[#E7DECE]">
               <h2 className="text-lg font-serif font-bold text-[#27221F]">
-                Quiénes Somos (Identidad e Impulso Icalma)
+                Quiénes Somos (Historia y Misión)
               </h2>
               <p className="text-xs text-[#5C524A]">
                 Modifica el titular, la reseña y la imagen que representa a la institución.
@@ -1137,7 +1143,71 @@ export default function AdminPage() {
         {/* PESTAÑA 7: WHATSAPP Y TRANSFERENCIAS                                     */}
         {/* ========================================================================= */}
         {activeTab === "contacto" && (
-          <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-8 shadow-sm space-y-8">
+            
+            {/* 1. LOGOTIPO OFICIAL DE LA WEB */}
+            <div className="bg-[#FAF8F5] p-5 rounded-2xl border border-[#E7DECE] space-y-4">
+              <div className="border-b border-[#E7DECE] pb-3">
+                <span className="text-xs font-bold uppercase tracking-wider text-terracotta-700 block">
+                  Logotipo Oficial de la Plataforma
+                </span>
+                <p className="text-xs text-[#5C524A] mt-0.5">
+                  Este es el logo que se muestra en la cabecera (navbar), menús y comunicaciones de la plataforma.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
+                <div className="sm:col-span-4 bg-white p-4 rounded-xl border border-[#E7DECE] flex flex-col items-center justify-center">
+                  <img
+                    src={content.settings.siteLogoUrl || "/images/logo-consteladores.jpg"}
+                    alt="Logo oficial"
+                    className="h-16 w-auto object-contain mb-3"
+                  />
+                  <span className="text-[10px] text-[#8A7E73]">Vista previa del logo</span>
+                </div>
+
+                <div className="sm:col-span-8 space-y-3">
+                  <div>
+                    <label className="block text-xs font-bold text-[#5C524A] mb-1.5">
+                      Cargar nuevo logo desde tu computador:
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const dataUrl = await optimizeImageFile(file);
+                        setContent({
+                          ...content,
+                          settings: { ...content.settings, siteLogoUrl: dataUrl },
+                        });
+                      }}
+                      className="block w-full text-xs text-[#5C524A] file:mr-2 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-terracotta-50 file:text-terracotta-700 hover:file:bg-terracotta-100 cursor-pointer"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-[#8A7E73] mb-1">
+                      O ruta/URL del logo:
+                    </label>
+                    <input
+                      type="text"
+                      value={content.settings.siteLogoUrl || "/images/logo-consteladores.jpg"}
+                      onChange={(e) =>
+                        setContent({
+                          ...content,
+                          settings: { ...content.settings, siteLogoUrl: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. CANAL DE WHATSAPP Y NOTIFICACIONES */}
             <div className="pb-4 border-b border-[#E7DECE]">
               <h2 className="text-lg font-serif font-bold text-[#27221F]">
                 Canal de WhatsApp y Datos Bancarios para Pagos
@@ -1272,6 +1342,120 @@ export default function AdminPage() {
                     }
                     className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs"
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* 3. MÓDULO DE CONVOCATORIA A FACILITADORES ("Si eres facilitador y quieres pertenecer al equipo") */}
+            <div className="bg-[#FAF8F5] p-5 rounded-2xl border border-[#E7DECE] space-y-4">
+              <div className="border-b border-[#E7DECE] pb-3">
+                <span className="text-xs font-bold uppercase tracking-wider text-terracotta-700 block">
+                  Módulo de Convocatoria a Facilitadores (Página /facilitadores)
+                </span>
+                <p className="text-xs text-[#5C524A] mt-0.5">
+                  Personaliza los textos, imagen y botones del marco "Si eres facilitador y quieres pertenecer al equipo".
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1">Título del Marco</label>
+                  <input
+                    type="text"
+                    value={content.settings.joinTeamTitle || "Si eres facilitador y quieres pertenecer al equipo"}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        settings: { ...content.settings, joinTeamTitle: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs font-bold"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1">Descripción</label>
+                  <textarea
+                    rows={3}
+                    value={content.settings.joinTeamDescription || ""}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        settings: { ...content.settings, joinTeamDescription: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1">Texto del Botón de Postulación</label>
+                  <input
+                    type="text"
+                    value={content.settings.joinTeamPostulateLabel || "Postular como facilitador"}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        settings: { ...content.settings, joinTeamPostulateLabel: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs font-semibold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1">Enlace del Botón de Postulación</label>
+                  <input
+                    type="text"
+                    value={content.settings.joinTeamPostulateUrl || "/registro-terapeuta"}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        settings: { ...content.settings, joinTeamPostulateUrl: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1">Enlace de la Comunidad de Telegram</label>
+                  <input
+                    type="text"
+                    value={content.settings.telegramUrl || "https://t.me/+PjKqj5M9k_wyYjEx"}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        settings: { ...content.settings, telegramUrl: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1.5">Imagen Destacada del Marco</label>
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={content.settings.joinTeamImageUrl || "/images/comunidad-encuentro.png"}
+                      alt="Preview"
+                      className="w-20 h-20 rounded-xl object-cover border border-[#E7DECE]"
+                    />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const dataUrl = await optimizeImageFile(file);
+                        setContent({
+                          ...content,
+                          settings: { ...content.settings, joinTeamImageUrl: dataUrl },
+                        });
+                      }}
+                      className="block text-xs text-[#5C524A] file:mr-2 file:py-1 file:px-2.5 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-terracotta-50 file:text-terracotta-700 hover:file:bg-terracotta-100 cursor-pointer"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

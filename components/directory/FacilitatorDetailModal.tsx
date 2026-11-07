@@ -54,7 +54,7 @@ export function FacilitatorDetailModal({
 
           <div className="text-center sm:text-left flex-1">
             <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-sage-100 text-sage-800 text-[11px] font-semibold mb-1.5">
-              <span>Estado: Acreditado Icalma</span>
+              <span>Facilitador de Constelaciones</span>
               <span>· {facilitator.experienceYears} años de práctica</span>
             </div>
             <h3 className="text-2xl sm:text-3xl font-serif font-semibold text-[#27221F]">
@@ -145,9 +145,6 @@ export function FacilitatorDetailModal({
                   <span className="text-2xl font-serif font-bold text-[#27221F]">
                     ${facilitator.totalPriceClp.toLocaleString("es-CL")}{" "}
                     <span className="text-xs font-sans font-normal text-[#8A7E73]">CLP</span>
-                  </span>
-                  <span className="text-xs text-terracotta-600 block font-medium">
-                    Abono 20%: ${facilitator.depositPriceClp.toLocaleString("es-CL")} · Saldo: ${facilitator.balancePriceClp.toLocaleString("es-CL")}
                   </span>
                   <span className="text-[10px] text-[#8A7E73] block mt-0.5">
                     * Valores referenciales sujetos a cambio

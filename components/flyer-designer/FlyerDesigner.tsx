@@ -26,7 +26,7 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
   const [quote, setQuote] = useState('"Cuando tú constelas, todos constelamos"');
 
   // Logotipo
-  const [logoType, setLogoType] = useState<"icalma" | "vortice" | "custom">("icalma");
+  const [logoType, setLogoType] = useState<"consteladores" | "icalma" | "vortice" | "custom">("consteladores");
   const [customLogoUrl, setCustomLogoUrl] = useState<string>("");
 
   // Imagen de Fondo
@@ -148,26 +148,23 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
       ctx.font = "bold 20px sans-serif";
       ctx.fillText("Vórtice Integración", 115, headerY + 32);
     } else {
-      // Badge Oficial Icalma Constelaciones
+      // Badge Oficial Consteladores
       ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
       ctx.beginPath();
-      ctx.roundRect(70, headerY, 340, 52, 26);
+      ctx.roundRect(70, headerY, 320, 52, 26);
       ctx.fill();
 
-      // Isotipo circular Icalma
-      ctx.strokeStyle = "#D9664A";
-      ctx.lineWidth = 3;
+      // Isotipo infinito de Consteladores
+      ctx.strokeStyle = "#2E1A63";
+      ctx.lineWidth = 3.5;
       ctx.beginPath();
-      ctx.arc(102, headerY + 26, 12, 0, Math.PI * 2);
+      ctx.arc(98, headerY + 26, 10, 0, Math.PI * 2);
+      ctx.arc(114, headerY + 26, 10, 0, Math.PI * 2);
       ctx.stroke();
 
-      ctx.fillStyle = "#D9664A";
-      ctx.font = "italic bold 24px Georgia, serif";
-      ctx.fillText("Icalma", 128, headerY + 34);
-
-      ctx.fillStyle = "#5C524A";
-      ctx.font = "500 16px sans-serif";
-      ctx.fillText("· Formación desde 2006", 204, headerY + 33);
+      ctx.fillStyle = "#2E1A63";
+      ctx.font = "bold 22px Georgia, serif";
+      ctx.fillText("Consteladores", 136, headerY + 34);
     }
 
     // Píldora de "consteladores.cl" en la esquina superior derecha
@@ -545,14 +542,14 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <button
                 type="button"
-                onClick={() => setLogoType("icalma")}
+                onClick={() => setLogoType("consteladores")}
                 className={`p-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
-                  logoType === "icalma"
-                    ? "bg-terracotta-100 border-terracotta-500 text-terracotta-800"
+                  logoType === "consteladores"
+                    ? "bg-purple-100 border-purple-500 text-purple-900"
                     : "bg-white border-[#E7DECE] text-[#5C524A]"
                 }`}
               >
-                Logo Icalma (Por Defecto)
+                Logo Consteladores (Por Defecto)
               </button>
 
               <button

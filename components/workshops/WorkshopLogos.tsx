@@ -7,7 +7,7 @@ export function WorkshopLogoBadge({
   logoUrl,
   className = "",
 }: {
-  logoType: "icalma" | "vortice" | "custom";
+  logoType?: "consteladores" | "icalma" | "vortice" | "custom";
   logoUrl?: string;
   className?: string;
 }) {
@@ -32,26 +32,17 @@ export function WorkshopLogoBadge({
     );
   }
 
-  // Por defecto: Logo oficial Icalma
+  // Por defecto: Logo oficial de Consteladores.cl
   return (
     <div
       className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF8F5]/95 border border-[#E7DECE] text-[#27221F] text-[11px] font-medium tracking-wide backdrop-blur-sm shadow-sm ${className}`}
     >
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        className="w-3.5 h-3.5 text-terracotta-600"
-      >
-        <circle cx="12" cy="12" r="10" strokeWidth="1.5" strokeOpacity="0.4" />
-        <path
-          d="M12 4C16.418 4 20 7.582 20 12C20 16.418 16.418 20 12 20C7.582 20 4 16.418 4 12"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-        <path d="M12 8C14.209 8 16 9.791 16 12" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-      <span className="font-serif font-semibold text-terracotta-700">Centro Icalma</span>
+      <img
+        src="/images/logo-consteladores.jpg"
+        alt="Consteladores"
+        className="h-4 w-auto object-contain"
+      />
+      <span className="font-serif font-semibold text-[#27221F]">Consteladores.cl</span>
     </div>
   );
 }

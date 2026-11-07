@@ -1,8 +1,9 @@
 {
   "settings": {
+    "siteLogoUrl": "/images/logo-consteladores.jpg",
     "whatsappNumber": "+56 9 4193 9363",
     "supportEmail": "contacto@consteladores.cl",
-    "telegramUrl": "https://web.telegram.org/a/#-5157628559",
+    "telegramUrl": "https://t.me/+PjKqj5M9k_wyYjEx",
     "telegramImage": "/images/comunidad-encuentro.png",
     "telegramBadge": "Comunidad de Consteladores en Telegram",
     "telegramDescription": "Únete a nuestro espacio seguro de acompañamiento, lecturas y encuentros sistémicos entre pares.",
@@ -21,9 +22,14 @@
       "Pañuelos desechables o similar."
     ],
     "serviceOnlineRequirements": "Contar con un espacio privado e internet a través de computador o teléfono móvil.",
+    "joinTeamTitle": "Si eres facilitador y quieres pertenecer al equipo",
+    "joinTeamDescription": "Buscamos facilitadores comprometidos con la ética sistémica y el cuidado humano. Postula para formar parte de nuestra red, o únete a nuestros espacios comunitarios de profundización.",
+    "joinTeamImageUrl": "/images/comunidad-encuentro.png",
+    "joinTeamPostulateUrl": "/registro-terapeuta",
+    "joinTeamPostulateLabel": "Postular como facilitador",
     "about": {
       "title": "Quiénes somos",
-      "description": "consteladores.cl es una plataforma orientada a conectar a personas que buscan mirar y ordenar dinámicas de su sistema familiar con facilitadores acreditados y con respaldo docente Icalma Constelaciones (formación desde 2006).",
+      "description": "consteladores.cl es una plataforma orientada a conectar a personas que buscan mirar y ordenar dinámicas de su sistema familiar con facilitadores de experiencia y vocación humana.",
       "imageUrl": "/images/arbol-generaciones.png"
     },
     "bankDetails": {

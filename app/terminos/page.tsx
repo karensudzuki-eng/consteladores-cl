@@ -62,7 +62,7 @@ export default function TerminosPage() {
             3. Reprogramación y Cancelación
           </h2>
           <p className="text-xs text-[#5C524A] leading-relaxed">
-            Se aplican íntegramente las condiciones descritas en nuestra <Link href="/cancelacion" className="text-terracotta-600 underline font-semibold">Política de Cancelación</Link>: con al menos 24 horas de aviso previo, el consultante puede reasignar su hora sin costo o solicitar la restitución del 100% del abono. Inasistencias sin aviso pierden el abono de reserva.
+            Para coordinar reprogramaciones o consultas sobre tu cita agendada, puedes comunicarte directamente al canal de WhatsApp con anticipación para acordar un nuevo horario de común acuerdo.
           </p>
         </section>
 

@@ -56,7 +56,7 @@ export function HeroRotatingCarousel({
   const currentSlide = activeSlides[currentIndex] || activeSlides[0];
 
   return (
-    <div className="w-full max-w-3xl mx-auto my-8">
+    <div className="w-full max-w-4xl mx-auto my-10">
       {/* Elemento de Audio Oculto */}
       {musicUrl && (
         <audio
@@ -69,11 +69,11 @@ export function HeroRotatingCarousel({
       )}
 
       {/* Barra de Control de Música Ambiental */}
-      <div className="flex items-center justify-between mb-3 px-2">
+      <div className="flex items-center justify-between mb-4 px-2">
         <button
           type="button"
           onClick={toggleMusic}
-          className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all shadow-sm cursor-pointer ${
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all shadow-sm cursor-pointer ${
             isPlayingMusic
               ? "bg-sage-600 text-white shadow-sage-200"
               : "bg-white/80 hover:bg-white text-[#5C524A] border border-[#E7DECE]"
@@ -92,16 +92,16 @@ export function HeroRotatingCarousel({
         </button>
 
         {/* Indicador de posición / Contador */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           {activeSlides.map((_, i) => (
             <button
               key={i}
               type="button"
               onClick={() => setCurrentIndex(i)}
-              className={`h-2 rounded-full transition-all cursor-pointer ${
+              className={`h-2.5 rounded-full transition-all cursor-pointer ${
                 i === currentIndex
-                  ? "w-6 bg-terracotta-500"
-                  : "w-2 bg-[#D5C8B4] hover:bg-[#8A7E73]"
+                  ? "w-8 bg-terracotta-500"
+                  : "w-2.5 bg-[#D5C8B4] hover:bg-[#8A7E73]"
               }`}
               aria-label={`Ir a diapositiva ${i + 1}`}
             />
@@ -109,11 +109,11 @@ export function HeroRotatingCarousel({
         </div>
       </div>
 
-      {/* Tarjeta del Carrusel Giratorio */}
-      <div className="relative bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-5 sm:p-7 shadow-lg overflow-hidden transition-all duration-700">
+      {/* Tarjeta del Carrusel Giratorio con Mayor Amplitud y Espacio */}
+      <div className="relative bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-10 shadow-xl overflow-hidden transition-all duration-700">
         
-        {/* Imagen del Slide con Transición Suave */}
-        <div className="relative w-full h-56 sm:h-72 rounded-2xl overflow-hidden mb-5 bg-[#EFE8DE] shadow-inner group">
+        {/* Imagen del Slide con Mayor Altura y Espacio */}
+        <div className="relative w-full h-72 sm:h-96 md:h-[440px] rounded-2xl overflow-hidden mb-6 bg-[#EFE8DE] shadow-inner group">
           <img
             key={currentSlide.id || currentSlide.imageUrl}
             src={currentSlide.imageUrl}
@@ -122,13 +122,13 @@ export function HeroRotatingCarousel({
           />
 
           {/* Botones de navegación sobre la imagen */}
-          <div className="absolute inset-0 flex items-center justify-between p-3 pointer-events-none">
+          <div className="absolute inset-0 flex items-center justify-between p-4 pointer-events-none">
             <button
               type="button"
               onClick={() =>
                 setCurrentIndex((prev) => (prev === 0 ? activeSlides.length - 1 : prev - 1))
               }
-              className="w-9 h-9 rounded-full bg-white/80 hover:bg-white text-[#27221F] flex items-center justify-center shadow-md transition-all active:scale-90 pointer-events-auto cursor-pointer"
+              className="w-10 h-10 rounded-full bg-white/85 hover:bg-white text-[#27221F] flex items-center justify-center shadow-lg transition-all active:scale-90 pointer-events-auto cursor-pointer"
               aria-label="Diapositiva anterior"
             >
               ←
@@ -136,7 +136,7 @@ export function HeroRotatingCarousel({
             <button
               type="button"
               onClick={() => setCurrentIndex((prev) => (prev + 1) % activeSlides.length)}
-              className="w-9 h-9 rounded-full bg-white/80 hover:bg-white text-[#27221F] flex items-center justify-center shadow-md transition-all active:scale-90 pointer-events-auto cursor-pointer"
+              className="w-10 h-10 rounded-full bg-white/85 hover:bg-white text-[#27221F] flex items-center justify-center shadow-lg transition-all active:scale-90 pointer-events-auto cursor-pointer"
               aria-label="Siguiente diapositiva"
             >
               →
@@ -144,30 +144,14 @@ export function HeroRotatingCarousel({
           </div>
         </div>
 
-        {/* Textos Explicativos bajo la Imagen */}
-        <div className="text-center sm:text-left space-y-2 mb-5 animate-fadeIn">
-          <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#27221F]">
+        {/* Textos Explicativos bajo la Imagen con Mayor Espacio */}
+        <div className="text-center sm:text-left space-y-3 pt-2 pb-1 animate-fadeIn">
+          <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#27221F]">
             {currentSlide.title}
           </h3>
-          <p className="text-sm sm:text-base text-[#5C524A] leading-relaxed font-normal">
+          <p className="text-base sm:text-lg text-[#4A423D] leading-relaxed font-normal">
             {currentSlide.description}
           </p>
-        </div>
-
-        {/* Botón de Acción Final: Reservar Cupo */}
-        <div className="pt-4 border-t border-[#E7DECE]/80 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span className="text-xs text-[#8A7E73]">
-            Paso {currentIndex + 1} de {activeSlides.length} · Comprensión sistémica
-          </span>
-
-          <button
-            type="button"
-            onClick={onBookClick}
-            className="w-full sm:w-auto px-7 py-3 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center gap-2"
-          >
-            <span>Reservar cupo</span>
-            <span>→</span>
-          </button>
         </div>
 
       </div>
