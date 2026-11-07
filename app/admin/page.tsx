@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { CMSContent, CMSWorkshop, DEFAULT_CMS_CONTENT } from "@/lib/cms/content";
+import { FlyerDesigner } from "@/components/flyer-designer/FlyerDesigner";
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -13,7 +14,7 @@ export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState<"talleres" | "textos" | "contacto">("talleres");
+  const [activeTab, setActiveTab] = useState<"talleres" | "disenador" | "textos" | "contacto">("talleres");
 
   // Estado para taller seleccionado en edición
   const [selectedWorkshopIndex, setSelectedWorkshopIndex] = useState<number>(0);
@@ -283,6 +284,19 @@ export default function AdminPage() {
 
           <button
             type="button"
+            onClick={() => setActiveTab("disenador")}
+            className={`px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              activeTab === "disenador"
+                ? "bg-terracotta-500 text-white shadow-sm"
+                : "bg-white text-[#5C524A] hover:bg-cream-100 border border-[#E7DECE]"
+            }`}
+          >
+            <span>🎨 Diseñador de Flyers</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          </button>
+
+          <button
+            type="button"
             onClick={() => setActiveTab("textos")}
             className={`px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "textos"
@@ -318,13 +332,22 @@ export default function AdminPage() {
                 <h2 className="text-sm font-bold uppercase tracking-wider text-[#5C524A]">
                   Tus Talleres
                 </h2>
-                <button
-                  type="button"
-                  onClick={handleAddWorkshop}
-                  className="px-3 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
-                >
-                  + Nuevo Taller
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("disenador")}
+                    className="px-2.5 py-1 rounded-full bg-cream-200 hover:bg-cream-300 text-terracotta-800 border border-terracotta-300 text-[11px] font-semibold transition-all cursor-pointer"
+                  >
+                    🎨 Diseñar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleAddWorkshop}
+                    className="px-3 py-1 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                  >
+                    + Nuevo
+                  </button>
+                </div>
               </div>
 
               {content.workshops.map((w, index) => (
@@ -696,6 +719,43 @@ export default function AdminPage() {
             </div>
 
           </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* MINI-APP: DISEÑADOR RÁPIDO DE FLYERS INTERACTIVO (CANVAS HD)              */}
+        {/* ========================================================================= */}
+        {activeTab === "disenador" && (
+          <FlyerDesigner
+            onSaveToWorkshops={(newWorkshopData, flyerDataUrl) => {
+              const newWorkshop: CMSWorkshop = {
+                id: `taller-${Date.now()}`,
+                title: newWorkshopData.title || "Taller Vivencial de Constelaciones",
+                description:
+                  newWorkshopData.description ||
+                  "Te invitamos a un taller vivencial donde, a través de la escenificación de dinámicas personales, podrás mirar tu vida desde una perspectiva más profunda y liberadora.",
+                importantNote:
+                  newWorkshopData.importantNote ||
+                  '⚠️ Los casos a constelar se seleccionarán durante el encuentro. Aunque no todos los asistentes constelarán de forma individual, la experiencia demuestra que el trabajo de cada compañero resuena con nuestras propias vivencias, permitiendo que todos los presentes vivan un proceso de aprendizaje y transformación compartida. "Cuando tú constelas, todos constelamos".',
+                date: newWorkshopData.date || "16 de enero de 2026",
+                time: newWorkshopData.time || "10:00 a 14:00 hrs",
+                facilitators: newWorkshopData.facilitators || "Erika Alert y Karen Sudzuki",
+                address: newWorkshopData.address || "Edmundo Eluchans 3047, of. 22, Concón",
+                city: newWorkshopData.city || "Concón, Valparaíso",
+                price: newWorkshopData.price || "$40.000",
+                logoType: (newWorkshopData.logoType as any) || "icalma",
+                logoUrl: newWorkshopData.logoUrl || "",
+                flyerUrl: flyerDataUrl,
+                phoneContact: newWorkshopData.phoneContact || content.settings.whatsappNumber || "+56 9 4193 9363",
+                isActive: true,
+              };
+
+              const updated = [...content.workshops, newWorkshop];
+              setContent({ ...content, workshops: updated });
+              setSelectedWorkshopIndex(updated.length - 1);
+              setActiveTab("talleres");
+              alert("✓ ¡Flyer asignado con éxito a la lista de talleres! Recuerda presionar 'Guardar Todos los Cambios' para sincronizar con la web.");
+            }}
+          />
         )}
 
         {/* ========================================================================= */}
