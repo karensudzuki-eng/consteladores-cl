@@ -10,7 +10,7 @@ export interface CMSWorkshop {
   city: string;
   price: string;
   modality?: "presencial" | "online";
-  logoType: "consteladores" | "icalma" | "vortice" | "custom";
+  logoType: "consteladores" | "icalma" | "vortice" | "custom" | "none";
   logoUrl?: string;
   flyerUrl: string;
   phoneContact: string;
@@ -73,6 +73,11 @@ export interface CMSSettings {
   serviceOnlineMaterials: string[];
   serviceOnlineRequirements: string;
 
+  // Acerca del encuentro de talleres
+  workshopAboutTitle: string;
+  workshopAboutDescription: string;
+  workshopAboutNote: string;
+
   // Si eres facilitador y quieres pertenecer al equipo
   joinTeamTitle: string;
   joinTeamDescription: string;
@@ -113,7 +118,7 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
 
     heroTitle: "¿Sientes que cargas con un peso que no te pertenece?",
     heroSubtitle:
-      "Un espacio cuidado para mirar el orden de tu sistema familiar y retomar tu propio lugar con calma.",
+      "Consteladores: un espacio cuidado para mirar el orden de tu sistema familiar y retomar tu propio lugar con calma.",
     heroBgImage: "/images/mirar-historia-sanar.png",
     heroOverlayOpacity: 0.8,
     heroMusicUrl: "https://cdn.pixabay.com/download/audio/2022/05/16/audio_c89b2713f0.mp3?filename=meditation-relaxing-ambient-112191.mp3",
@@ -130,6 +135,12 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
     ],
     serviceOnlineRequirements:
       "Contar con un espacio privado e internet a través de computador o teléfono móvil.",
+
+    workshopAboutTitle: "Acerca del encuentro",
+    workshopAboutDescription:
+      "Te invitamos a un taller vivencial donde, a través de la escenificación de dinámicas personales, podrás mirar tu vida desde una perspectiva más profunda y liberadora.",
+    workshopAboutNote:
+      '⚠️ Los casos a constelar se seleccionarán durante el encuentro. Aunque no todos los asistentes constelarán de forma individual, la experiencia demuestra que el trabajo de cada compañero resuena con nuestras propias vivencias, permitiendo que todos los presentes vivan un proceso de aprendizaje y transformación compartida. "Cuando tú constelas, todos constelamos".',
 
     joinTeamTitle: "Si eres facilitador y quieres pertenecer al equipo",
     joinTeamDescription:

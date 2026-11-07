@@ -60,7 +60,7 @@ export function WorkshopDetailModal({
             <img
               src={workshop.flyerUrl}
               alt={workshop.title}
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-contain object-center"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
               <span className="text-white text-xs font-medium tracking-wide">

@@ -664,6 +664,71 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
+
+            {/* TEXTOS DE LA SECCIÓN TALLERES: "ACERCA DEL ENCUENTRO" */}
+            <div className="lg:col-span-12 bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-5 space-y-4">
+              <div className="border-b border-[#E7DECE] pb-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-terracotta-700 block">
+                  Textos Generales de la Sección de Talleres ("Acerca del encuentro")
+                </span>
+                <p className="text-[11px] text-[#5C524A]">
+                  Estos textos aparecen directamente bajo el título "Talleres de Constelaciones" en la página principal.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                    Título del bloque
+                  </label>
+                  <input
+                    type="text"
+                    value={content.settings.workshopAboutTitle || "Acerca del encuentro"}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        settings: { ...content.settings, workshopAboutTitle: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs font-bold"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                    Descripción del encuentro
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={content.settings.workshopAboutDescription || ""}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        settings: { ...content.settings, workshopAboutDescription: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs resize-none"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                    Nota Importante (Casos a constelar y resonancia)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={content.settings.workshopAboutNote || ""}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        settings: { ...content.settings, workshopAboutNote: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs resize-none"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

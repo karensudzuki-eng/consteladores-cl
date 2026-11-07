@@ -25,13 +25,16 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
   const [phone, setPhone] = useState("+56 9 4193 9363");
   const [quote, setQuote] = useState('"Cuando tú constelas, todos constelamos"');
 
-  // Logotipo
-  const [logoType, setLogoType] = useState<"consteladores" | "icalma" | "vortice" | "custom">("consteladores");
+  // Logotipo transparente único
+  const [logoType, setLogoType] = useState<"consteladores" | "custom" | "vortice" | "none">("consteladores");
   const [customLogoUrl, setCustomLogoUrl] = useState<string>("");
 
-  // Imagen de Fondo
+  // Imagen de Fondo y Encuadre
   const [bgImagePreset, setBgImagePreset] = useState<string>("/images/arbol-generaciones.png");
   const [customBgUrl, setCustomBgUrl] = useState<string>("");
+  const [bgZoom, setBgZoom] = useState<number>(1.0);
+  const [bgPositionY, setBgPositionY] = useState<number>(50); // 0 a 100%
+  const [bgFit, setBgFit] = useState<"cover" | "contain">("cover");
   const [overlayOpacity, setOverlayOpacity] = useState<number>(0.65);
   const [accentColor, setAccentColor] = useState<string>("#D9664A"); // Terracota cálido
 
@@ -84,15 +87,18 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
     ctx.fillStyle = "#FAF7F2";
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    // 3. Dibujar imagen de fondo si está cargada
+    // 3. Dibujar imagen de fondo si está cargada con controles de encuadre y zoom
     if (bgImgRef.current) {
       const img = bgImgRef.current;
-      // Ajustar imagen para cubrir todo el canvas (object-fit: cover)
-      const hRatio = CANVAS_WIDTH / img.width;
-      const vRatio = CANVAS_HEIGHT / img.height;
-      const ratio = Math.max(hRatio, vRatio);
-      const centerShiftX = (CANVAS_WIDTH - img.width * ratio) / 2;
-      const centerShiftY = (CANVAS_HEIGHT - img.height * ratio) / 2;
+      const baseRatio =
+        bgFit === "contain"
+          ? Math.min(CANVAS_WIDTH / img.width, CANVAS_HEIGHT / img.height)
+          : Math.max(CANVAS_WIDTH / img.width, CANVAS_HEIGHT / img.height);
+      const ratio = baseRatio * bgZoom;
+      const drawWidth = img.width * ratio;
+      const drawHeight = img.height * ratio;
+      const shiftX = (CANVAS_WIDTH - drawWidth) / 2;
+      const shiftY = (CANVAS_HEIGHT - drawHeight) * (bgPositionY / 100);
 
       ctx.drawImage(
         img,
@@ -100,10 +106,10 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
         0,
         img.width,
         img.height,
-        centerShiftX,
-        centerShiftY,
-        img.width * ratio,
-        img.height * ratio
+        shiftX,
+        shiftY,
+        drawWidth,
+        drawHeight
       );
     }
 
@@ -124,61 +130,36 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
     ctx.lineWidth = 3;
     ctx.strokeRect(40, 40, CANVAS_WIDTH - 80, CANVAS_HEIGHT - 80);
 
-    // 6. ENCABEZADO Y LOGOTIPO DINÁMICO
-    const headerY = 90;
+    // 6. ENCABEZADO Y LOGOTIPO TRANSPARENTE ÚNICO (Sin bordes ni píldoras redondeadas)
+    const headerY = 85;
 
     if (logoType === "custom" && customLogoImgRef.current) {
       const logo = customLogoImgRef.current;
-      const logoH = 70;
+      const logoH = 75;
       const logoW = (logo.width / logo.height) * logoH;
       ctx.drawImage(logo, 70, headerY, logoW, logoH);
     } else if (logoType === "vortice") {
-      // Badge Vórtice Integración
-      ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
-      ctx.beginPath();
-      ctx.roundRect(70, headerY, 260, 50, 25);
-      ctx.fill();
-
       ctx.fillStyle = "#385E48";
       ctx.beginPath();
-      ctx.arc(95, headerY + 25, 6, 0, Math.PI * 2);
+      ctx.arc(85, headerY + 25, 7, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = "#1E3326";
-      ctx.font = "bold 20px sans-serif";
-      ctx.fillText("Vórtice Integración", 115, headerY + 32);
-    } else {
-      // Badge Oficial Consteladores
-      ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 24px sans-serif";
+      ctx.fillText("Vórtice Integración", 105, headerY + 33);
+    } else if (logoType === "consteladores") {
+      // Isotipo infinito transparente de Consteladores (sin fondo blanco ni píldoras)
+      ctx.strokeStyle = "#FFFFFF";
+      ctx.lineWidth = 4;
       ctx.beginPath();
-      ctx.roundRect(70, headerY, 320, 52, 26);
-      ctx.fill();
-
-      // Isotipo infinito de Consteladores
-      ctx.strokeStyle = "#2E1A63";
-      ctx.lineWidth = 3.5;
-      ctx.beginPath();
-      ctx.arc(98, headerY + 26, 10, 0, Math.PI * 2);
-      ctx.arc(114, headerY + 26, 10, 0, Math.PI * 2);
+      ctx.arc(92, headerY + 22, 12, 0, Math.PI * 2);
+      ctx.arc(114, headerY + 22, 12, 0, Math.PI * 2);
       ctx.stroke();
 
-      ctx.fillStyle = "#2E1A63";
-      ctx.font = "bold 22px Georgia, serif";
-      ctx.fillText("Consteladores", 136, headerY + 34);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 28px Georgia, serif";
+      ctx.fillText("Consteladores", 142, headerY + 31);
     }
-
-    // Píldora de "consteladores.cl" en la esquina superior derecha
-    ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
-    ctx.beginPath();
-    ctx.roundRect(CANVAS_WIDTH - 280, headerY, 210, 48, 24);
-    ctx.fill();
-
-    ctx.fillStyle = "#27221F";
-    ctx.font = "600 20px Georgia, serif";
-    ctx.fillText("consteladores", CANVAS_WIDTH - 262, headerY + 31);
-    ctx.fillStyle = "#D9664A";
-    ctx.font = "italic 20px Georgia, serif";
-    ctx.fillText(".cl", CANVAS_WIDTH - 132, headerY + 31);
 
     // 7. SUBTÍTULO / INSIGNIA DEL TALLER
     ctx.fillStyle = accentColor;
@@ -288,17 +269,21 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
     ctx.letterSpacing = "0px";
     ctx.fillText(`${address} (${city})`, 110, cardY + 285);
 
-    // FILA 4: FRANJA INFERIOR DESTACADA DE WHATSAPP / RESERVAS
-    const ctaY = cardY + 325;
+    // FILA 4: BOTÓN DE RESERVA REDUCIDO (CON ÍCONO, SIN NÚMERO DE TELÉFONO)
+    const ctaY = cardY + 332;
+    const btnW = 280;
+    const btnH = 52;
+    const btnX = (CANVAS_WIDTH - btnW) / 2;
+
     ctx.fillStyle = "#128C7E"; // Verde oficial de WhatsApp
     ctx.beginPath();
-    ctx.roundRect(110, ctaY, CANVAS_WIDTH - 220, 68, 34);
+    ctx.roundRect(btnX, ctaY, btnW, btnH, 26);
     ctx.fill();
 
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 24px sans-serif";
+    ctx.font = "bold 22px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(`WhatsApp de Reserva: ${phone}`, CANVAS_WIDTH / 2, ctaY + 42);
+    ctx.fillText("💬 Reservar", CANVAS_WIDTH / 2, ctaY + 33);
     ctx.textAlign = "left"; // Restablecer alineación
   }, [
     title,
@@ -311,6 +296,9 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
     phone,
     quote,
     logoType,
+    bgZoom,
+    bgPositionY,
+    bgFit,
     overlayOpacity,
     accentColor,
   ]);
@@ -515,6 +503,70 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
               )}
             </div>
 
+            {/* Ajustes de Encuadre para evitar cortes de imagen */}
+            <div className="bg-white/80 p-3.5 rounded-xl border border-[#E7DECE] space-y-3">
+              <span className="text-[11px] font-bold text-[#27221F] block">
+                📐 Ajuste y Encuadre de Imagen (Evitar cortes):
+              </span>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setBgFit("cover")}
+                  className={`py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${
+                    bgFit === "cover"
+                      ? "bg-terracotta-500 text-white"
+                      : "bg-[#FAF8F5] border border-[#E7DECE] text-[#5C524A]"
+                  }`}
+                >
+                  Llenar fondo (Cover)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBgFit("contain")}
+                  className={`py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${
+                    bgFit === "contain"
+                      ? "bg-terracotta-500 text-white"
+                      : "bg-[#FAF8F5] border border-[#E7DECE] text-[#5C524A]"
+                  }`}
+                >
+                  Imagen completa (Contain)
+                </button>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between text-xs text-[#5C524A] mb-1">
+                  <span>Zoom / Escala de imagen:</span>
+                  <span>{Math.round(bgZoom * 100)}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="1.8"
+                  step="0.05"
+                  value={bgZoom}
+                  onChange={(e) => setBgZoom(parseFloat(e.target.value))}
+                  className="w-full accent-terracotta-500 cursor-pointer"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between text-xs text-[#5C524A] mb-1">
+                  <span>Posición vertical (subir / bajar):</span>
+                  <span>{bgPositionY}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="5"
+                  value={bgPositionY}
+                  onChange={(e) => setBgPositionY(parseInt(e.target.value))}
+                  className="w-full accent-terracotta-500 cursor-pointer"
+                />
+              </div>
+            </div>
+
             {/* Regulador de Velo / Opacidad para legibilidad */}
             <div>
               <div className="flex items-center justify-between text-xs font-semibold text-[#5C524A] mb-1">
@@ -533,10 +585,10 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
             </div>
           </div>
 
-          {/* 2. LOGOTIPO DINÁMICO */}
+          {/* 2. LOGOTIPO DINÁMICO TRANSPARENTE (Sin bordes ni píldoras redondeadas) */}
           <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-5 space-y-3">
             <span className="text-xs font-bold uppercase tracking-wider text-terracotta-600 block">
-              2. Logotipo Dinámico
+              2. Logotipo Transparente Único (Sin bordes redondeados)
             </span>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -549,19 +601,7 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
                     : "bg-white border-[#E7DECE] text-[#5C524A]"
                 }`}
               >
-                Logo Consteladores (Por Defecto)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setLogoType("vortice")}
-                className={`p-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
-                  logoType === "vortice"
-                    ? "bg-terracotta-100 border-terracotta-500 text-terracotta-800"
-                    : "bg-white border-[#E7DECE] text-[#5C524A]"
-                }`}
-              >
-                Logo Vórtice
+                Logo Consteladores
               </button>
 
               <button
@@ -573,18 +613,30 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
                     : "bg-white border-[#E7DECE] text-[#5C524A]"
                 }`}
               >
-                Logo Personalizado
+                Subir Logo Propio (PNG)
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setLogoType("none")}
+                className={`p-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+                  logoType === "none"
+                    ? "bg-zinc-200 border-zinc-500 text-zinc-900"
+                    : "bg-white border-[#E7DECE] text-[#5C524A]"
+                }`}
+              >
+                Sin Logo
               </button>
             </div>
 
             {logoType === "custom" && (
               <div className="pt-2">
                 <label className="block text-xs font-semibold text-[#5C524A] mb-1">
-                  Subir logo en formato PNG o SVG:
+                  Subir logo en formato transparente (PNG sin fondo):
                 </label>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/svg+xml"
                   onChange={handleUploadCustomLogo}
                   className="w-full text-xs text-[#5C524A]"
                 />

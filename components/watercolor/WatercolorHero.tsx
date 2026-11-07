@@ -19,7 +19,7 @@ export function WatercolorHero({ onBookClick, onOpenTriage }: WatercolorHeroProp
   const heroTitle = settings.heroTitle || "¿Sientes que cargas con un peso que no te pertenece?";
   const heroSubtitle =
     settings.heroSubtitle ||
-    "Un espacio cuidado para mirar el orden de tu sistema familiar y retomar tu propio lugar con calma.";
+    "Consteladores: un espacio cuidado para mirar el orden de tu sistema familiar y retomar tu propio lugar con calma.";
   const heroBg = settings.heroBgImage || "/images/mirar-historia-sanar.png";
 
   return (
@@ -65,7 +65,7 @@ export function WatercolorHero({ onBookClick, onOpenTriage }: WatercolorHeroProp
         />
 
         {/* Acciones Principales */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
             onClick={onBookClick}
             type="button"
@@ -80,16 +80,6 @@ export function WatercolorHero({ onBookClick, onOpenTriage }: WatercolorHeroProp
           >
             Ver talleres vivenciales
           </a>
-        </div>
-
-        {/* Micro-Garantías de Confianza */}
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs sm:text-sm text-[#4A423D] font-medium">
-          <span className="inline-flex items-center gap-1.5 text-xs text-[#38322E]">
-            Online vía videollamada y presencial en Concón y Santiago
-          </span>
-          <span className="inline-flex items-center gap-1.5 text-xs text-[#38322E]">
-            Atención personalizada y respetuosa
-          </span>
         </div>
       </div>
     </section>

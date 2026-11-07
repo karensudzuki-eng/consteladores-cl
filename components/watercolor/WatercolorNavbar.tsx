@@ -49,16 +49,21 @@ export function WatercolorNavbar({ onBookClick, onOpenTriage }: WatercolorNavbar
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* Logo Principal Oficial de Consteladores */}
+          {/* Marca Oficial: Ícono editable + Texto "Consteladores" en letra grande (sin .cl) */}
           <Link
             href="/"
-            className="flex items-center gap-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500 rounded-lg p-1"
+            className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500 rounded-xl py-1 px-1.5"
           >
-            <img
-              src={siteLogo}
-              alt="Consteladores"
-              className="h-10 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-102"
-            />
+            {siteLogo && (
+              <img
+                src={siteLogo}
+                alt="Ícono Consteladores"
+                className="h-10 sm:h-12 w-auto object-contain rounded-md transition-transform duration-300 group-hover:scale-105"
+              />
+            )}
+            <span className="text-2xl sm:text-3xl font-serif font-bold text-[#27221F] tracking-tight group-hover:text-terracotta-700 transition-colors">
+              Consteladores
+            </span>
           </Link>
 
           {/* Menú de Navegación: Quiénes somos · Talleres · Sesión Individual · Facilitadores */}

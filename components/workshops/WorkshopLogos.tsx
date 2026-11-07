@@ -7,10 +7,14 @@ export function WorkshopLogoBadge({
   logoUrl,
   className = "",
 }: {
-  logoType?: "consteladores" | "icalma" | "vortice" | "custom";
+  logoType?: "consteladores" | "icalma" | "vortice" | "custom" | "none";
   logoUrl?: string;
   className?: string;
 }) {
+  if (logoType === "none") {
+    return null;
+  }
+
   if (logoType === "custom" && logoUrl) {
     return (
       <img

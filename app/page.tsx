@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useCMS } from "@/lib/cms/CMSContext";
 import { WatercolorNavbar } from "@/components/watercolor/WatercolorNavbar";
 import { WatercolorHero } from "@/components/watercolor/WatercolorHero";
-import { WatercolorWhatIsConstellation } from "@/components/watercolor/WatercolorWhatIsConstellation";
 import { WorkshopsCarousel } from "@/components/workshops/WorkshopsCarousel";
 import { WorkshopDetailModal } from "@/components/workshops/WorkshopDetailModal";
 import { WatercolorServices } from "@/components/watercolor/WatercolorServices";
@@ -43,10 +42,7 @@ function HomeInner() {
       {/* 2. Hero con Carrusel Giratorio con Música y Diapositivas */}
       <WatercolorHero onBookClick={handleOpenBooking} />
 
-      {/* 3. ¿Qué es una constelación familiar? (Explicación limpia y botones directos) */}
-      <WatercolorWhatIsConstellation onBookClick={handleOpenBooking} />
-
-      {/* 4. Carrusel de Talleres de Constelaciones (Flyers y modalidades) */}
+      {/* 3. Carrusel de Talleres de Constelaciones (Flyers y modalidades) */}
       <WorkshopsCarousel
         workshops={content.workshops}
         onSelectWorkshop={handleSelectWorkshop}
