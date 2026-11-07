@@ -10,11 +10,11 @@ export default function RegistroTerapeutaPage() {
     fullName: "",
     email: "",
     phone: "",
-    headline: "Facilitador en Constelaciones Familiares Online",
+    headline: "Facilitador",
     bio: "",
     approach: "",
     experienceYears: 2,
-    priceClp: 45000,
+    priceClp: 40000,
   });
 
   const [file, setFile] = useState<File | null>(null);
@@ -40,13 +40,6 @@ export default function RegistroTerapeutaPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) {
-      setStatusMessage({
-        type: "error",
-        text: "Por favor adjunta tu diploma o certificado de constelador (PDF o imagen).",
-      });
-      return;
-    }
 
     setIsUploading(true);
     setStatusMessage(null);
@@ -61,7 +54,9 @@ export default function RegistroTerapeutaPage() {
       data.append("approach", formData.approach);
       data.append("experienceYears", String(formData.experienceYears));
       data.append("priceClp", String(formData.priceClp));
-      data.append("certificate", file);
+      if (file) {
+        data.append("certificate", file);
+      }
 
       let result: { success: boolean; error?: string } | null = null;
 
@@ -104,7 +99,7 @@ export default function RegistroTerapeutaPage() {
 
       setStatusMessage({
         type: "success",
-        text: "¡Tu postulación ha sido enviada con éxito! Nuestro equipo revisará tus antecedentes y certificado dentro de un plazo de 24 a 48 horas hábiles. Si tu postulación es aceptada, recibirás una notificación a tu correo electrónico y tu perfil quedará automáticamente activo y visible en el directorio de consteladores.cl.",
+        text: "¡Tu postulación ha sido enviada con éxito! Tu postulación será evaluada. En caso de necesitar mayor información nos contactaremos contigo.",
       });
     } catch (err: any) {
       setStatusMessage({
@@ -134,29 +129,20 @@ export default function RegistroTerapeutaPage() {
         <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-10 shadow-sm">
           
           <div className="text-center mb-8 space-y-2">
-            <div className="flex justify-center mb-2">
-              <AmmoniteIcon className="w-8 h-8 text-terracotta-500" />
-            </div>
-            <div className="inline-flex items-center px-4 py-1 rounded-full bg-[#F3ECE2] border border-[#E7DECE] text-[#5C524A] text-xs font-medium">
-              Convocatoria de Facilitadores · Chile
-            </div>
             <h1 className="text-2xl sm:text-3xl font-serif font-semibold text-[#27221F] tracking-tight">
               Postulación a la Red de Consteladores
             </h1>
             <p className="text-xs sm:text-sm text-[#5C524A] leading-relaxed max-w-[500px] mx-auto">
-              Validamos cada diploma y linaje formativo para resguardar la rigurosidad, el respeto y la confianza en cada sesión.
+              Postula para formar parte de nuestro equipo de facilitadores y practicantes.
             </p>
           </div>
 
-          {/* Mensaje de Éxito Detallado (24-48 horas de revisión) */}
+          {/* Mensaje de Éxito */}
           {statusMessage?.type === "success" ? (
             <div className="bg-[#FEF9EE] border border-ochre-300 rounded-3xl p-8 text-center animate-fadeIn">
               <div className="w-16 h-16 rounded-full bg-[#FCF2DA] border-2 border-ochre-500 text-ochre-700 text-3xl flex items-center justify-center mx-auto mb-4">
                 ✓
               </div>
-              <span className="text-xs font-semibold uppercase tracking-widest text-terracotta-600 block mb-1">
-                En Revisión (24 a 48 hrs)
-              </span>
               <h2 className="text-2xl font-serif font-semibold text-[#27221F] mb-3">
                 ¡Tu postulación ha sido enviada con éxito!
               </h2>
@@ -228,22 +214,23 @@ export default function RegistroTerapeutaPage() {
 
                   <div>
                     <label className="block text-xs font-semibold text-[#5C524A] mb-1">
-                      Titular de tu perfil *
+                      Rol o titular de perfil *
                     </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Ej. Facilitador Sistémico • Familia y Vínculos"
+                    <select
                       value={formData.headline}
                       onChange={(e) => setFormData({ ...formData, headline: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-full bg-[#FAF8F5] border border-[#E7DECE] text-sm text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
-                    />
+                      className="w-full px-4 py-2.5 rounded-full bg-[#FAF8F5] border border-[#E7DECE] text-sm text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500 cursor-pointer font-medium"
+                    >
+                      <option value="Facilitador">Facilitador</option>
+                      <option value="Practicante">Practicante</option>
+                      <option value="Consultante">Consultante</option>
+                    </select>
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-[#5C524A] mb-1">
-                    Biografía y presentación para consultantes *
+                    Biografía y presentación *
                   </label>
                   <textarea
                     rows={3}
@@ -257,12 +244,11 @@ export default function RegistroTerapeutaPage() {
 
                 <div>
                   <label className="block text-xs font-semibold text-[#5C524A] mb-1">
-                    Escuela, linaje o institución formativa *
+                    Escuela o institución formativa
                   </label>
                   <input
                     type="text"
-                    required
-                    placeholder="Ej. Instituto Bert Hellinger de Chile / Centro Latinoamericano / etc."
+                    placeholder="Ej. Centro de Formación Sistémica / Instituto Bert Hellinger / etc."
                     value={formData.approach}
                     onChange={(e) => setFormData({ ...formData, approach: e.target.value })}
                     className="w-full px-4 py-2.5 rounded-full bg-[#FAF8F5] border border-[#E7DECE] text-sm text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
@@ -276,7 +262,7 @@ export default function RegistroTerapeutaPage() {
                     </label>
                     <input
                       type="number"
-                      min="1"
+                      min="0"
                       max="50"
                       required
                       value={formData.experienceYears}
@@ -301,18 +287,17 @@ export default function RegistroTerapeutaPage() {
                   </div>
                 </div>
 
-                {/* Caja para subir certificado */}
+                {/* Caja para subir certificado (Opcional) */}
                 <div className="p-5 rounded-2xl bg-[#FAF8F5] border border-[#E7DECE] space-y-2">
                   <label className="block text-xs font-semibold text-[#27221F]">
-                    Certificado o Diploma de Constelador (Obligatorio) 📄
+                    Certificado o Diploma de Constelador (Opcional) 📄
                   </label>
                   <p className="text-xs text-[#8A7E73] leading-relaxed mb-2">
-                    Sube tu diploma en formato PDF, JPG o PNG (máx. 10MB). Documento confidencial para uso exclusivo del equipo moderador de consteladores.cl.
+                    Si dispones de tu diploma en formato PDF o imagen, puedes adjuntarlo. Documento confidencial para uso exclusivo del equipo moderador.
                   </p>
                   <input
                     type="file"
                     accept=".pdf,image/png,image/jpeg,image/webp"
-                    required
                     onChange={handleFileChange}
                     className="text-xs text-[#5C524A] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-medium file:bg-[#F3ECE2] file:text-[#27221F] hover:file:bg-terracotta-100 hover:file:text-terracotta-700 cursor-pointer"
                   />
@@ -325,12 +310,12 @@ export default function RegistroTerapeutaPage() {
                     disabled={isUploading}
                     className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-terracotta-500 hover:bg-terracotta-600 disabled:opacity-60 text-white font-medium text-sm shadow-sm hover:shadow transition-all flex items-center justify-center gap-2"
                   >
-                    {isUploading ? "Enviando postulación y certificado..." : "Enviar postulación para validación"}
+                    {isUploading ? "Enviando postulación..." : "Enviar postulación"}
                   </button>
                 </div>
 
                 <p className="text-[11px] text-[#8A7E73] text-center leading-relaxed">
-                  Al enviar aceptas el compromiso ético, la confidencialidad y el cuidado del espacio sistémico. Tu postulación será evaluada en 24-48 horas.
+                  Tu postulación será evaluada. En caso de necesitar mayor información nos contactaremos contigo.
                 </p>
               </form>
             </>

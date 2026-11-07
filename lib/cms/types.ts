@@ -30,10 +30,19 @@ export interface CMSTestimonial {
   attribution: string;
 }
 
+export interface CMSValuePillar {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl?: string;
+  linkUrl: string;
+}
+
 export interface CMSAbout {
   title: string;
   description: string;
   imageUrl?: string;
+  pillars?: CMSValuePillar[];
 }
 
 export interface CMSFacilitator {
@@ -142,18 +151,43 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
     workshopAboutNote:
       '⚠️ Los casos a constelar se seleccionarán durante el encuentro. Aunque no todos los asistentes constelarán de forma individual, la experiencia demuestra que el trabajo de cada compañero resuena con nuestras propias vivencias, permitiendo que todos los presentes vivan un proceso de aprendizaje y transformación compartida. "Cuando tú constelas, todos constelamos".',
 
-    joinTeamTitle: "Si eres facilitador y quieres pertenecer al equipo",
-    joinTeamDescription:
-      "Buscamos facilitadores comprometidos con la ética sistémica y el cuidado humano. Postula para formar parte de nuestra red, o únete a nuestros espacios comunitarios de profundización.",
+    joinTeamTitle: "Si eres facilitador (o practicante) y quieres pertenecer al equipo",
+    joinTeamDescription: "Postula para ser parte de nuestra red",
     joinTeamImageUrl: "/images/comunidad-encuentro.png",
     joinTeamPostulateUrl: "/registro-terapeuta",
-    joinTeamPostulateLabel: "Postular como facilitador",
+    joinTeamPostulateLabel: "Postular facilitador / practicante",
 
     about: {
       title: "Quiénes somos",
       description:
         "consteladores.cl es una plataforma orientada a conectar a personas que buscan mirar y ordenar dinámicas de su sistema familiar con facilitadores acreditados y con respaldo docente Icalma Constelaciones (formación desde 2006).",
       imageUrl: "/images/arbol-generaciones.png",
+      pillars: [
+        {
+          id: "respeto",
+          title: "Respeto y Confidencialidad",
+          description:
+            "Cada historia y motivo de consulta es tratado como un espacio sagrado, bajo el más riguroso resguardo ético y privacidad.",
+          imageUrl: "/images/mirar-historia-sanar.png",
+          linkUrl: "/#servicios",
+        },
+        {
+          id: "mirada",
+          title: "Mirada Fenomenológica",
+          description:
+            "No imponemos interpretaciones ni juicios morales; observamos lo que se muestra y acogemos lo que emerge con compasión.",
+          imageUrl: "/images/arbol-generaciones.png",
+          linkUrl: "/#talleres",
+        },
+        {
+          id: "comunidad",
+          title: "Comunidad Viva",
+          description:
+            "Fomentamos el encuentro continuo de facilitadores, practicantes y consultantes para aprender juntos y apoyarnos mutuamente.",
+          imageUrl: "/images/comunidad-encuentro.png",
+          linkUrl: "https://t.me/+PjKqj5M9k_wyYjEx",
+        },
+      ],
     },
 
     bankDetails: {

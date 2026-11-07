@@ -70,6 +70,9 @@ export default function AdminPage() {
       const reader = new FileReader();
       reader.onload = () => {
         const rawResult = (reader.result as string) || "";
+        if (file.type === "image/svg+xml" || file.name.toLowerCase().endsWith(".svg")) {
+          return resolve(rawResult);
+        }
         const img = new Image();
         img.onload = () => {
           try {
@@ -90,7 +93,10 @@ export default function AdminPage() {
             canvas.height = height;
             const ctx = canvas.getContext("2d");
             ctx?.drawImage(img, 0, 0, width, height);
-            const dataUrl = canvas.toDataURL("image/jpeg", 0.88);
+            const isPng = file.type === "image/png" || file.name.toLowerCase().endsWith(".png");
+            const dataUrl = isPng
+              ? canvas.toDataURL("image/png")
+              : canvas.toDataURL("image/jpeg", 0.88);
             resolve(dataUrl || rawResult);
           } catch {
             resolve(rawResult);
@@ -794,26 +800,88 @@ export default function AdminPage() {
               </button>
             </div>
 
-            {/* Música Ambiental */}
-            <div className="bg-[#FAF8F5] p-4 rounded-2xl border border-[#E7DECE] space-y-2">
-              <label className="block text-xs font-bold text-[#5C524A]">
-                🎵 URL del Audio o Música Ambiental (MP3)
-              </label>
-              <input
-                type="text"
-                value={content.settings.heroMusicUrl || ""}
-                onChange={(e) =>
-                  setContent({
-                    ...content,
-                    settings: { ...content.settings, heroMusicUrl: e.target.value },
-                  })
-                }
-                placeholder="https://.../musica-relajante.mp3"
-                className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs sm:text-sm text-[#27221F]"
-              />
-              <p className="text-[11px] text-[#8A7E73]">
-                Los consultantes podrán activar o pausar este sonido relajante mientras miran las imágenes explicativas en el carrusel.
-              </p>
+            {/* Música Ambiental (Subida de MP3 Local o Enlace) */}
+            <div className="bg-[#FAF8F5] p-5 rounded-2xl border border-[#E7DECE] space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                  🎵 Música Ambiental para el Carrusel (MP3 / Audio Local)
+                </label>
+                <p className="text-[11px] text-[#8A7E73]">
+                  Puedes subir tu propio archivo de música relajante (.mp3, .wav) o pegar una URL. Los consultantes podrán activar o pausar este sonido mientras rotan las imágenes explicativas.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                <div>
+                  <label className="block text-[11px] font-bold text-[#5C524A] mb-1">
+                    Opción A: Subir archivo MP3 local desde tu computador
+                  </label>
+                  <input
+                    type="file"
+                    accept="audio/*,.mp3,.wav,.ogg,.m4a"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = () => {
+                        const dataUrl = reader.result as string;
+                        setContent({
+                          ...content,
+                          settings: { ...content.settings, heroMusicUrl: dataUrl },
+                        });
+                      };
+                      reader.readAsDataURL(file);
+                    }}
+                    className="block w-full text-xs text-[#5C524A] file:mr-2 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-terracotta-50 file:text-terracotta-700 hover:file:bg-terracotta-100 cursor-pointer"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-[#5C524A] mb-1">
+                    Opción B: URL o enlace web al archivo de audio
+                  </label>
+                  <input
+                    type="text"
+                    value={content.settings.heroMusicUrl || ""}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        settings: { ...content.settings, heroMusicUrl: e.target.value },
+                      })
+                    }
+                    placeholder="https://.../musica-relajante.mp3 o /audio/..."
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F]"
+                  />
+                </div>
+              </div>
+
+              {/* Vista previa y reproductor interactivo */}
+              {content.settings.heroMusicUrl && (
+                <div className="pt-2 border-t border-[#E7DECE]/80 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-xl border border-[#E7DECE]">
+                  <div className="w-full sm:flex-1">
+                    <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-700 mb-1">
+                      ✓ Audio actual configurado (Prueba reproduciendo aquí):
+                    </span>
+                    <audio
+                      controls
+                      src={content.settings.heroMusicUrl}
+                      className="w-full h-8"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setContent({
+                        ...content,
+                        settings: { ...content.settings, heroMusicUrl: "" },
+                      })
+                    }
+                    className="px-3 py-1.5 text-xs text-red-600 hover:text-red-800 font-semibold cursor-pointer shrink-0"
+                  >
+                    Quitar audio
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Lista de Diapositivas */}
@@ -1119,6 +1187,157 @@ export default function AdminPage() {
                     className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8F5] border border-[#E7DECE] text-xs text-[#27221F] resize-none"
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* PILARES / VALORES EDITABLES (Respeto, Mirada, Comunidad) */}
+            <div className="pt-6 border-t border-[#E7DECE] space-y-4">
+              <div>
+                <h3 className="text-sm font-bold uppercase tracking-wider text-terracotta-700">
+                  Pilares de Valor (3 Tarjetas con Imagen Pequeña y Redirección)
+                </h3>
+                <p className="text-xs text-[#5C524A]">
+                  Configura el título, la descripción, la imagen pequeña y el enlace de redirección para cada uno de los 3 valores de Quiénes Somos.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {(content.settings.about?.pillars || [
+                  {
+                    id: "respeto",
+                    title: "Respeto y Confidencialidad",
+                    description: "Cada historia y motivo de consulta es tratado como un espacio sagrado, bajo el más riguroso resguardo ético y privacidad.",
+                    imageUrl: "/images/mirar-historia-sanar.png",
+                    linkUrl: "/#servicios",
+                  },
+                  {
+                    id: "mirada",
+                    title: "Mirada Fenomenológica",
+                    description: "No imponemos interpretaciones ni juicios morales; observamos lo que se muestra y acogemos lo que emerge con compasión.",
+                    imageUrl: "/images/arbol-generaciones.png",
+                    linkUrl: "/#talleres",
+                  },
+                  {
+                    id: "comunidad",
+                    title: "Comunidad Viva",
+                    description: "Fomentamos el encuentro continuo de facilitadores, practicantes y consultantes para aprender juntos y apoyarnos mutuamente.",
+                    imageUrl: "/images/comunidad-encuentro.png",
+                    linkUrl: "https://t.me/+PjKqj5M9k_wyYjEx",
+                  },
+                ]).map((pillar, pIdx) => (
+                  <div key={pillar.id || pIdx} className="bg-white p-4 rounded-2xl border border-[#E7DECE] space-y-3 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-[#E7DECE] bg-[#FAF8F5] shrink-0">
+                        <img src={pillar.imageUrl || "/images/arbol-generaciones.png"} alt={pillar.title} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <label className="block text-[11px] font-bold text-[#5C524A] mb-1">
+                          Subir Imagen Pequeña
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            try {
+                              const dataUrl = await optimizeImageFile(file);
+                              const currentPillars = [...(content.settings.about?.pillars || [
+                                { id: "respeto", title: "Respeto y Confidencialidad", description: "", imageUrl: "", linkUrl: "/#servicios" },
+                                { id: "mirada", title: "Mirada Fenomenológica", description: "", imageUrl: "", linkUrl: "/#talleres" },
+                                { id: "comunidad", title: "Comunidad Viva", description: "", imageUrl: "", linkUrl: "https://t.me/+PjKqj5M9k_wyYjEx" },
+                              ])];
+                              currentPillars[pIdx] = { ...currentPillars[pIdx], imageUrl: dataUrl };
+                              setContent({
+                                ...content,
+                                settings: {
+                                  ...content.settings,
+                                  about: { ...(content.settings.about || {}), pillars: currentPillars } as any,
+                                },
+                              });
+                            } catch (err) {
+                              console.error(err);
+                            }
+                          }}
+                          className="block w-full text-[10px] text-[#5C524A] file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-[9px] file:font-semibold file:bg-terracotta-50 file:text-terracotta-700 hover:file:bg-terracotta-100 cursor-pointer"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#5C524A] mb-1">Título</label>
+                      <input
+                        type="text"
+                        value={pillar.title}
+                        onChange={(e) => {
+                          const currentPillars = [...(content.settings.about?.pillars || [
+                            { id: "respeto", title: "Respeto y Confidencialidad", description: "", imageUrl: "", linkUrl: "/#servicios" },
+                            { id: "mirada", title: "Mirada Fenomenológica", description: "", imageUrl: "", linkUrl: "/#talleres" },
+                            { id: "comunidad", title: "Comunidad Viva", description: "", imageUrl: "", linkUrl: "https://t.me/+PjKqj5M9k_wyYjEx" },
+                          ])];
+                          currentPillars[pIdx] = { ...currentPillars[pIdx], title: e.target.value };
+                          setContent({
+                            ...content,
+                            settings: {
+                              ...content.settings,
+                              about: { ...(content.settings.about || {}), pillars: currentPillars } as any,
+                            },
+                          });
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#E7DECE] text-xs font-semibold text-[#27221F]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#5C524A] mb-1">Descripción</label>
+                      <textarea
+                        rows={3}
+                        value={pillar.description}
+                        onChange={(e) => {
+                          const currentPillars = [...(content.settings.about?.pillars || [
+                            { id: "respeto", title: "Respeto y Confidencialidad", description: "", imageUrl: "", linkUrl: "/#servicios" },
+                            { id: "mirada", title: "Mirada Fenomenológica", description: "", imageUrl: "", linkUrl: "/#talleres" },
+                            { id: "comunidad", title: "Comunidad Viva", description: "", imageUrl: "", linkUrl: "https://t.me/+PjKqj5M9k_wyYjEx" },
+                          ])];
+                          currentPillars[pIdx] = { ...currentPillars[pIdx], description: e.target.value };
+                          setContent({
+                            ...content,
+                            settings: {
+                              ...content.settings,
+                              about: { ...(content.settings.about || {}), pillars: currentPillars } as any,
+                            },
+                          });
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#E7DECE] text-xs text-[#27221F] resize-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#5C524A] mb-1">Enlace de Redirección (URL o Sección)</label>
+                      <input
+                        type="text"
+                        value={pillar.linkUrl}
+                        placeholder="/#servicios, /#talleres o enlace de Telegram"
+                        onChange={(e) => {
+                          const currentPillars = [...(content.settings.about?.pillars || [
+                            { id: "respeto", title: "Respeto y Confidencialidad", description: "", imageUrl: "", linkUrl: "/#servicios" },
+                            { id: "mirada", title: "Mirada Fenomenológica", description: "", imageUrl: "", linkUrl: "/#talleres" },
+                            { id: "comunidad", title: "Comunidad Viva", description: "", imageUrl: "", linkUrl: "https://t.me/+PjKqj5M9k_wyYjEx" },
+                          ])];
+                          currentPillars[pIdx] = { ...currentPillars[pIdx], linkUrl: e.target.value };
+                          setContent({
+                            ...content,
+                            settings: {
+                              ...content.settings,
+                              about: { ...(content.settings.about || {}), pillars: currentPillars } as any,
+                            },
+                          });
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#E7DECE] text-xs font-mono text-[#5C524A]"
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

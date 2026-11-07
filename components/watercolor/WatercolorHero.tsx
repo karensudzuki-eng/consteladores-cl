@@ -78,7 +78,7 @@ export function WatercolorHero({ onBookClick, onOpenTriage }: WatercolorHeroProp
             href="#talleres"
             className="w-full sm:w-auto px-8 py-4 text-base font-medium text-[#27221F] bg-cream-50 hover:bg-cream-200/90 border-2 border-[#E7DECE] hover:border-terracotta-400 rounded-full shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center cursor-pointer"
           >
-            Ver talleres vivenciales
+            Ver talleres
           </a>
         </div>
       </div>

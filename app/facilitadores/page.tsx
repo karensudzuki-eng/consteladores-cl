@@ -39,9 +39,6 @@ export default function FacilitadoresPage() {
           
           {/* Encabezado */}
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-cream-200 border border-[#E7DECE] text-terracotta-700 text-xs font-semibold tracking-wider uppercase mb-4">
-              Equipo de Acompañamiento
-            </span>
             <h1 className="text-4xl sm:text-5xl font-serif font-semibold text-[#27221F] mb-4">
               Facilitadores de Constelaciones
             </h1>
@@ -71,11 +68,6 @@ export default function FacilitadoresPage() {
                         {initials}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs px-2.5 py-0.5 rounded-full bg-sage-100 text-sage-800 font-semibold">
-                            {f.experienceYears} años de experiencia
-                          </span>
-                        </div>
                         <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#27221F]">
                           {f.name}
                         </h3>
@@ -140,36 +132,7 @@ export default function FacilitadoresPage() {
           </div>
 
           {/* ========================================================================= */}
-          {/* SECCIÓN: PRACTICA CON NOSOTROS (Sesiones en Formación Supervisada)         */}
-          {/* ========================================================================= */}
-          <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-3xl p-8 sm:p-10 mb-20 shadow-sm">
-            <div className="max-w-3xl mx-auto text-center space-y-4">
-              <span className="inline-block px-3 py-1 rounded-full bg-cream-100 border border-[#E7DECE] text-[#5C524A] text-xs font-semibold uppercase tracking-wider">
-                Espacio de Integración Formativa
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#27221F]">
-                Practica con nosotros
-              </h2>
-              <p className="text-sm sm:text-base text-[#5C524A] leading-relaxed">
-                Ofrecemos un espacio de atención vivencial guiado por practicantes avanzados en etapa de integración clínica y formación sistémica, bajo supervisión pedagógica continua. Si buscas acceder a una sesión individual a un valor formativo preferencial o participar en círculos de práctica, escríbenos directamente.
-              </p>
-              <div className="pt-2">
-                <a
-                  href={`https://wa.me/${rawPhone}?text=${encodeURIComponent("Hola, me interesa conocer más sobre las sesiones y espacios de Practica con Nosotros en consteladores.cl.")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition-all"
-                >
-                  <span>💬</span>
-                  <span>Consultar por sesiones de práctica</span>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* ========================================================================= */}
-          {/* MARCO SEPARADO: SI ERES FACILITADOR Y QUIERES PERTENECER AL EQUIPO         */}
-          {/* Con solo 3 botones requeridos y editable desde CMS                          */}
+          {/* MARCO SEPARADO: SI ERES FACILITADOR (O PRACTICANTE) Y QUIERES PERTENECER AL EQUIPO */}
           {/* ========================================================================= */}
           <div className="relative border-2 border-terracotta-300/80 bg-gradient-to-br from-[#FCFAF7] to-[#F7EFE3] rounded-3xl p-8 sm:p-12 shadow-md">
             
@@ -189,55 +152,51 @@ export default function FacilitadoresPage() {
               {/* Contenido y los 3 Botones Exclusivos */}
               <div className="md:col-span-7 space-y-5 text-left">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-terracotta-600 block mb-2">
-                    Convocatoria Abierta
-                  </span>
                   <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#27221F] leading-tight">
-                    {settings?.joinTeamTitle || "Si eres facilitador y quieres pertenecer al equipo"}
+                    {settings?.joinTeamTitle || "Si eres facilitador (o practicante) y quieres pertenecer al equipo"}
                   </h2>
                 </div>
 
                 <p className="text-sm sm:text-base text-[#5C524A] leading-relaxed">
-                  {settings?.joinTeamDescription ||
-                    "Buscamos facilitadores comprometidos con la ética sistémica y el cuidado humano. Postula para formar parte de nuestra red, o únete a nuestros espacios comunitarios de profundización."}
+                  {settings?.joinTeamDescription || "Postula para ser parte de nuestra red"}
                 </p>
 
-                {/* LOS 3 BOTONES REQUERIDOS */}
+                {/* LOS 3 BOTONES REQUERIDOS (Sin textos largos) */}
                 <div className="pt-2 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3">
                   
-                  {/* Botón 1: Postular como facilitador */}
+                  {/* Botón 1: Postular facilitador / practicante */}
                   <Link
                     href={settings?.joinTeamPostulateUrl || "/registro-terapeuta"}
                     className="px-6 py-3 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-semibold text-xs sm:text-sm text-center shadow-sm hover:shadow transition-all active:scale-95 cursor-pointer"
                   >
-                    {settings?.joinTeamPostulateLabel || "Postular como facilitador"}
+                    {settings?.joinTeamPostulateLabel || "Postular facilitador / practicante"}
                   </Link>
 
-                  {/* Botón 2: Ícono de WhatsApp para consultas */}
+                  {/* Botón 2: Ícono de WhatsApp y número de teléfono editable */}
                   <a
                     href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-5 py-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow transition-all active:scale-95 cursor-pointer"
-                    title="Consultas vía WhatsApp"
+                    className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow transition-all active:scale-95 cursor-pointer"
+                    title="WhatsApp"
                   >
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                       <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z" />
                     </svg>
-                    <span>Consultas por WhatsApp</span>
+                    <span>{settings?.whatsappNumber || "+56 9 4193 9363"}</span>
                   </a>
 
-                  {/* Botón 3: Solicitar unirme a la comunidad (Telegram) */}
+                  {/* Botón 3: Comunidad (Telegram) */}
                   <a
                     href={settings?.telegramUrl || CONFIG.TELEGRAM_INVITE_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-5 py-3 rounded-full bg-[#2AABEE] hover:bg-[#229ED9] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow transition-all active:scale-95 cursor-pointer"
                   >
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                       <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.458c.538-.196 1.006.128.832.963z" />
                     </svg>
-                    <span>Solicitar unirme a la comunidad</span>
+                    <span>Comunidad</span>
                   </a>
 
                 </div>

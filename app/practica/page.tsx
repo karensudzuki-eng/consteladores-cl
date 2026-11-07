@@ -28,7 +28,7 @@ const practitionersList: PractitionerItem[] = [
     institution: "Centro de Formación Icalma",
     graduationYear: "Egresado/a 2025",
     availableHours: ["11:00", "15:00", "18:00"],
-    bio: "Practicante en etapa de integración clínica. Acompaña procesos individuales online bajo la tutela metodológica de docentes del Centro de Formación Icalma.",
+    bio: "Practicante en etapa de profundización práctica. Acompaña procesos individuales online bajo la tutela metodológica de docentes del Centro de Formación Icalma.",
   },
 ];
 

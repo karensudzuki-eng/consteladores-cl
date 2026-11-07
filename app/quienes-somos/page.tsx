@@ -56,43 +56,85 @@ export default function QuienesSomosPage() {
             </div>
           </div>
 
-          {/* Valores y Principios Guía */}
+          {/* Valores y Principios Guía (Editables y con Imagen Clickable que Redirige) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-            <div className="bg-white/80 border border-[#E7DECE] rounded-2xl p-6 shadow-sm">
-              <div className="w-10 h-10 rounded-full bg-terracotta-50 text-terracotta-600 flex items-center justify-center text-lg mb-4">
-                🤍
-              </div>
-              <h3 className="text-lg font-serif font-bold text-[#27221F] mb-2">
-                Respeto y Confidencialidad
-              </h3>
-              <p className="text-xs text-[#5C524A] leading-relaxed">
-                Cada historia y motivo de consulta es tratado como un espacio sagrado, bajo el más riguroso resguardo ético y privacidad.
-              </p>
-            </div>
+            {(
+              about?.pillars || [
+                {
+                  id: "respeto",
+                  title: "Respeto y Confidencialidad",
+                  description:
+                    "Cada historia y motivo de consulta es tratado como un espacio sagrado, bajo el más riguroso resguardo ético y privacidad.",
+                  imageUrl: "/images/mirar-historia-sanar.png",
+                  linkUrl: "/#servicios",
+                },
+                {
+                  id: "mirada",
+                  title: "Mirada Fenomenológica",
+                  description:
+                    "No imponemos interpretaciones ni juicios morales; observamos lo que se muestra y acogemos lo que emerge con compasión.",
+                  imageUrl: "/images/arbol-generaciones.png",
+                  linkUrl: "/#talleres",
+                },
+                {
+                  id: "comunidad",
+                  title: "Comunidad Viva",
+                  description:
+                    "Fomentamos el encuentro continuo de facilitadores, practicantes y consultantes para aprender juntos y apoyarnos mutuamente.",
+                  imageUrl: "/images/comunidad-encuentro.png",
+                  linkUrl: "https://t.me/+PjKqj5M9k_wyYjEx",
+                },
+              ]
+            ).map((pillar) => {
+              const isExternal = pillar.linkUrl?.startsWith("http");
+              const CardWrapper = ({ children }: { children: React.ReactNode }) =>
+                isExternal ? (
+                  <a
+                    href={pillar.linkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block h-full group"
+                  >
+                    {children}
+                  </a>
+                ) : (
+                  <Link href={pillar.linkUrl || "#"} className="block h-full group">
+                    {children}
+                  </Link>
+                );
 
-            <div className="bg-white/80 border border-[#E7DECE] rounded-2xl p-6 shadow-sm">
-              <div className="w-10 h-10 rounded-full bg-cream-100 text-cream-800 flex items-center justify-center text-lg mb-4">
-                🌿
-              </div>
-              <h3 className="text-lg font-serif font-bold text-[#27221F] mb-2">
-                Mirada Fenomenológica
-              </h3>
-              <p className="text-xs text-[#5C524A] leading-relaxed">
-                No imponemos interpretaciones ni juicios morales; observamos lo que se muestra y acogemos lo que emerge con compasión.
-              </p>
-            </div>
+              return (
+                <div key={pillar.id} className="h-full">
+                  <CardWrapper>
+                    <div className="bg-white/85 hover:bg-white border border-[#E7DECE] hover:border-terracotta-300 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col justify-between">
+                      <div>
+                        {/* Imagen Pequeña Clickable */}
+                        <div className="w-14 h-14 rounded-xl overflow-hidden border border-[#E7DECE] bg-[#FAF8F5] mb-4 group-hover:scale-105 transition-transform shadow-sm">
+                          <img
+                            src={pillar.imageUrl || "/images/arbol-generaciones.png"}
+                            alt={pillar.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
 
-            <div className="bg-white/80 border border-[#E7DECE] rounded-2xl p-6 shadow-sm">
-              <div className="w-10 h-10 rounded-full bg-sage-50 text-sage-700 flex items-center justify-center text-lg mb-4">
-                🤝
-              </div>
-              <h3 className="text-lg font-serif font-bold text-[#27221F] mb-2">
-                Comunidad Viva
-              </h3>
-              <p className="text-xs text-[#5C524A] leading-relaxed">
-                Fomentamos el encuentro continuo de facilitadores, practicantes y consultantes para aprender juntos y apoyarnos mutuamente.
-              </p>
-            </div>
+                        <h3 className="text-lg font-serif font-bold text-[#27221F] mb-2 group-hover:text-terracotta-700 transition-colors">
+                          {pillar.title}
+                        </h3>
+
+                        <p className="text-xs text-[#5C524A] leading-relaxed">
+                          {pillar.description}
+                        </p>
+                      </div>
+
+                      <div className="pt-4 mt-2 flex items-center gap-1.5 text-xs font-semibold text-terracotta-600 group-hover:text-terracotta-700">
+                        <span>Ver más</span>
+                        <span className="transition-transform group-hover:translate-x-1">→</span>
+                      </div>
+                    </div>
+                  </CardWrapper>
+                </div>
+              );
+            })}
           </div>
 
           {/* Llamado a la acción */}
@@ -115,7 +157,7 @@ export default function QuienesSomosPage() {
                 href="/#talleres"
                 className="px-6 py-3 rounded-full bg-white hover:bg-[#F3ECE2] border border-[#E7DECE] text-[#27221F] font-medium text-sm shadow-sm transition-all active:scale-95"
               >
-                Ver talleres vivenciales
+                Ver talleres
               </Link>
             </div>
           </div>
