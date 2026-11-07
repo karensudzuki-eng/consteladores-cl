@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { getCMSContent, saveCMSContent } from "@/lib/cms/server-content";
+import { getCMSContentAsync, saveCMSContentAsync } from "@/lib/cms/server-content";
 import { CMSContent } from "@/lib/cms/types";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const data = getCMSContent();
+    const data = await getCMSContentAsync();
     return NextResponse.json(data);
   } catch (err: any) {
     return NextResponse.json(
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-    saveCMSContent(body);
+    await saveCMSContentAsync(body);
     return NextResponse.json({ success: true, data: body });
   } catch (err: any) {
     return NextResponse.json(
