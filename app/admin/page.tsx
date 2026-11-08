@@ -5,10 +5,29 @@ import Link from "next/link";
 import { useCMS } from "@/lib/cms/CMSContext";
 import { CMSWorkshop, CMSHeroSlide, CMSTestimonial } from "@/lib/cms/types";
 import { FlyerDesigner } from "@/components/flyer-designer/FlyerDesigner";
+import {
+  saveAudioToIndexedDB,
+  getAudioFromIndexedDB,
+  removeAudioFromIndexedDB,
+} from "@/lib/cms/audio-storage";
 
 export default function AdminPage() {
   const { content, setContent, updateContent, isLoading } = useCMS();
   const [isSaving, setIsSaving] = useState(false);
+  const [adminAudioPreview, setAdminAudioPreview] = useState<string>("");
+
+  // Cargar preview de audio si está en IndexedDB o es URL
+  useEffect(() => {
+    if (content.settings?.heroMusicUrl === "indexeddb://hero_ambient_audio") {
+      getAudioFromIndexedDB().then((src) => {
+        if (src) setAdminAudioPreview(src);
+      });
+    } else if (content.settings?.heroMusicUrl) {
+      setAdminAudioPreview(content.settings.heroMusicUrl);
+    } else {
+      setAdminAudioPreview("");
+    }
+  }, [content.settings?.heroMusicUrl]);
 
   // Autenticación simple mediante clave
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -76,7 +95,7 @@ export default function AdminPage() {
         const img = new Image();
         img.onload = () => {
           try {
-            const maxDim = 1200;
+            const maxDim = 900;
             let width = img.width;
             let height = img.height;
             if (width > maxDim || height > maxDim) {
@@ -96,7 +115,7 @@ export default function AdminPage() {
             const isPng = file.type === "image/png" || file.name.toLowerCase().endsWith(".png");
             const dataUrl = isPng
               ? canvas.toDataURL("image/png")
-              : canvas.toDataURL("image/jpeg", 0.88);
+              : canvas.toDataURL("image/jpeg", 0.80);
             resolve(dataUrl || rawResult);
           } catch {
             resolve(rawResult);
@@ -276,12 +295,74 @@ export default function AdminPage() {
           <Link href="/" className="font-serif font-bold text-xl text-[#27221F] hover:text-terracotta-600">
             consteladores<span className="text-terracotta-500 italic">.cl</span>
           </Link>
-          <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-terracotta-100 text-terracotta-800 border border-terracotta-200">
-            Panel de Control
-          </span>
+          <Link
+            href="/"
+            target="_blank"
+            className="text-[11px] font-semibold px-3 py-1 rounded-full bg-cream-100 hover:bg-cream-200 text-[#5C524A] hover:text-[#27221F] border border-[#E7DECE] transition-all flex items-center gap-1 cursor-pointer"
+          >
+            <span>Ver sitio en vivo</span>
+            <span>↗</span>
+          </Link>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Botón Descargar Respaldo JSON */}
+          <button
+            type="button"
+            onClick={() => {
+              const dataStr =
+                "data:text/json;charset=utf-8," +
+                encodeURIComponent(JSON.stringify(content, null, 2));
+              const downloadAnchor = document.createElement("a");
+              downloadAnchor.setAttribute("href", dataStr);
+              downloadAnchor.setAttribute(
+                "download",
+                `consteladores-cms-backup-${new Date().toISOString().split("T")[0]}.json`
+              );
+              document.body.appendChild(downloadAnchor);
+              downloadAnchor.click();
+              downloadAnchor.remove();
+            }}
+            className="text-xs text-[#5C524A] hover:text-[#27221F] px-3 py-1.5 rounded-lg border border-[#E7DECE] bg-white transition-colors cursor-pointer hidden sm:inline-flex items-center gap-1 shadow-xs"
+            title="Descargar copia de respaldo JSON con todo el contenido actual"
+          >
+            <span>📥 Respaldo JSON</span>
+          </button>
+
+          {/* Botón Restaurar Respaldo JSON */}
+          <label
+            className="text-xs text-[#5C524A] hover:text-[#27221F] px-3 py-1.5 rounded-lg border border-[#E7DECE] bg-white transition-colors cursor-pointer hidden sm:inline-flex items-center gap-1 shadow-xs"
+            title="Restaurar una copia de respaldo JSON guardada previamente"
+          >
+            <span>📤 Restaurar JSON</span>
+            <input
+              type="file"
+              accept=".json,application/json"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = async () => {
+                  try {
+                    const parsed = JSON.parse(reader.result as string);
+                    if (parsed?.settings && Array.isArray(parsed?.workshops)) {
+                      setContent(parsed);
+                      await updateContent(parsed);
+                      setSuccessMessage("✓ ¡Copia de respaldo restaurada exitosamente!");
+                      setTimeout(() => setSuccessMessage(""), 5000);
+                    } else {
+                      alert("El archivo no tiene el formato de contenido válido de consteladores.cl");
+                    }
+                  } catch {
+                    alert("Error al procesar el archivo JSON.");
+                  }
+                };
+                reader.readAsText(file);
+              }}
+            />
+          </label>
+
           <button
             onClick={handleSaveAll}
             disabled={isSaving}
@@ -671,68 +752,30 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* TEXTOS DE LA SECCIÓN TALLERES: "ACERCA DEL ENCUENTRO" */}
-            <div className="lg:col-span-12 bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-5 space-y-4">
+            {/* TEXTOS DE LA SECCIÓN TALLERES (Un solo bloque editable sin bordes) */}
+            <div className="lg:col-span-12 bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-5 space-y-3">
               <div className="border-b border-[#E7DECE] pb-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-terracotta-700 block">
-                  Textos Generales de la Sección de Talleres ("Acerca del encuentro")
+                  Texto de la Sección Talleres (Un solo bloque editable)
                 </span>
                 <p className="text-[11px] text-[#5C524A]">
-                  Estos textos aparecen directamente bajo el título "Talleres de Constelaciones" en la página principal.
+                  Este texto aparece directamente bajo el título &quot;Talleres de Constelaciones&quot; en la página principal, sin cajas ni bordes duros.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-[#5C524A] mb-1">
-                    Título del bloque
-                  </label>
-                  <input
-                    type="text"
-                    value={content.settings.workshopAboutTitle || "Acerca del encuentro"}
-                    onChange={(e) =>
-                      setContent({
-                        ...content,
-                        settings: { ...content.settings, workshopAboutTitle: e.target.value },
-                      })
-                    }
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs font-bold"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-[#5C524A] mb-1">
-                    Descripción del encuentro
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={content.settings.workshopAboutDescription || ""}
-                    onChange={(e) =>
-                      setContent({
-                        ...content,
-                        settings: { ...content.settings, workshopAboutDescription: e.target.value },
-                      })
-                    }
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs resize-none"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-[#5C524A] mb-1">
-                    Nota Importante (Casos a constelar y resonancia)
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={content.settings.workshopAboutNote || ""}
-                    onChange={(e) =>
-                      setContent({
-                        ...content,
-                        settings: { ...content.settings, workshopAboutNote: e.target.value },
-                      })
-                    }
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs resize-none"
-                  />
-                </div>
+              <div>
+                <textarea
+                  rows={4}
+                  value={content.settings.workshopAboutDescription || ""}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      settings: { ...content.settings, workshopAboutDescription: e.target.value },
+                    })
+                  }
+                  placeholder="Te invitamos a un taller de constelaciones donde..."
+                  className="w-full px-4 py-3 rounded-xl bg-white border border-[#E7DECE] text-xs sm:text-sm leading-relaxed text-[#27221F]"
+                />
               </div>
             </div>
           </div>
@@ -823,12 +866,14 @@ export default function AdminPage() {
                       const file = e.target.files?.[0];
                       if (!file) return;
                       const reader = new FileReader();
-                      reader.onload = () => {
+                      reader.onload = async () => {
                         const dataUrl = reader.result as string;
+                        await saveAudioToIndexedDB(dataUrl);
                         setContent({
                           ...content,
-                          settings: { ...content.settings, heroMusicUrl: dataUrl },
+                          settings: { ...content.settings, heroMusicUrl: "indexeddb://hero_ambient_audio" },
                         });
+                        setAdminAudioPreview(dataUrl);
                       };
                       reader.readAsDataURL(file);
                     }}
@@ -842,13 +887,15 @@ export default function AdminPage() {
                   </label>
                   <input
                     type="text"
-                    value={content.settings.heroMusicUrl || ""}
-                    onChange={(e) =>
+                    value={content.settings.heroMusicUrl?.startsWith("indexeddb://") ? "" : (content.settings.heroMusicUrl || "")}
+                    onChange={(e) => {
+                      const val = e.target.value;
                       setContent({
                         ...content,
-                        settings: { ...content.settings, heroMusicUrl: e.target.value },
-                      })
-                    }
+                        settings: { ...content.settings, heroMusicUrl: val },
+                      });
+                      setAdminAudioPreview(val);
+                    }}
                     placeholder="https://.../musica-relajante.mp3 o /audio/..."
                     className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F]"
                   />
@@ -856,7 +903,7 @@ export default function AdminPage() {
               </div>
 
               {/* Vista previa y reproductor interactivo */}
-              {content.settings.heroMusicUrl && (
+              {adminAudioPreview && (
                 <div className="pt-2 border-t border-[#E7DECE]/80 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-xl border border-[#E7DECE]">
                   <div className="w-full sm:flex-1">
                     <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-700 mb-1">
@@ -864,18 +911,20 @@ export default function AdminPage() {
                     </span>
                     <audio
                       controls
-                      src={content.settings.heroMusicUrl}
+                      src={adminAudioPreview}
                       className="w-full h-8"
                     />
                   </div>
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={async () => {
+                      await removeAudioFromIndexedDB();
                       setContent({
                         ...content,
                         settings: { ...content.settings, heroMusicUrl: "" },
-                      })
-                    }
+                      });
+                      setAdminAudioPreview("");
+                    }}
                     className="px-3 py-1.5 text-xs text-red-600 hover:text-red-800 font-semibold cursor-pointer shrink-0"
                   >
                     Quitar audio

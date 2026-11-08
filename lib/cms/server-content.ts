@@ -117,6 +117,7 @@ export function saveCMSContent(content: CMSContent): void {
 
 function mergeWithDefaults(parsed: any): CMSContent {
   return {
+    updatedAt: parsed?.updatedAt || undefined,
     settings: {
       ...DEFAULT_CMS_CONTENT.settings,
       ...(parsed.settings || {}),

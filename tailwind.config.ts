@@ -75,9 +75,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        serif: ["var(--font-cormorant)", "Georgia", "serif"],
-        sans: ["var(--font-geist-sans)", "Inter", "system-ui", "-apple-system", "sans-serif"],
-        cursive: ["var(--font-cormorant)", "Georgia", "serif"],
+        serif: ["'Cormorant Garamond'", "Georgia", "serif"],
+        sans: ["Geist", "Inter", "system-ui", "-apple-system", "sans-serif"],
+        cursive: ["'Cormorant Garamond'", "Georgia", "serif"],
       },
       borderRadius: {
         DEFAULT: "6px",

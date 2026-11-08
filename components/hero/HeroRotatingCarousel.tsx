@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { CMSHeroSlide } from "@/lib/cms/types";
+import { getAudioFromIndexedDB } from "@/lib/cms/audio-storage";
 
 interface HeroRotatingCarouselProps {
   slides: CMSHeroSlide[];
@@ -17,7 +18,25 @@ export function HeroRotatingCarousel({
 }: HeroRotatingCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+  const [resolvedAudioSrc, setResolvedAudioSrc] = useState<string>("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Resolver la fuente del audio (si viene de IndexedDB o URL directa)
+  useEffect(() => {
+    async function resolveAudio() {
+      if (!musicUrl) {
+        setResolvedAudioSrc("");
+        return;
+      }
+      if (musicUrl === "indexeddb://hero_ambient_audio") {
+        const localAudio = await getAudioFromIndexedDB();
+        setResolvedAudioSrc(localAudio || "");
+      } else {
+        setResolvedAudioSrc(musicUrl);
+      }
+    }
+    resolveAudio();
+  }, [musicUrl]);
 
   const activeSlides = slides && slides.length > 0 ? slides : [];
 
@@ -34,7 +53,7 @@ export function HeroRotatingCarousel({
 
   // Manejo de la música ambiental
   const toggleMusic = () => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || !resolvedAudioSrc) return;
 
     if (isPlayingMusic) {
       audioRef.current.pause();
@@ -58,56 +77,79 @@ export function HeroRotatingCarousel({
   return (
     <div className="w-full max-w-4xl mx-auto my-10">
       {/* Elemento de Audio Oculto */}
-      {musicUrl && (
+      {resolvedAudioSrc && (
         <audio
           ref={audioRef}
-          src={musicUrl}
+          src={resolvedAudioSrc}
           loop
           preload="none"
           onEnded={() => setIsPlayingMusic(false)}
         />
       )}
 
-      {/* Barra de Control de Música Ambiental */}
-      <div className="flex items-center justify-between mb-4 px-2">
-        <button
-          type="button"
-          onClick={toggleMusic}
-          className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all shadow-sm cursor-pointer ${
-            isPlayingMusic
-              ? "bg-sage-600 text-white shadow-sage-200"
-              : "bg-white/80 hover:bg-white text-[#5C524A] border border-[#E7DECE]"
-          }`}
-          title="Música ambiental para mirar y conectar con el espacio"
-        >
-          <span className="text-sm">{isPlayingMusic ? "🔊" : "🎵"}</span>
-          <span>{isPlayingMusic ? "Pausar música ambiental" : "Activar música ambiental"}</span>
-          {isPlayingMusic && (
-            <span className="flex gap-0.5 items-end h-3 ml-1">
-              <span className="w-0.5 h-3 bg-white animate-pulse" />
-              <span className="w-0.5 h-2 bg-white animate-pulse delay-75" />
-              <span className="w-0.5 h-3.5 bg-white animate-pulse delay-150" />
-            </span>
-          )}
-        </button>
+      {/* Barra de Control de Música Ambiental (solo si hay audio configurado) */}
+      {resolvedAudioSrc && (
+        <div className="flex items-center justify-between mb-4 px-2">
+          <button
+            type="button"
+            onClick={toggleMusic}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all shadow-sm cursor-pointer ${
+              isPlayingMusic
+                ? "bg-sage-600 text-white shadow-sage-200"
+                : "bg-white/80 hover:bg-white text-[#5C524A] border border-[#E7DECE]"
+            }`}
+            title="Música ambiental para mirar y conectar con el espacio"
+          >
+            <span className="text-sm">{isPlayingMusic ? "🔊" : "🎵"}</span>
+            <span>{isPlayingMusic ? "Pausar música ambiental" : "Activar música ambiental"}</span>
+            {isPlayingMusic && (
+              <span className="flex gap-0.5 items-end h-3 ml-1">
+                <span className="w-0.5 h-3 bg-white animate-pulse" />
+                <span className="w-0.5 h-2 bg-white animate-pulse delay-75" />
+                <span className="w-0.5 h-3.5 bg-white animate-pulse delay-150" />
+              </span>
+            )}
+          </button>
 
-        {/* Indicador de posición / Contador */}
-        <div className="flex items-center gap-2">
-          {activeSlides.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setCurrentIndex(i)}
-              className={`h-2.5 rounded-full transition-all cursor-pointer ${
-                i === currentIndex
-                  ? "w-8 bg-terracotta-500"
-                  : "w-2.5 bg-[#D5C8B4] hover:bg-[#8A7E73]"
-              }`}
-              aria-label={`Ir a diapositiva ${i + 1}`}
-            />
-          ))}
+          {/* Indicador de posición / Contador */}
+          <div className="flex items-center gap-2">
+            {activeSlides.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setCurrentIndex(i)}
+                className={`h-2.5 rounded-full transition-all cursor-pointer ${
+                  i === currentIndex
+                    ? "w-8 bg-terracotta-500"
+                    : "w-2.5 bg-[#D5C8B4] hover:bg-[#8A7E73]"
+                }`}
+                aria-label={`Ir a diapositiva ${i + 1}`}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Si no hay audio, solo mostramos el contador de diapositivas */}
+      {!resolvedAudioSrc && (
+        <div className="flex items-center justify-end mb-4 px-2">
+          <div className="flex items-center gap-2">
+            {activeSlides.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setCurrentIndex(i)}
+                className={`h-2.5 rounded-full transition-all cursor-pointer ${
+                  i === currentIndex
+                    ? "w-8 bg-terracotta-500"
+                    : "w-2.5 bg-[#D5C8B4] hover:bg-[#8A7E73]"
+                }`}
+                aria-label={`Ir a diapositiva ${i + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Tarjeta del Carrusel Giratorio con Mayor Amplitud y Espacio */}
       <div className="relative bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-10 shadow-xl overflow-hidden transition-all duration-700">

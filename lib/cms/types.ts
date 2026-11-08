@@ -107,6 +107,7 @@ export interface CMSSettings {
 }
 
 export interface CMSContent {
+  updatedAt?: number;
   settings: CMSSettings;
   workshops: CMSWorkshop[];
   heroSlides: CMSHeroSlide[];
@@ -130,7 +131,7 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       "Consteladores: un espacio cuidado para mirar el orden de tu sistema familiar y retomar tu propio lugar con calma.",
     heroBgImage: "/images/mirar-historia-sanar.png",
     heroOverlayOpacity: 0.8,
-    heroMusicUrl: "/audio/meditacion-armonica.wav",
+    heroMusicUrl: "",
 
     serviceTitle: "Sesión Individual",
     serviceDescription:
@@ -145,11 +146,10 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
     serviceOnlineRequirements:
       "Contar con un espacio privado e internet a través de computador o teléfono móvil.",
 
-    workshopAboutTitle: "Acerca del encuentro",
+    workshopAboutTitle: "Talleres",
     workshopAboutDescription:
-      "Te invitamos a un taller vivencial donde, a través de la escenificación de dinámicas personales, podrás mirar tu vida desde una perspectiva más profunda y liberadora.",
-    workshopAboutNote:
-      '⚠️ Los casos a constelar se seleccionarán durante el encuentro. Aunque no todos los asistentes constelarán de forma individual, la experiencia demuestra que el trabajo de cada compañero resuena con nuestras propias vivencias, permitiendo que todos los presentes vivan un proceso de aprendizaje y transformación compartida. "Cuando tú constelas, todos constelamos".',
+      'Te invitamos a un taller de constelaciones donde, a través de la escenificación de dinámicas personales, podrás mirar tu vida desde una perspectiva más profunda y liberadora.\n\nLos casos a constelar se seleccionarán durante el encuentro. Aunque no todos los asistentes constelarán de forma individual, la experiencia demuestra que el trabajo de cada compañero resuena con nuestras propias vivencias, permitiendo que todos los presentes vivan un proceso de aprendizaje y transformación compartida: "Cuando tú constelas, todos constelamos".',
+    workshopAboutNote: "",
 
     joinTeamTitle: "Si eres facilitador (o practicante) y quieres pertenecer al equipo",
     joinTeamDescription: "Postula para ser parte de nuestra red",

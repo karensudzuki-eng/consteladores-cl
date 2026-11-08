@@ -43,22 +43,14 @@ export function WorkshopsCarousel({
           </h2>
         </div>
 
-        {/* ACERCA DEL ENCUENTRO (Sin bordes duros, texto limpio y editable desde CMS) */}
-        <div className="max-w-3xl mx-auto mb-14 text-left sm:text-center space-y-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[#8A7E73]">
-            {settings?.workshopAboutTitle || "Acerca del encuentro"}
-          </h3>
-          <p className="text-base sm:text-lg text-[#27221F] leading-relaxed">
-            {settings?.workshopAboutDescription ||
-              "Te invitamos a un taller vivencial donde, a través de la escenificación de dinámicas personales, podrás mirar tu vida desde una perspectiva más profunda y liberadora."}
-          </p>
-          <div className="p-5 rounded-2xl bg-[#FFF9F2] text-xs sm:text-sm text-[#7A4B10] leading-relaxed shadow-xs text-left">
-            <p>
-              {settings?.workshopAboutNote ||
-                '⚠️ Los casos a constelar se seleccionarán durante el encuentro. Aunque no todos los asistentes constelarán de forma individual, la experiencia demuestra que el trabajo de cada compañero resuena con nuestras propias vivencias, permitiendo que todos los presentes vivan un proceso de aprendizaje y transformación compartida. "Cuando tú constelas, todos constelamos".'}
+        {/* TEXTO INTRODUCTORIO DE TALLERES (Un solo bloque editable sin bordes ni cajas) */}
+        {settings?.workshopAboutDescription && (
+          <div className="max-w-3xl mx-auto mb-12 text-center">
+            <p className="text-base sm:text-lg text-[#38322E] leading-relaxed whitespace-pre-line">
+              {settings.workshopAboutDescription}
             </p>
           </div>
-        </div>
+        )}
 
         {/* Carrusel de Flyers */}
         <div className="relative">
@@ -86,7 +78,7 @@ export function WorkshopsCarousel({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {activeWorkshops.map((workshop, idx) => {
               const workshopWspUrl = `https://wa.me/${rawPhone}?text=${encodeURIComponent(
-                `Hola, me interesa coordinar mi participación en el taller vivencial "${workshop.title}" (${workshop.date}).`
+                `Hola, me interesa coordinar mi participación en el taller "${workshop.title}" (${workshop.date}).`
               )}`;
 
               return (

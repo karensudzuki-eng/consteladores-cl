@@ -37,46 +37,45 @@ export function WorkshopDetailModal({
         <button
           onClick={onClose}
           type="button"
-          className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/80 border border-[#E7DECE] text-[#5C524A] hover:text-[#27221F] flex items-center justify-center shadow-sm hover:scale-105 transition-all cursor-pointer z-10"
+          className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/90 border border-[#E7DECE] text-[#5C524A] hover:text-[#27221F] flex items-center justify-center shadow-sm hover:scale-105 transition-all cursor-pointer z-20"
           aria-label="Cerrar modal"
         >
           ✕
         </button>
 
-        {/* Encabezado con Logo dinámico */}
-        <div className="flex items-center justify-between mb-4">
-          <WorkshopLogoBadge
-            logoType={workshop.logoType}
-            logoUrl={workshop.logoUrl}
-          />
-          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-terracotta-100 text-terracotta-800 border border-terracotta-200">
-            Taller Vivencial
-          </span>
-        </div>
+        {/* Encabezado con Logo dinámico (sin texto taller vivencial) */}
+        {workshop.logoType && workshop.logoType !== "none" && (
+          <div className="mb-4">
+            <WorkshopLogoBadge
+              logoType={workshop.logoType}
+              logoUrl={workshop.logoUrl}
+            />
+          </div>
+        )}
 
-        {/* Flyer miniatura si existe */}
+        {/* Flyer ocupando TODO EL ANCHO */}
         {workshop.flyerUrl && (
-          <div className="relative w-full h-48 sm:h-56 rounded-2xl overflow-hidden mb-6 border border-[#E7DECE] bg-[#FAF8F5]">
+          <div className="relative w-full h-72 sm:h-96 md:h-[420px] rounded-2xl overflow-hidden mb-6 border border-[#E7DECE] bg-[#FAF8F5] shadow-sm">
             <img
               src={workshop.flyerUrl}
               alt={workshop.title}
-              className="w-full h-full object-contain object-center"
+              className="w-full h-full object-cover object-center"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
-              <span className="text-white text-xs font-medium tracking-wide">
-                {workshop.date} · {workshop.time}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-5">
+              <span className="text-white text-xs sm:text-sm font-medium tracking-wide">
+                {workshop.date} {workshop.time && `· ${workshop.time}`}
               </span>
             </div>
           </div>
         )}
 
         {/* Título Principal */}
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#27221F] mb-3 leading-snug">
+        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#27221F] mb-4 leading-snug">
           {workshop.title}
         </h2>
 
-        {/* Fecha, Facilitadoras y Ubicación */}
-        <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-4 sm:p-5 mb-5 space-y-2 text-xs sm:text-sm">
+        {/* Solo: Fecha, Horario, Lugar, Facilitadoras y Valor */}
+        <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-4 sm:p-5 mb-6 space-y-2.5 text-xs sm:text-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-[#E7DECE]/80 pb-2">
             <span className="text-[#8A7E73] font-medium">Fecha y Horario:</span>
             <span className="font-semibold text-[#27221F]">
@@ -99,30 +98,13 @@ export function WorkshopDetailModal({
           </div>
 
           {workshop.price && (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-0.5">
               <span className="text-[#8A7E73] font-medium">Valor de participación:</span>
               <span className="font-serif font-bold text-base text-[#27221F]">
                 {workshop.price} <span className="text-xs font-sans text-[#8A7E73]">CLP</span>
               </span>
             </div>
           )}
-        </div>
-
-        {/* Descripción del Taller */}
-        <div className="mb-5 space-y-2">
-          <h3 className="text-xs uppercase tracking-wider font-semibold text-[#8A7E73]">
-            Acerca del encuentro
-          </h3>
-          <p className="text-sm sm:text-[15px] text-[#38322E] leading-relaxed">
-            {workshop.description}
-          </p>
-        </div>
-
-        {/* Nota Importante: Selección de Casos y Resonancia Sistémica */}
-        <div className="bg-[#FEF9EE] border border-ochre-300 rounded-2xl p-4 sm:p-5 mb-6 text-xs sm:text-sm text-[#7C5217] space-y-2 leading-relaxed">
-          <p className="font-medium">
-            {workshop.importantNote}
-          </p>
         </div>
 
         {/* Contacto directo y WhatsApp interactivo */}

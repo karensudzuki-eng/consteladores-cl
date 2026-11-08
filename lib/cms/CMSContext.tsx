@@ -32,6 +32,8 @@ export function CMSProvider({
   const [isLoading, setIsLoading] = useState<boolean>(!initialContent);
 
   const fetchContent = async () => {
+    let localData: (CMSContent & { updatedAt?: number }) | null = null;
+
     // 1. Cargar caché inmediata de localStorage si existe
     if (typeof window !== "undefined") {
       try {
@@ -39,23 +41,42 @@ export function CMSProvider({
         if (cached) {
           const parsed = JSON.parse(cached);
           if (parsed?.settings && Array.isArray(parsed?.workshops)) {
+            localData = parsed;
             setContent(parsed);
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn("Error leyendo localStorage:", e);
+      }
     }
 
-    // 2. Sincronizar con el servidor
+    // 2. Sincronizar con el servidor respetando la versión más reciente
     try {
       setIsLoading(true);
       const res = await fetch("/api/cms", { cache: "no-store" });
       if (res.ok) {
-        const data = await res.json();
-        if (data?.settings) {
-          setContent(data);
-          if (typeof window !== "undefined") {
+        const serverData = await res.json();
+        if (serverData?.settings) {
+          const serverTime = (serverData as any).updatedAt || 0;
+          const localTime = localData?.updatedAt || 0;
+
+          // SOLO sobreescribir si los datos del servidor son estrictamente más nuevos
+          if (serverTime > localTime) {
+            setContent(serverData);
+            if (typeof window !== "undefined") {
+              try {
+                localStorage.setItem("cst_cms_content", JSON.stringify(serverData));
+              } catch (e) {}
+            }
+          } else if (localTime > serverTime && localData) {
+            // El usuario guardó cambios localmente que el servidor no tiene aún.
+            // Sincronizamos hacia el servidor en segundo plano sin pisar los cambios locales.
             try {
-              localStorage.setItem("cst_cms_content", JSON.stringify(data));
+              fetch("/api/cms", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(localData),
+              });
             } catch (e) {}
           }
         }
@@ -72,19 +93,26 @@ export function CMSProvider({
   }, []);
 
   const updateContent = async (newContent: CMSContent): Promise<boolean> => {
+    const timestamped = {
+      ...newContent,
+      updatedAt: Date.now(),
+    };
+
     // Guardar inmediatamente en localStorage del cliente
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("cst_cms_content", JSON.stringify(newContent));
-      } catch (e) {}
+        localStorage.setItem("cst_cms_content", JSON.stringify(timestamped));
+      } catch (e) {
+        console.warn("Error al guardar en localStorage (posible exceso de cuota):", e);
+      }
     }
-    setContent(newContent);
+    setContent(timestamped as CMSContent);
 
     try {
       const res = await fetch("/api/cms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newContent),
+        body: JSON.stringify(timestamped),
       });
       return res.ok;
     } catch (err) {
