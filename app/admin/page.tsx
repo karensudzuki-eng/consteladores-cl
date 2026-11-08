@@ -175,7 +175,7 @@ export default function AdminPage() {
       logoType: "icalma",
       logoUrl: "",
       flyerUrl: "/images/arbol-generaciones.png",
-      phoneContact: content.settings.whatsappNumber || "+56 9 4193 9363",
+      phoneContact: "+56 9 6373 0998",
       isActive: true,
     };
 
@@ -844,6 +844,41 @@ export default function AdminPage() {
                     className="w-full px-4 py-2 rounded-xl bg-[#FAF8F5] border border-[#E7DECE] text-xs resize-none"
                   />
                 </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                      Teléfono / WhatsApp de Reservas *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ej. +56 9 6373 0998"
+                      value={currentWorkshop.phoneContact || "+56 9 6373 0998"}
+                      onChange={(e) => {
+                        const updated = [...content.workshops];
+                        updated[selectedWorkshopIndex].phoneContact = e.target.value;
+                        setContent({ ...content, workshops: updated });
+                      }}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs font-bold text-emerald-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                      Ciudad / Región
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ej. Concón / Valparaíso"
+                      value={currentWorkshop.city || ""}
+                      onChange={(e) => {
+                        const updated = [...content.workshops];
+                        updated[selectedWorkshopIndex].city = e.target.value;
+                        setContent({ ...content, workshops: updated });
+                      }}
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -901,7 +936,7 @@ export default function AdminPage() {
                   logoType: "icalma",
                   logoUrl: "",
                   flyerUrl: flyerDataUrl,
-                  phoneContact: content.settings.whatsappNumber || "+56 9 4193 9363",
+                  phoneContact: workshopData.phoneContact || "+56 9 6373 0998",
                   isActive: true,
                 };
                 const updated = [...content.workshops, newWorkshop];

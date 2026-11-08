@@ -14,19 +14,24 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Estados de datos del Flyer
+  // Estados de datos del Flyer (Estilo Imagen 1: información superpuesta directamente en la imagen)
+  const [subtitle, setSubtitle] = useState("TALLER PRESENCIAL\nCONSTELACIONES FAMILIARES");
   const [title, setTitle] = useState("Sana tu historia y conecta con nuevas posibilidades. ✨");
-  const [subtitle, setSubtitle] = useState("Taller Vivencial de Constelaciones Familiares");
-  const [dateAndHour, setDateAndHour] = useState("Sábado 16 de enero de 2026 · 10:00 a 14:00 hrs");
+  const [quote, setQuote] = useState('"Cuando tú constelas, todos constelamos"');
+  const [dateAndHour, setDateAndHour] = useState("Sábado 16 de enero de 2026 / 10:00 a 14:00 hrs");
   const [facilitators, setFacilitators] = useState("Erika Alert y Karen Sudzuki");
+  const [price, setPrice] = useState("$40.000");
   const [address, setAddress] = useState("Edmundo Eluchans 3047, of. 22, Concón");
   const [city, setCity] = useState("Concón / Viña del Mar");
-  const [price, setPrice] = useState("$40.000");
-  const [phone, setPhone] = useState("+56 9 4193 9363");
-  const [quote, setQuote] = useState('"Cuando tú constelas, todos constelamos"');
+  const [bookingPhone, setBookingPhone] = useState("+56 9 6373 0998");
 
-  // Logotipo transparente único
-  const [logoType, setLogoType] = useState<"consteladores" | "custom" | "vortice" | "none">("consteladores");
+  // Tamaños de fuente ajustables para destacar
+  const [subtitleFontSize, setSubtitleFontSize] = useState<number>(54);
+  const [titleFontSize, setTitleFontSize] = useState<number>(44);
+  const [quoteFontSize, setQuoteFontSize] = useState<number>(30);
+
+  // Logotipo transparente
+  const [logoType, setLogoType] = useState<"consteladores" | "icalma" | "custom" | "none">("consteladores");
   const [customLogoUrl, setCustomLogoUrl] = useState<string>("");
 
   // Imagen de Fondo y Encuadre
@@ -35,13 +40,12 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
   const [bgZoom, setBgZoom] = useState<number>(1.0);
   const [bgPositionY, setBgPositionY] = useState<number>(50); // 0 a 100%
   const [bgFit, setBgFit] = useState<"cover" | "contain">("cover");
-  const [overlayOpacity, setOverlayOpacity] = useState<number>(0.65);
-  const [accentColor, setAccentColor] = useState<string>("#D9664A"); // Terracota cálido
+  const [overlayOpacity, setOverlayOpacity] = useState<number>(0.5);
 
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [exportNotice, setExportNotice] = useState<string>("");
 
-  // Imagen cargada en memoria
+  // Imágenes cargadas en memoria
   const bgImgRef = useRef<HTMLImageElement | null>(null);
   const customLogoImgRef = useRef<HTMLImageElement | null>(null);
 
@@ -73,7 +77,7 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
     }
   }, [logoType, customLogoUrl]);
 
-  // Función principal de renderizado en Canvas
+  // Función principal de renderizado en Canvas (Estilo Imagen 1: información superpuesta sin caja blanca)
   const drawFlyer = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -83,11 +87,11 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
     // 1. Limpiar canvas
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    // 2. Fondo base crema suave
-    ctx.fillStyle = "#FAF7F2";
+    // 2. Fondo base
+    ctx.fillStyle = "#181412";
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    // 3. Dibujar imagen de fondo si está cargada con controles de encuadre y zoom
+    // 3. Dibujar imagen de fondo ocupando TODO el lienzo (Full Bleed)
     if (bgImgRef.current) {
       const img = bgImgRef.current;
       const baseRatio =
@@ -100,207 +104,267 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
       const shiftX = (CANVAS_WIDTH - drawWidth) / 2;
       const shiftY = (CANVAS_HEIGHT - drawHeight) * (bgPositionY / 100);
 
-      ctx.drawImage(
-        img,
-        0,
-        0,
-        img.width,
-        img.height,
-        shiftX,
-        shiftY,
-        drawWidth,
-        drawHeight
-      );
+      ctx.drawImage(img, 0, 0, img.width, img.height, shiftX, shiftY, drawWidth, drawHeight);
     }
 
-    // 4. Capa de velo / gradiente oscuro con opacidad regulable para garantizar contraste de texto
-    ctx.fillStyle = `rgba(39, 34, 31, ${overlayOpacity})`;
+    // 4. Capas cinematográficas de degradado transparente (permiten ver casi toda la imagen sin recuadros)
+    // 4.1 Velo general suave
+    ctx.fillStyle = `rgba(16, 12, 10, ${overlayOpacity * 0.45})`;
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    // Gradiente extra en la parte inferior para la caja de datos
-    const grad = ctx.createLinearGradient(0, CANVAS_HEIGHT * 0.4, 0, CANVAS_HEIGHT);
-    grad.addColorStop(0, "rgba(25, 20, 18, 0)");
-    grad.addColorStop(0.7, "rgba(25, 20, 18, 0.85)");
-    grad.addColorStop(1, "rgba(25, 20, 18, 0.96)");
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, CANVAS_HEIGHT * 0.4, CANVAS_WIDTH, CANVAS_HEIGHT * 0.6);
+    // 4.2 Degradado superior suave para logo y píldora de fecha
+    const topGrad = ctx.createLinearGradient(0, 0, 0, 360);
+    topGrad.addColorStop(0, "rgba(12, 9, 7, 0.75)");
+    topGrad.addColorStop(0.5, "rgba(12, 9, 7, 0.4)");
+    topGrad.addColorStop(1, "rgba(12, 9, 7, 0)");
+    ctx.fillStyle = topGrad;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, 360);
 
-    // 5. Marco decorativo fino exterior
-    ctx.strokeStyle = "rgba(231, 222, 206, 0.4)";
-    ctx.lineWidth = 3;
-    ctx.strokeRect(40, 40, CANVAS_WIDTH - 80, CANVAS_HEIGHT - 80);
+    // 4.3 Degradado inferior para textos y datos sin tapar con caja
+    const botGrad = ctx.createLinearGradient(0, CANVAS_HEIGHT * 0.35, 0, CANVAS_HEIGHT);
+    botGrad.addColorStop(0, "rgba(12, 9, 7, 0)");
+    botGrad.addColorStop(0.5, "rgba(12, 9, 7, 0.5)");
+    botGrad.addColorStop(0.85, "rgba(10, 8, 6, 0.85)");
+    botGrad.addColorStop(1, "rgba(8, 6, 5, 0.96)");
+    ctx.fillStyle = botGrad;
+    ctx.fillRect(0, CANVAS_HEIGHT * 0.35, CANVAS_WIDTH, CANVAS_HEIGHT * 0.65);
 
-    // 6. ENCABEZADO Y LOGOTIPO TRANSPARENTE ÚNICO (Sin bordes ni píldoras redondeadas)
-    const headerY = 85;
+    // 5. Marco fino decorativo exterior
+    ctx.strokeStyle = "rgba(231, 222, 206, 0.35)";
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(36, 36, CANVAS_WIDTH - 72, CANVAS_HEIGHT - 72);
 
+    // Helper para dibujar píldoras redondeadas con fondo translúcido y borde dorado/ocre
+    const drawPill = (
+      x: number,
+      y: number,
+      w: number,
+      h: number,
+      radius: number,
+      bgColor: string,
+      borderColor: string,
+      borderWidth: number = 2
+    ) => {
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, radius);
+      ctx.fillStyle = bgColor;
+      ctx.fill();
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = borderWidth;
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    // 6. LOGOTIPO SUPERIOR TRANSPARENTE (Esquina superior derecha)
+    const logoY = 65;
     if (logoType === "custom" && customLogoImgRef.current) {
       const logo = customLogoImgRef.current;
-      const logoH = 75;
+      const logoH = 80;
       const logoW = (logo.width / logo.height) * logoH;
-      ctx.drawImage(logo, 70, headerY, logoW, logoH);
-    } else if (logoType === "vortice") {
-      ctx.fillStyle = "#385E48";
-      ctx.beginPath();
-      ctx.arc(85, headerY + 25, 7, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = "bold 24px sans-serif";
-      ctx.fillText("Vórtice Integración", 105, headerY + 33);
+      ctx.drawImage(logo, CANVAS_WIDTH - logoW - 70, logoY, logoW, logoH);
     } else if (logoType === "consteladores") {
-      // Isotipo infinito transparente de Consteladores (sin fondo blanco ni píldoras)
+      // Isotipo Consteladores a la derecha
+      const logoX = CANVAS_WIDTH - 290;
       ctx.strokeStyle = "#FFFFFF";
       ctx.lineWidth = 4;
       ctx.beginPath();
-      ctx.arc(92, headerY + 22, 12, 0, Math.PI * 2);
-      ctx.arc(114, headerY + 22, 12, 0, Math.PI * 2);
+      ctx.arc(logoX + 22, logoY + 30, 13, 0, Math.PI * 2);
+      ctx.arc(logoX + 46, logoY + 30, 13, 0, Math.PI * 2);
       ctx.stroke();
 
       ctx.fillStyle = "#FFFFFF";
       ctx.font = "bold 28px Georgia, serif";
-      ctx.fillText("Consteladores", 142, headerY + 31);
+      ctx.fillText("Consteladores", logoX + 72, logoY + 39);
+    } else if (logoType === "icalma") {
+      // Isotipo Icalma
+      const logoX = CANVAS_WIDTH - 230;
+      ctx.fillStyle = "#F5D79E";
+      ctx.font = "bold 34px Georgia, serif";
+      ctx.fillText("Icalma", logoX, logoY + 35);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "14px sans-serif";
+      ctx.letterSpacing = "2px";
+      ctx.fillText("CONSTELACIONES", logoX, logoY + 55);
+      ctx.letterSpacing = "0px";
     }
 
-    // 7. SUBTÍTULO / INSIGNIA DEL TALLER
-    ctx.fillStyle = accentColor;
-    ctx.font = "600 24px sans-serif";
-    ctx.letterSpacing = "3px";
-    ctx.fillText(subtitle.toUpperCase(), 70, 260);
+    // 7. PÍLDORA DE FECHA Y HORARIO (Estilo Imagen 1: borde dorado y fondo translúcido)
+    const pillY = 190;
+    ctx.font = "bold 24px sans-serif";
+    const dateMetrics = ctx.measureText(dateAndHour);
+    const datePillW = Math.min(CANVAS_WIDTH - 140, dateMetrics.width + 56);
+    const datePillH = 54;
+    const datePillX = 70;
 
-    // 8. TÍTULO PRINCIPAL (con salto de línea inteligente)
+    drawPill(
+      datePillX,
+      pillY,
+      datePillW,
+      datePillH,
+      27,
+      "rgba(28, 20, 15, 0.72)",
+      "#D4A359",
+      2.5
+    );
+
+    ctx.fillStyle = "#F8ECD2";
+    ctx.font = "bold 24px sans-serif";
+    ctx.fillText(dateAndHour, datePillX + 28, pillY + 35);
+
+    // 8. TIPO DE TALLER ("TALLER PRESENCIAL CONSTELACIONES FAMILIARES")
+    // Letras GRANDES, en mayúsculas serif con sombra para alto impacto visual
+    let currentY = pillY + 110;
+    ctx.save();
+    ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
+    ctx.shadowBlur = 14;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 3;
+
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 60px Georgia, serif";
+    ctx.font = `bold ${subtitleFontSize}px Georgia, serif`;
+    ctx.letterSpacing = "1.5px";
+
+    const subtitleLines = subtitle.split("\n");
+    for (const subLine of subtitleLines) {
+      ctx.fillText(subLine.toUpperCase(), 70, currentY);
+      currentY += subtitleFontSize + 14;
+    }
+    ctx.restore();
+
+    // 9. TÍTULO DEL TALLER (con salto de línea inteligente y sombra)
+    currentY += 10;
+    ctx.save();
+    ctx.shadowColor = "rgba(0, 0, 0, 0.85)";
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+
+    ctx.fillStyle = "#FAF7F2";
+    ctx.font = `bold ${titleFontSize}px Georgia, serif`;
     ctx.letterSpacing = "0px";
 
     const titleWords = title.split(" ");
     let line = "";
-    let lineY = 340;
     const maxTitleWidth = CANVAS_WIDTH - 140;
 
     for (let n = 0; n < titleWords.length; n++) {
       const testLine = line + titleWords[n] + " ";
       const metrics = ctx.measureText(testLine);
       if (metrics.width > maxTitleWidth && n > 0) {
-        ctx.fillText(line, 70, lineY);
+        ctx.fillText(line, 70, currentY);
         line = titleWords[n] + " ";
-        lineY += 76;
+        currentY += titleFontSize + 16;
       } else {
         line = testLine;
       }
     }
-    ctx.fillText(line, 70, lineY);
+    ctx.fillText(line, 70, currentY);
+    ctx.restore();
 
-    // 9. FRASE / LEMA DE RESONANCIA
+    // 10. LEMA O FRASE DE RESONANCIA (Agrandada, itálica en ocre suave con comillas)
     if (quote) {
-      ctx.fillStyle = "rgba(232, 197, 138, 0.95)"; // Ocre suave
-      ctx.font = "italic 500 26px Georgia, serif";
-      ctx.fillText(quote, 70, lineY + 60);
+      currentY += 45;
+      ctx.save();
+      ctx.fillStyle = "#E8C58A"; // Ocre dorado suave
+      ctx.font = `italic 500 ${quoteFontSize}px Georgia, serif`;
+      ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetX = 1;
+      ctx.shadowOffsetY = 2;
+      ctx.fillText(quote, 70, currentY);
+      ctx.restore();
     }
 
-    // 10. TARJETA INFERIOR CONTENEDORA DE INFORMACIÓN PRÁCTICA
-    const cardY = CANVAS_HEIGHT - 490;
-    const cardH = 420;
+    // 11. VALOR DESTACADO CON LÍNEA DORADA INFERIOR (Estilo Imagen 1)
+    currentY += 60;
+    ctx.save();
+    ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
 
-    ctx.fillStyle = "rgba(252, 250, 247, 0.96)";
+    const valueText = `VALOR: ${price}`;
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "bold 40px Georgia, serif";
+    ctx.fillText(valueText, 70, currentY);
+
+    // Línea dorada de acento bajo el valor
+    const valMetrics = ctx.measureText(valueText);
+    ctx.strokeStyle = "#D4A359";
+    ctx.lineWidth = 3.5;
     ctx.beginPath();
-    ctx.roundRect(70, cardY, CANVAS_WIDTH - 140, cardH, 32);
-    ctx.fill();
-
-    ctx.strokeStyle = "rgba(217, 102, 74, 0.4)";
-    ctx.lineWidth = 2;
+    ctx.moveTo(70, currentY + 12);
+    ctx.lineTo(70 + valMetrics.width, currentY + 12);
     ctx.stroke();
+    ctx.restore();
 
-    // Contenido dentro de la tarjeta
-    // FILA 1: FECHA Y HORARIO
-    ctx.fillStyle = "#D9664A";
-    ctx.font = "bold 16px sans-serif";
-    ctx.letterSpacing = "1.5px";
-    ctx.fillText("📅 FECHA Y HORARIO", 110, cardY + 50);
+    // 12. PÍLDORA DE FACILITADORAS (En la zona inferior izquierda, estilo Imagen 1)
+    const facPillY = CANVAS_HEIGHT - 170;
+    const facText = `Facilitadoras: ${facilitators}`;
+    ctx.font = "bold 24px sans-serif";
+    const facMetrics = ctx.measureText(facText);
+    const facPillW = Math.min(CANVAS_WIDTH - 140, facMetrics.width + 56);
+    const facPillH = 52;
 
-    ctx.fillStyle = "#27221F";
-    ctx.font = "bold 30px Georgia, serif";
-    ctx.letterSpacing = "0px";
-    ctx.fillText(dateAndHour, 110, cardY + 90);
+    drawPill(
+      70,
+      facPillY,
+      facPillW,
+      facPillH,
+      26,
+      "rgba(28, 20, 15, 0.72)",
+      "#D4A359",
+      2.5
+    );
 
-    // Línea separadora
-    ctx.strokeStyle = "rgba(231, 222, 206, 0.8)";
+    ctx.fillStyle = "#F8ECD2";
+    ctx.font = "bold 24px sans-serif";
+    ctx.fillText(facText, 70 + 28, facPillY + 34);
+
+    // 13. FRANJA INFERIOR: UBICACIÓN Y RESERVAS (Sin botón de reservar, con teléfono directo)
+    const dividerY = CANVAS_HEIGHT - 90;
+    ctx.strokeStyle = "rgba(231, 222, 206, 0.4)";
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(110, cardY + 115);
-    ctx.lineTo(CANVAS_WIDTH - 110, cardY + 115);
+    ctx.moveTo(70, dividerY);
+    ctx.lineTo(CANVAS_WIDTH - 70, dividerY);
     ctx.stroke();
 
-    // FILA 2: FACILITADORAS Y VALOR (dos columnas)
-    // Columna izquierda: Facilitadoras
-    ctx.fillStyle = "#5C524A";
-    ctx.font = "600 16px sans-serif";
-    ctx.letterSpacing = "1.5px";
-    ctx.fillText("🌿 FACILITADORAS", 110, cardY + 150);
+    const bottomY = CANVAS_HEIGHT - 48;
 
-    ctx.fillStyle = "#27221F";
-    ctx.font = "bold 26px Georgia, serif";
-    ctx.letterSpacing = "0px";
-    ctx.fillText(facilitators, 110, cardY + 185);
+    // Lado izquierdo: Dirección y Ciudad
+    ctx.fillStyle = "#FAF7F2";
+    ctx.font = "600 22px Georgia, serif";
+    ctx.fillText(`📍 ${address} (${city})`, 70, bottomY);
 
-    // Columna derecha: Valor
-    ctx.fillStyle = "#5C524A";
-    ctx.font = "600 16px sans-serif";
-    ctx.letterSpacing = "1.5px";
-    ctx.fillText("VALOR DE PARTICIPACIÓN", CANVAS_WIDTH - 420, cardY + 150);
+    // Lado derecho: Reservas con número de teléfono
+    const cleanBookingPhone = bookingPhone.trim().startsWith("Reservas")
+      ? bookingPhone.trim()
+      : `Reservas: ${bookingPhone.trim()}`;
 
-    ctx.fillStyle = "#D9664A";
-    ctx.font = "bold 34px Georgia, serif";
-    ctx.fillText(price, CANVAS_WIDTH - 420, cardY + 188);
-
-    // Línea separadora
-    ctx.beginPath();
-    ctx.moveTo(110, cardY + 215);
-    ctx.lineTo(CANVAS_WIDTH - 110, cardY + 215);
-    ctx.stroke();
-
-    // FILA 3: DIRECCIÓN Y CIUDAD
-    ctx.fillStyle = "#5C524A";
-    ctx.font = "600 16px sans-serif";
-    ctx.letterSpacing = "1.5px";
-    ctx.fillText("📍 LUGAR Y DIRECCIÓN", 110, cardY + 250);
-
-    ctx.fillStyle = "#27221F";
-    ctx.font = "600 24px Georgia, serif";
-    ctx.letterSpacing = "0px";
-    ctx.fillText(`${address} (${city})`, 110, cardY + 285);
-
-    // FILA 4: BOTÓN DE RESERVA REDUCIDO (CON ÍCONO, SIN NÚMERO DE TELÉFONO)
-    const ctaY = cardY + 332;
-    const btnW = 280;
-    const btnH = 52;
-    const btnX = (CANVAS_WIDTH - btnW) / 2;
-
-    ctx.fillStyle = "#128C7E"; // Verde oficial de WhatsApp
-    ctx.beginPath();
-    ctx.roundRect(btnX, ctaY, btnW, btnH, 26);
-    ctx.fill();
-
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 22px sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("💬 Reservar", CANVAS_WIDTH / 2, ctaY + 33);
-    ctx.textAlign = "left"; // Restablecer alineación
+    ctx.font = "bold 24px sans-serif";
+    const bookingMetrics = ctx.measureText(`💬 ${cleanBookingPhone}`);
+    ctx.fillStyle = "#55E89B"; // Verde WhatsApp luminoso y visible
+    ctx.fillText(`💬 ${cleanBookingPhone}`, CANVAS_WIDTH - 70 - bookingMetrics.width, bottomY);
   }, [
     title,
     subtitle,
+    quote,
     dateAndHour,
     facilitators,
+    price,
     address,
     city,
-    price,
-    phone,
-    quote,
+    bookingPhone,
+    subtitleFontSize,
+    titleFontSize,
+    quoteFontSize,
     logoType,
     bgZoom,
     bgPositionY,
     bgFit,
     overlayOpacity,
-    accentColor,
   ]);
 
   // Redibujar ante cualquier cambio de estado
@@ -379,170 +443,123 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
           address,
           city,
           price,
-          phoneContact: phone,
-          logoType,
+          phoneContact: bookingPhone.replace(/[^0-9+ ]/g, "").trim() || "+56 9 6373 0998",
           isActive: true,
+          flyerUrl: dataUrl,
+          importantNote: quote,
         },
         dataUrl
       );
-      setExportNotice("✓ ¡Flyer asignado con éxito a la lista de talleres del CMS!");
+      setExportNotice("✓ ¡Flyer asignado y guardado como Taller!");
       setTimeout(() => setExportNotice(""), 4000);
     }
   };
 
   return (
-    <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-9 shadow-sm">
-      
-      {/* Cabecera del Diseñador */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E7DECE] pb-6 mb-8">
-        <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-terracotta-100 text-terracotta-800 text-xs font-semibold uppercase tracking-wider mb-2">
-            <span>🎨 Mini-App Web</span>
-            <span>•</span>
-            <span>Estilo Editorial consteladores.cl</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#27221F]">
-            Diseñador Rápido de Flyers
-          </h2>
-          <p className="text-xs sm:text-sm text-[#5C524A] mt-1">
-            Crea flyers estandarizados y elegantes en alta calidad (1080 × 1350 px), listos para redes sociales y el carrusel web.
-          </p>
-        </div>
-
-        {/* Botones de Acción Superior */}
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={handleDownloadPNG}
-            disabled={isExporting}
-            className="px-6 py-3 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
-          >
-            <span>⬇️ Descargar Flyer (PNG)</span>
-          </button>
-
-          {onSaveToWorkshops && (
-            <button
-              type="button"
-              onClick={handleDirectAddToCarousel}
-              className="px-5 py-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95"
-            >
-              <span>+ Usar en Carrusel Web</span>
-            </button>
-          )}
-        </div>
+    <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-8 shadow-sm">
+      {/* Cabecera del Módulo */}
+      <div className="border-b border-[#E7DECE] pb-5 mb-8">
+        <span className="text-[10px] uppercase font-bold tracking-widest text-terracotta-600 block mb-1">
+          Herramienta de Estudio
+        </span>
+        <h2 className="text-2xl font-serif font-bold text-[#27221F]">
+          Diseñador de Flyers en Alta Resolución (1080 × 1350 px)
+        </h2>
+        <p className="text-xs text-[#5C524A] mt-1 max-w-2xl leading-relaxed">
+          Diseño con fotografía de fondo a pantalla completa y datos superpuestos con tipografía elegante. Sin recuadros blancos que tapen la imagen y con reservas directas por WhatsApp.
+        </p>
       </div>
 
-      {exportNotice && (
-        <div className="mb-6 p-3 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-semibold text-center animate-fadeIn">
-          {exportNotice}
-        </div>
-      )}
-
-      {/* Grid: Controles a la Izquierda, Canvas en Vivo a la Derecha */}
+      {/* Grid de 2 Columnas: Controles a la izquierda, Canvas a la derecha */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* ========================================================================= */}
-        {/* COLUMNA DE CONTROLES EDITABLES EN TIEMPO REAL                             */}
+        {/* COLUMNA DE CONTROLES                                                      */}
         {/* ========================================================================= */}
         <div className="lg:col-span-7 space-y-6">
           
-          {/* 1. SELECCIÓN Y CARGA DE FONDO */}
+          {/* 1. SELECCIÓN Y ENCUADRE DE LA IMAGEN DE FONDO */}
           <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-5 space-y-4">
             <span className="text-xs font-bold uppercase tracking-wider text-terracotta-600 block">
-              1. Carga de Fondo y Estilo
+              1. Fotografía de Fondo (Ocupa casi todo el flyer)
             </span>
 
-            {/* Presets sistémicos disponibles */}
+            {/* Presets rápidos */}
             <div>
               <label className="block text-xs font-semibold text-[#5C524A] mb-2">
-                Fondos Sistémicos Predefinidos:
+                Seleccionar ilustración del sistema o subir foto propia:
               </label>
               <div className="grid grid-cols-3 gap-2">
-                {[
-                  { label: "Árbol y Raíces", url: "/images/arbol-generaciones.png" },
-                  { label: "Encuentro y Comunidad", url: "/images/comunidad-encuentro.png" },
-                  { label: "Mirar la Historia", url: "/images/mirar-historia-sanar.png" },
-                ].map((preset, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => {
-                      setBgImagePreset(preset.url);
-                      setCustomBgUrl("");
-                    }}
-                    className={`p-2 rounded-xl border text-center transition-all cursor-pointer ${
-                      bgImagePreset === preset.url && !customBgUrl
-                        ? "bg-terracotta-100 border-terracotta-500 font-bold text-terracotta-800 shadow-sm"
-                        : "bg-white border-[#E7DECE] text-[#5C524A] hover:bg-cream-100"
-                    }`}
-                  >
-                    <span className="block text-[11px] truncate">{preset.label}</span>
-                  </button>
-                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCustomBgUrl("");
+                    setBgImagePreset("/images/arbol-generaciones.png");
+                  }}
+                  className={`p-2 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
+                    !customBgUrl && bgImagePreset === "/images/arbol-generaciones.png"
+                      ? "bg-terracotta-100 border-terracotta-500 text-terracotta-800"
+                      : "bg-white border-[#E7DECE] text-[#5C524A] hover:bg-cream-100"
+                  }`}
+                >
+                  🌳 Árbol Genealógico
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCustomBgUrl("");
+                    setBgImagePreset("/images/mirar-historia-sanar.png");
+                  }}
+                  className={`p-2 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
+                    !customBgUrl && bgImagePreset === "/images/mirar-historia-sanar.png"
+                      ? "bg-terracotta-100 border-terracotta-500 text-terracotta-800"
+                      : "bg-white border-[#E7DECE] text-[#5C524A] hover:bg-cream-100"
+                  }`}
+                >
+                  🕊️ Vínculo Afectivo
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCustomBgUrl("");
+                    setBgImagePreset("/images/comunidad-encuentro.png");
+                  }}
+                  className={`p-2 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
+                    !customBgUrl && bgImagePreset === "/images/comunidad-encuentro.png"
+                      ? "bg-terracotta-100 border-terracotta-500 text-terracotta-800"
+                      : "bg-white border-[#E7DECE] text-[#5C524A] hover:bg-cream-100"
+                  }`}
+                >
+                  🤝 Encuentro Grupal
+                </button>
               </div>
             </div>
 
-            {/* Botón de subida de imagen propia */}
-            <div>
+            {/* Subir foto propia */}
+            <div className="pt-1">
               <label className="block text-xs font-semibold text-[#5C524A] mb-1">
-                O sube tu propia imagen de fondo ilustrada o fotográfica:
+                Subir foto local desde tu computador:
               </label>
-              <label className="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl bg-white border-2 border-dashed border-[#E7DECE] hover:border-terracotta-400 text-xs font-medium text-[#27221F] hover:bg-cream-50 transition-all cursor-pointer">
-                <span>📁 Subir imagen desde tu dispositivo</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleUploadBg}
-                  className="hidden"
-                />
-              </label>
-              {customBgUrl && (
-                <p className="text-[11px] text-emerald-700 mt-1 font-semibold">
-                  ✓ Imagen propia cargada y activa en el diseño.
-                </p>
-              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleUploadBg}
+                className="w-full text-xs text-[#5C524A] file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-terracotta-500 file:text-white hover:file:bg-terracotta-600 cursor-pointer"
+              />
             </div>
 
-            {/* Ajustes de Encuadre para evitar cortes de imagen */}
-            <div className="bg-white/80 p-3.5 rounded-xl border border-[#E7DECE] space-y-3">
-              <span className="text-[11px] font-bold text-[#27221F] block">
-                📐 Ajuste y Encuadre de Imagen (Evitar cortes):
-              </span>
-
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setBgFit("cover")}
-                  className={`py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${
-                    bgFit === "cover"
-                      ? "bg-terracotta-500 text-white"
-                      : "bg-[#FAF8F5] border border-[#E7DECE] text-[#5C524A]"
-                  }`}
-                >
-                  Llenar fondo (Cover)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBgFit("contain")}
-                  className={`py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${
-                    bgFit === "contain"
-                      ? "bg-terracotta-500 text-white"
-                      : "bg-[#FAF8F5] border border-[#E7DECE] text-[#5C524A]"
-                  }`}
-                >
-                  Imagen completa (Contain)
-                </button>
-              </div>
-
+            {/* Ajustes de encuadre */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-[#E7DECE]">
               <div>
-                <div className="flex items-center justify-between text-xs text-[#5C524A] mb-1">
-                  <span>Zoom / Escala de imagen:</span>
-                  <span>{Math.round(bgZoom * 100)}%</span>
-                </div>
+                <label className="block text-xs font-semibold text-[#5C524A] mb-1">
+                  Zoom ({Math.round(bgZoom * 100)}%)
+                </label>
                 <input
                   type="range"
-                  min="0.5"
-                  max="1.8"
+                  min="0.8"
+                  max="2.5"
                   step="0.05"
                   value={bgZoom}
                   onChange={(e) => setBgZoom(parseFloat(e.target.value))}
@@ -551,47 +568,44 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
               </div>
 
               <div>
-                <div className="flex items-center justify-between text-xs text-[#5C524A] mb-1">
-                  <span>Posición vertical (subir / bajar):</span>
-                  <span>{bgPositionY}%</span>
-                </div>
+                <label className="block text-xs font-semibold text-[#5C524A] mb-1">
+                  Posición Vertical ({bgPositionY}%)
+                </label>
                 <input
                   type="range"
                   min="0"
                   max="100"
-                  step="5"
+                  step="1"
                   value={bgPositionY}
-                  onChange={(e) => setBgPositionY(parseInt(e.target.value))}
+                  onChange={(e) => setBgPositionY(parseInt(e.target.value, 10))}
+                  className="w-full accent-terracotta-500 cursor-pointer"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#5C524A] mb-1">
+                  Velo de Fondo ({Math.round(overlayOpacity * 100)}%)
+                </label>
+                <input
+                  type="range"
+                  min="0.2"
+                  max="0.85"
+                  step="0.05"
+                  value={overlayOpacity}
+                  onChange={(e) => setOverlayOpacity(parseFloat(e.target.value))}
                   className="w-full accent-terracotta-500 cursor-pointer"
                 />
               </div>
             </div>
-
-            {/* Regulador de Velo / Opacidad para legibilidad */}
-            <div>
-              <div className="flex items-center justify-between text-xs font-semibold text-[#5C524A] mb-1">
-                <span>Intensidad del velo de lectura (contraste WCAG):</span>
-                <span>{Math.round(overlayOpacity * 100)}%</span>
-              </div>
-              <input
-                type="range"
-                min="0.30"
-                max="0.85"
-                step="0.05"
-                value={overlayOpacity}
-                onChange={(e) => setOverlayOpacity(parseFloat(e.target.value))}
-                className="w-full accent-terracotta-500 cursor-pointer"
-              />
-            </div>
           </div>
 
-          {/* 2. LOGOTIPO DINÁMICO TRANSPARENTE (Sin bordes ni píldoras redondeadas) */}
-          <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-5 space-y-3">
+          {/* 2. SELECCIÓN DE LOGOTIPO TRANSPARENTE */}
+          <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-5 space-y-4">
             <span className="text-xs font-bold uppercase tracking-wider text-terracotta-600 block">
-              2. Logotipo Transparente Único (Sin bordes redondeados)
+              2. Logotipo Superior
             </span>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <button
                 type="button"
                 onClick={() => setLogoType("consteladores")}
@@ -601,7 +615,19 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
                     : "bg-white border-[#E7DECE] text-[#5C524A]"
                 }`}
               >
-                Logo Consteladores
+                Consteladores
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setLogoType("icalma")}
+                className={`p-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+                  logoType === "icalma"
+                    ? "bg-ochre-100 border-ochre-500 text-ochre-900"
+                    : "bg-white border-[#E7DECE] text-[#5C524A]"
+                }`}
+              >
+                Icalma
               </button>
 
               <button
@@ -613,7 +639,7 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
                     : "bg-white border-[#E7DECE] text-[#5C524A]"
                 }`}
               >
-                Subir Logo Propio (PNG)
+                Subir Logo PNG
               </button>
 
               <button
@@ -644,16 +670,63 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
             )}
           </div>
 
-          {/* 3. CAMPOS DE TEXTO EDITABLES EN TIEMPO REAL */}
+          {/* 3. CAMPOS DE TEXTO EDITABLES Y TAMAÑOS DE LETRA */}
           <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-5 space-y-4">
             <span className="text-xs font-bold uppercase tracking-wider text-terracotta-600 block">
-              3. Textos del Taller (Edición en Tiempo Real)
+              3. Textos y Tamaños (Información Superpuesta sobre la Foto)
             </span>
 
+            {/* Tipo de Taller */}
             <div>
-              <label className="block text-xs font-semibold text-[#5C524A] mb-1">
-                Título del Taller *
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-bold text-[#5C524A]">
+                  Tipo de Taller (Letras Grandes) *
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-[#8A7E73]">Tamaño:</span>
+                  <input
+                    type="range"
+                    min="36"
+                    max="68"
+                    value={subtitleFontSize}
+                    onChange={(e) => setSubtitleFontSize(Number(e.target.value))}
+                    className="w-24 accent-terracotta-500 cursor-pointer"
+                  />
+                  <span className="text-xs font-bold text-[#27221F] w-6 text-right">
+                    {subtitleFontSize}
+                  </span>
+                </div>
+              </div>
+              <textarea
+                rows={2}
+                value={subtitle}
+                onChange={(e) => setSubtitle(e.target.value)}
+                placeholder="Ej. TALLER PRESENCIAL&#10;CONSTELACIONES FAMILIARES"
+                className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-sm font-serif font-bold text-[#27221F] focus:ring-2 focus:ring-terracotta-500 uppercase"
+              />
+            </div>
+
+            {/* Título Principal */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-bold text-[#5C524A]">
+                  Título del Taller *
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-[#8A7E73]">Tamaño:</span>
+                  <input
+                    type="range"
+                    min="32"
+                    max="60"
+                    value={titleFontSize}
+                    onChange={(e) => setTitleFontSize(Number(e.target.value))}
+                    className="w-24 accent-terracotta-500 cursor-pointer"
+                  />
+                  <span className="text-xs font-bold text-[#27221F] w-6 text-right">
+                    {titleFontSize}
+                  </span>
+                </div>
+              </div>
               <input
                 type="text"
                 value={title}
@@ -662,103 +735,153 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
               />
             </div>
 
+            {/* Lema o Frase */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-bold text-[#5C524A]">
+                  Lema o Frase de Resonancia
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-[#8A7E73]">Tamaño:</span>
+                  <input
+                    type="range"
+                    min="22"
+                    max="44"
+                    value={quoteFontSize}
+                    onChange={(e) => setQuoteFontSize(Number(e.target.value))}
+                    className="w-24 accent-terracotta-500 cursor-pointer"
+                  />
+                  <span className="text-xs font-bold text-[#27221F] w-6 text-right">
+                    {quoteFontSize}
+                  </span>
+                </div>
+              </div>
+              <input
+                type="text"
+                value={quote}
+                onChange={(e) => setQuote(e.target.value)}
+                placeholder='"Cuando tú constelas, todos constelamos"'
+                className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs italic text-[#5C524A]"
+              />
+            </div>
+
+            {/* Fecha y Horario en Píldora */}
+            <div>
+              <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                Fecha y Horario (Aparece en la píldora superior) *
+              </label>
+              <input
+                type="text"
+                value={dateAndHour}
+                onChange={(e) => setDateAndHour(e.target.value)}
+                placeholder="Ej. Sábado 16 de enero de 2026 / 10:00 a 14:00 hrs"
+                className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs sm:text-sm text-[#27221F]"
+              />
+            </div>
+
+            {/* Facilitadoras y Valor */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-[#5C524A] mb-1">
-                  Franja de Fecha y Horario *
+                <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                  Facilitadoras (Píldora inferior) *
                 </label>
                 <input
                   type="text"
-                  placeholder="Ej. Sábado 16 de enero · 10:00 a 14:00 hrs"
-                  value={dateAndHour}
-                  onChange={(e) => setDateAndHour(e.target.value)}
+                  value={facilitators}
+                  onChange={(e) => setFacilitators(e.target.value)}
+                  placeholder="Ej. Erika Alert y Karen Sudzuki"
                   className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs sm:text-sm text-[#27221F]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#5C524A] mb-1">
-                  Facilitadoras *
+                <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                  Valor con línea de acento *
                 </label>
                 <input
                   type="text"
-                  placeholder="Ej. Erika Alert y Karen Sudzuki"
-                  value={facilitators}
-                  onChange={(e) => setFacilitators(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs sm:text-sm text-[#27221F]"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="Ej. $40.000"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-sm font-bold text-terracotta-700"
                 />
               </div>
             </div>
 
+            {/* Dirección y Ciudad */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-[#5C524A] mb-1">
+                <label className="block text-xs font-bold text-[#5C524A] mb-1">
                   Dirección *
                 </label>
                 <input
                   type="text"
-                  placeholder="Ej. Edmundo Eluchans 3047, of. 22, Concón"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Ej. Edmundo Eluchans 3047, of. 22, Concón"
                   className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs sm:text-sm text-[#27221F]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#5C524A] mb-1">
+                <label className="block text-xs font-bold text-[#5C524A] mb-1">
                   Ciudad / Región
                 </label>
                 <input
                   type="text"
-                  placeholder="Ej. Concón / Viña del Mar"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
+                  placeholder="Ej. Concón / Viña del Mar"
                   className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs sm:text-sm text-[#27221F]"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-semibold text-[#5C524A] mb-1">
-                  Valor del Taller *
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ej. $40.000"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-sm font-bold text-terracotta-700"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-[#5C524A] mb-1">
-                  WhatsApp de Contacto *
-                </label>
-                <input
-                  type="text"
-                  placeholder="+56 9 4193 9363"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs sm:text-sm text-[#27221F]"
-                />
-              </div>
-            </div>
-
+            {/* Reservas: Teléfono editable */}
             <div>
-              <label className="block text-xs font-semibold text-[#5C524A] mb-1">
-                Lema o Frase de Resonancia (Opcional)
+              <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                Texto / Teléfono de Reservas (Franja inferior) *
               </label>
               <input
                 type="text"
-                placeholder='"Cuando tú constelas, todos constelamos"'
-                value={quote}
-                onChange={(e) => setQuote(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs italic text-[#5C524A]"
+                value={bookingPhone}
+                onChange={(e) => setBookingPhone(e.target.value)}
+                placeholder="Ej. +56 9 6373 0998 o Reservas: +56 9 6373 0998"
+                className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-sm font-bold text-emerald-700"
               />
+              <p className="text-[11px] text-[#8A7E73] mt-1">
+                Aparece directamente en la barra inferior del flyer (ej: <em>💬 Reservas: {bookingPhone}</em>), reemplazando al botón.
+              </p>
             </div>
           </div>
+
+          {/* 4. ACCIONES DE DESCARGA Y GUARDADO */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              type="button"
+              onClick={handleDownloadPNG}
+              disabled={isExporting}
+              className="flex-1 py-3 px-5 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-semibold text-xs sm:text-sm shadow-md transition-all cursor-pointer text-center flex items-center justify-center gap-2"
+            >
+              <span>📥 Descargar Flyer (PNG 1080×1350)</span>
+            </button>
+
+            {onSaveToWorkshops && (
+              <button
+                type="button"
+                onClick={handleDirectAddToCarousel}
+                className="py-3 px-5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>➕ Guardar como Taller en la Web</span>
+              </button>
+            )}
+          </div>
+
+          {exportNotice && (
+            <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl text-xs font-semibold text-emerald-800 text-center animate-fadeIn">
+              {exportNotice}
+            </div>
+          )}
 
         </div>
 
@@ -768,51 +891,29 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
         <div className="lg:col-span-5 sticky top-24 space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-[#5C524A]">
-              Vista Previa Interactiva (En Vivo)
+              Vista Previa en Vivo (Estilo Imagen 1)
             </span>
             <span className="text-[11px] text-[#8A7E73]">
-              1080 × 1350 px · Alta Definición
+              1080 × 1350 px
             </span>
           </div>
 
-          {/* Contenedor del Canvas con sombra y marco elegante */}
-          <div className="w-full bg-[#EAE0D0] rounded-2xl p-2 sm:p-3 border border-[#E7DECE] shadow-xl flex items-center justify-center overflow-hidden">
+          {/* Contenedor del Canvas con sombra */}
+          <div className="w-full bg-[#181412] rounded-2xl p-2 sm:p-3 border border-[#E7DECE] shadow-2xl flex items-center justify-center overflow-hidden">
             <canvas
               ref={canvasRef}
               width={CANVAS_WIDTH}
               height={CANVAS_HEIGHT}
-              className="w-full h-auto rounded-xl shadow-md max-h-[580px] object-contain"
+              className="w-full h-auto max-h-[700px] object-contain rounded-xl"
             />
           </div>
 
-          {/* Botones de Exportación Rápidos */}
-          <div className="space-y-2 pt-2">
-            <button
-              type="button"
-              onClick={handleDownloadPNG}
-              className="w-full py-3.5 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
-            >
-              <span>⬇️ Descargar Flyer Listo (PNG)</span>
-            </button>
-
-            {onSaveToWorkshops && (
-              <button
-                type="button"
-                onClick={handleDirectAddToCarousel}
-                className="w-full py-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm shadow transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
-              >
-                <span>🚀 Asignar y Publicar en Carrusel de la Web</span>
-              </button>
-            )}
-
-            <p className="text-[11px] text-center text-[#8A7E73]">
-              * La imagen se genera instantáneamente en tu navegador sin consumir créditos ni servidores externos.
-            </p>
-          </div>
+          <p className="text-[11px] text-center text-[#8A7E73]">
+            La imagen ocupa casi todo el flyer. Los textos y píldoras flotan directamente sobre la fotografía.
+          </p>
         </div>
 
       </div>
-
     </div>
   );
 }

@@ -313,7 +313,7 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       logoType: "icalma",
       logoUrl: "",
       flyerUrl: "/images/arbol-generaciones.png",
-      phoneContact: "+56 9 4193 9363",
+      phoneContact: "+56 9 6373 0998",
       isActive: true,
     },
   ],
