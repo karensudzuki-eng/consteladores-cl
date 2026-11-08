@@ -73,7 +73,7 @@ export function WorkshopsCarousel({
             </div>
           )}
 
-          {/* Grid de Flyers con Imagen Ocupando Casi Todo el Flyer y Textos Superpuestos */}
+          {/* Grid de Flyers con Imagen Protagonista Luminosa y Proporciones Equilibradas */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {activeWorkshops.map((workshop, idx) => {
               const bookingPhone = workshop.phoneContact || "+56 9 6373 0998";
@@ -82,79 +82,79 @@ export function WorkshopsCarousel({
                 `Hola, me interesa reservar mi cupo en el taller "${workshop.title}" (${workshop.date}).`
               )}`;
 
+              const displayImage = workshop.flyerUrl || "/images/arbol-generaciones.png";
+
               return (
                 <div
                   key={workshop.id || idx}
                   onClick={() => onSelectWorkshop(workshop)}
-                  className="group relative rounded-3xl overflow-hidden min-h-[580px] sm:min-h-[640px] flex flex-col justify-between p-6 sm:p-7 shadow-md hover:shadow-2xl transition-all duration-500 border border-[#E7DECE] hover:border-terracotta-400 cursor-pointer bg-[#181412]"
+                  className="group rounded-3xl overflow-hidden border border-[#E7DECE] hover:border-terracotta-400 bg-white shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer"
                 >
-                  {/* FOTOGRAFÍA DE FONDO A PANTALLA COMPLETA */}
-                  {workshop.flyerUrl ? (
+                  {/* FOTOGRAFÍA / FLYER CON SU BRILLO Y COLOR NATURAL (Sin velos negros) */}
+                  <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#FAF6F0]">
                     <img
-                      src={workshop.flyerUrl}
+                      src={displayImage}
                       alt={workshop.title}
-                      className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-104 transition-transform duration-700 ease-out -z-10"
+                      className="w-full h-full object-cover object-top group-hover:scale-102 transition-transform duration-500"
                     />
-                  ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#2D221D] to-[#120E0C] -z-10" />
-                  )}
 
-                  {/* DEGRADADO CINEMATOGRÁFICO PARA LEGIBILIDAD PERFECTA */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/30 group-hover:via-black/50 transition-colors duration-500 -z-10" />
+                    {/* BADGES SUPERIORES FLOTANTES SOBRE EL FLYER */}
+                    <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2 z-10 pointer-events-none">
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold shadow-xs backdrop-blur-md bg-white/90 text-[#27221F] border border-[#E7DECE]">
+                        {workshop.modality === "online" ? "🌐 Online" : "📍 Presencial"}
+                      </span>
 
-                  {/* ZONA SUPERIOR: BADGES */}
-                  <div className="flex items-center justify-between gap-2 z-10">
-                    <span className="px-3 py-1 rounded-full text-xs font-semibold tracking-wide shadow-sm backdrop-blur-md bg-black/60 text-white border border-white/20">
-                      {workshop.modality === "online" ? "🌐 Online" : "📍 Presencial"}
-                    </span>
-
-                    <span className="text-[11px] font-serif font-bold text-ochre-300 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full border border-ochre-400/40">
-                      Consteladores
-                    </span>
+                      <span className="text-[11px] font-serif font-bold text-white bg-[#8A5618]/90 backdrop-blur-md px-3 py-1 rounded-full shadow-xs border border-ochre-300/40">
+                        Consteladores
+                      </span>
+                    </div>
                   </div>
 
-                  {/* ZONA INFERIOR: INFORMACIÓN SUPERPUESTA CON LETRAS GRANDES */}
-                  <div className="z-10 space-y-3 pt-24">
-                    {/* Píldora de Fecha y Horario */}
-                    <div>
-                      <span className="inline-block px-3.5 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-[#D4A359] text-ochre-200 text-xs sm:text-sm font-semibold shadow-sm">
-                        🗓️ {workshop.date} {workshop.time ? `· ${workshop.time}` : ""}
-                      </span>
+                  {/* CUERPO DE INFORMACIÓN DEL TALLER Y BOTÓN DE RESERVA */}
+                  <div className="p-5 sm:p-6 flex flex-col justify-between flex-1 space-y-3.5 bg-white border-t border-[#E7DECE]/80">
+                    <div className="space-y-2.5">
+                      {/* Píldora de Fecha y Horario */}
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF3E8] border border-[#F0DFCA] text-[#8A5618] text-xs font-semibold shadow-2xs">
+                        <span>🗓️ {workshop.date}</span>
+                        {workshop.time && <span>· {workshop.time}</span>}
+                      </div>
+
+                      {/* Título Principal */}
+                      <h3 className="text-lg sm:text-xl font-serif font-bold text-[#27221F] group-hover:text-terracotta-700 transition-colors line-clamp-2 leading-snug">
+                        {workshop.title}
+                      </h3>
+
+                      {/* Facilitadoras */}
+                      <p className="text-xs sm:text-sm text-[#5C524A]">
+                        <span className="text-[#8A5618] font-bold">Facilitadoras:</span>{" "}
+                        {workshop.facilitators}
+                      </p>
+
+                      {/* Lugar */}
+                      <p className="text-xs text-[#8A7E73] truncate">
+                        📍 {workshop.modality === "online" ? "Online vía Google Meet" : `${workshop.address}${workshop.city ? `, ${workshop.city}` : ""}`}
+                      </p>
                     </div>
 
-                    {/* Título Principal con Letras Grandes */}
-                    <h3 className="text-2xl sm:text-3xl font-serif font-bold text-white group-hover:text-ochre-200 transition-colors leading-tight drop-shadow-md">
-                      {workshop.title}
-                    </h3>
+                    {/* Valor y Botón de Reserva Directa por WhatsApp */}
+                    <div className="pt-3 border-t border-[#E7DECE]/80 space-y-3">
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-[11px] text-[#8A7E73] uppercase tracking-wider font-semibold">
+                          Valor
+                        </span>
+                        <span className="text-xl font-serif font-bold text-[#27221F]">
+                          {workshop.price}{" "}
+                          <span className="text-xs font-sans font-normal text-[#8A7E73]">CLP</span>
+                        </span>
+                      </div>
 
-                    {/* Facilitadoras */}
-                    <p className="text-sm sm:text-base text-cream-100 font-medium drop-shadow-sm">
-                      <span className="text-ochre-300 font-semibold">Facilitadoras:</span>{" "}
-                      {workshop.facilitators}
-                    </p>
-
-                    {/* Lugar */}
-                    <p className="text-xs sm:text-sm text-cream-200/90 drop-shadow-sm line-clamp-1">
-                      📍 {workshop.modality === "online" ? "Online vía Google Meet" : `${workshop.address} (${workshop.city})`}
-                    </p>
-
-                    {/* Valor Destacado */}
-                    <div className="pt-1">
-                      <span className="text-xl sm:text-2xl font-serif font-bold text-white drop-shadow-md">
-                        <span className="text-ochre-300">VALOR:</span> {workshop.price}{" "}
-                        <span className="text-xs font-sans font-normal text-cream-200/80">CLP</span>
-                      </span>
-                      <div className="w-24 h-0.5 bg-[#D4A359] mt-1" />
-                    </div>
-
-                    {/* Botón WhatsApp: Reservas + Teléfono Editable */}
-                    <div className="pt-3">
+                      {/* Botón WhatsApp con número editable */}
                       <a
                         href={workshopWspUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="w-full py-3 px-4 rounded-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold text-xs sm:text-sm shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                        className="w-full py-2.5 px-4 rounded-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold text-xs sm:text-sm shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                         title={`Reservar cupo por WhatsApp: ${bookingPhone}`}
                       >
                         <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">

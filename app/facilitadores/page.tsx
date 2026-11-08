@@ -18,6 +18,10 @@ export default function FacilitadoresPage() {
   const [selectedFacilitator, setSelectedFacilitator] = useState<FacilitatorProfile | null>(null);
   const [detailFacilitator, setDetailFacilitator] = useState<FacilitatorProfile | null>(null);
 
+  // Estados de búsqueda y filtro por rol (petición de usuario)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedRole, setSelectedRole] = useState("all");
+
   const carouselRef = useRef<HTMLDivElement>(null);
 
   // Facilitadores activos sincronizados con el CMS (o fallback al directorio base)
@@ -70,6 +74,30 @@ export default function FacilitadoresPage() {
     setIsBookingOpen(true);
   };
 
+  // Filtrado reactivo por nombre (mínimo 3 caracteres) y por rol/categoría
+  const filteredFacilitators = useMemo(() => {
+    return activeFacilitators.filter((f) => {
+      // Filtro por rol
+      if (selectedRole !== "all") {
+        const isPracticante = (f.role || "").toLowerCase().includes("practicante");
+        if (selectedRole === "practicante" && !isPracticante) return false;
+        if (selectedRole === "constelador" && isPracticante) return false;
+      }
+      // Filtro por texto de búsqueda (mínimo 3 caracteres para activar)
+      const q = searchQuery.trim().toLowerCase();
+      if (q.length >= 3) {
+        const nameMatch = f.name.toLowerCase().includes(q);
+        const cityMatch = (f.city || "").toLowerCase().includes(q);
+        const headlineMatch = (f.headline || "").toLowerCase().includes(q);
+        const specialtyMatch = f.specialties?.some((s) => s.toLowerCase().includes(q));
+        if (!nameMatch && !cityMatch && !headlineMatch && !specialtyMatch) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [activeFacilitators, searchQuery, selectedRole]);
+
   const scrollCarousel = (direction: "left" | "right") => {
     if (carouselRef.current) {
       const scrollAmount = 360;
@@ -103,16 +131,78 @@ export default function FacilitadoresPage() {
           </div>
 
           {/* ========================================================================= */}
+          {/* BUSCADOR POR NOMBRE Y FILTRO POR ROL / CATEGORÍA                          */}
+          {/* ========================================================================= */}
+          <div className="bg-[#FAF8F5] border border-[#E7DECE] rounded-2xl p-4 sm:p-5 mb-8 max-w-3xl mx-auto shadow-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Buscador por nombre */}
+              <div>
+                <label className="block text-xs font-semibold text-[#5C524A] mb-1.5">
+                  Buscador por nombre (mínimo 3 caracteres)
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="🔍 Ej. Karen, Erika, Santiago..."
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7DECE] bg-white text-xs sm:text-sm text-[#27221F] placeholder:text-[#A89F91] focus:outline-none focus:border-terracotta-400 focus:ring-1 focus:ring-terracotta-400 transition-all"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      type="button"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#8A7E73] hover:text-[#27221F] p-1"
+                      aria-label="Limpiar búsqueda"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Filtrar por categoría / rol */}
+              <div>
+                <label className="block text-xs font-semibold text-[#5C524A] mb-1.5">
+                  Filtrar por categoría / rol
+                </label>
+                <select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7DECE] bg-white text-xs sm:text-sm text-[#27221F] focus:outline-none focus:border-terracotta-400 focus:ring-1 focus:ring-terracotta-400 transition-all cursor-pointer"
+                >
+                  <option value="all">Todos los roles ({activeFacilitators.length})</option>
+                  <option value="constelador">
+                    Consteladores / Facilitadores (
+                    {activeFacilitators.filter((f) => !f.role?.toLowerCase().includes("practicante")).length}
+                    )
+                  </option>
+                  <option value="practicante">
+                    Practicantes (
+                    {activeFacilitators.filter((f) => f.role?.toLowerCase().includes("practicante")).length}
+                    )
+                  </option>
+                </select>
+              </div>
+            </div>
+            {searchQuery.trim().length > 0 && searchQuery.trim().length < 3 && (
+              <p className="text-[11px] text-[#A89F91] mt-2">
+                Escribe al menos 3 caracteres para iniciar la búsqueda...
+              </p>
+            )}
+          </div>
+
+          {/* ========================================================================= */}
           {/* CARRUSEL DE TARJETAS MÁS PEQUEÑAS PARA GANAR ESPACIO                      */}
           {/* ========================================================================= */}
           <div className="mb-14">
             {/* Barra superior del carrusel con controles */}
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-semibold uppercase tracking-wider text-[#8A7E73]">
-                Directorio ({activeFacilitators.length} perfiles activos)
+                Directorio ({filteredFacilitators.length} de {activeFacilitators.length} perfiles)
               </span>
 
-              {activeFacilitators.length > 1 && (
+              {filteredFacilitators.length > 1 && (
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => scrollCarousel("left")}
@@ -134,114 +224,132 @@ export default function FacilitadoresPage() {
               )}
             </div>
 
-            {/* Contenedor del Carrusel Deslizable Horizontal */}
-            <div
-              ref={carouselRef}
-              className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto scrollbar-none pb-4 pt-1 snap-x snap-mandatory"
-              style={{ scrollBehavior: "smooth" }}
-            >
-              {activeFacilitators.map((f) => {
-                const initials = f.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .substring(0, 2);
+            {/* Si no hay resultados de búsqueda */}
+            {filteredFacilitators.length === 0 ? (
+              <div className="bg-[#FAF8F5] border border-dashed border-[#E7DECE] rounded-2xl p-8 text-center text-[#5C524A]">
+                <p className="text-sm font-medium mb-2">No se encontraron facilitadores para tu búsqueda.</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedRole("all");
+                  }}
+                  className="text-xs text-terracotta-600 font-semibold underline hover:text-terracotta-800 cursor-pointer"
+                >
+                  Restablecer filtros
+                </button>
+              </div>
+            ) : (
+              /* Contenedor del Carrusel Deslizable Horizontal */
+              <div
+                ref={carouselRef}
+                className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto scrollbar-none pb-4 pt-1 snap-x snap-mandatory"
+                style={{ scrollBehavior: "smooth" }}
+              >
+                {filteredFacilitators.map((f) => {
+                  const initials = f.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .substring(0, 2);
 
-                const isPracticante = f.role?.toLowerCase() === "practicante";
+                  const isPracticante = f.role?.toLowerCase() === "practicante";
 
-                return (
-                  <div
-                    key={f.id}
-                    className="w-[280px] sm:w-[320px] md:w-[340px] shrink-0 snap-start bg-[#FCFAF7] border border-[#E7DECE] hover:border-terracotta-300 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
-                  >
-                    <div>
-                      {/* Header de la tarjeta compacta */}
-                      <div className="flex items-center gap-3 mb-3">
-                        {f.imageUrl ? (
-                          <img
-                            src={f.imageUrl}
-                            alt={f.name}
-                            className="w-12 h-12 rounded-full object-cover border-2 border-terracotta-200 shrink-0"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-full bg-[#F3ECE2] border-2 border-terracotta-200 flex items-center justify-center text-terracotta-700 font-serif text-base font-bold shrink-0">
-                            {initials}
+                  return (
+                    <div
+                      key={f.id}
+                      onClick={() => setDetailFacilitator(f)}
+                      className="w-[280px] sm:w-[320px] md:w-[340px] shrink-0 snap-start bg-[#FCFAF7] border border-[#E7DECE] hover:border-terracotta-400 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between cursor-pointer group"
+                    >
+                      <div>
+                        {/* Header de la tarjeta compacta */}
+                        <div className="flex items-center gap-3 mb-3">
+                          {f.imageUrl ? (
+                            <img
+                              src={f.imageUrl}
+                              alt={f.name}
+                              className="w-12 h-12 rounded-full object-cover border-2 border-terracotta-200 group-hover:border-terracotta-400 shrink-0 transition-colors shadow-xs"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-full bg-[#F3ECE2] border-2 border-terracotta-200 group-hover:border-terracotta-400 flex items-center justify-center text-terracotta-700 font-serif text-base font-bold shrink-0 transition-colors">
+                              {initials}
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <h3 className="text-base sm:text-lg font-serif font-bold text-[#27221F] group-hover:text-terracotta-700 transition-colors truncate">
+                                {f.name}
+                              </h3>
+                              <span
+                                className={`text-[9px] font-semibold px-2 py-0.5 rounded-full ${
+                                  isPracticante
+                                    ? "bg-sky-100 text-sky-800 border border-sky-200"
+                                    : "bg-terracotta-100 text-terracotta-800 border border-terracotta-200"
+                                }`}
+                              >
+                                {f.role || "Facilitador"}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-terracotta-700 font-medium line-clamp-1">
+                              {f.headline}
+                            </p>
                           </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <h3 className="text-base sm:text-lg font-serif font-bold text-[#27221F] truncate">
-                              {f.name}
-                            </h3>
-                            <span
-                              className={`text-[9px] font-semibold px-2 py-0.5 rounded-full ${
-                                isPracticante
-                                  ? "bg-sky-100 text-sky-800 border border-sky-200"
-                                  : "bg-terracotta-100 text-terracotta-800 border border-terracotta-200"
-                              }`}
-                            >
-                              {f.role || "Facilitador"}
+                        </div>
+
+                        {/* Modalidad y Ubicación Compacta */}
+                        <div className="bg-[#FAF8F5] rounded-xl p-2.5 border border-[#E7DECE] text-[11px] text-[#5C524A] space-y-1 mb-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[#8A7E73]">Modalidad:</span>
+                            <span className="font-semibold text-[#27221F] truncate ml-2">
+                              {f.modalities.includes("online") ? "🌐 Online" : "📍 Presencial"}
                             </span>
                           </div>
-                          <p className="text-[11px] text-terracotta-700 font-medium line-clamp-1">
-                            {f.headline}
-                          </p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[#8A7E73]">Ubicación:</span>
+                            <span className="font-semibold text-[#27221F] truncate ml-2">{f.city}</span>
+                          </div>
                         </div>
+
+                        {/* Bio resumida para ganar espacio */}
+                        <p className="text-xs text-[#5C524A] leading-relaxed line-clamp-2 mb-4">
+                          {f.bio}
+                        </p>
                       </div>
 
-                      {/* Modalidad y Ubicación Compacta */}
-                      <div className="bg-[#FAF8F5] rounded-xl p-2.5 border border-[#E7DECE] text-[11px] text-[#5C524A] space-y-1 mb-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[#8A7E73]">Modalidad:</span>
-                          <span className="font-semibold text-[#27221F] truncate ml-2">
-                            {f.modalities.includes("online") ? "🌐 Online" : "📍 Presencial"}
+                      {/* Valor y Botones Compactos */}
+                      <div className="pt-3 border-t border-[#E7DECE] flex items-center justify-between gap-2">
+                        <div>
+                          <span className="text-[9px] text-[#8A7E73] block uppercase tracking-wider">
+                            Valor
+                          </span>
+                          <span className="text-base font-serif font-bold text-[#27221F]">
+                            ${f.totalPriceClp.toLocaleString("es-CL")}{" "}
+                            <span className="text-[10px] font-sans font-normal text-[#8A7E73]">CLP</span>
                           </span>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[#8A7E73]">Ubicación:</span>
-                          <span className="font-semibold text-[#27221F] truncate ml-2">{f.city}</span>
+
+                        <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            onClick={() => setDetailFacilitator(f)}
+                            type="button"
+                            className="px-2.5 py-1.5 rounded-full border border-[#E7DECE] bg-white hover:bg-[#F3ECE2] text-[11px] font-medium text-[#27221F] transition-colors cursor-pointer"
+                          >
+                            Ver perfil
+                          </button>
+                          <button
+                            onClick={() => handleBook(f)}
+                            type="button"
+                            className="px-3 py-1.5 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white text-[11px] font-semibold shadow-xs transition-all cursor-pointer"
+                          >
+                            Reservar
+                          </button>
                         </div>
                       </div>
-
-                      {/* Bio resumida para ganar espacio */}
-                      <p className="text-xs text-[#5C524A] leading-relaxed line-clamp-2 mb-4">
-                        {f.bio}
-                      </p>
                     </div>
-
-                    {/* Valor y Botones Compactos */}
-                    <div className="pt-3 border-t border-[#E7DECE] flex items-center justify-between gap-2">
-                      <div>
-                        <span className="text-[9px] text-[#8A7E73] block uppercase tracking-wider">
-                          Valor
-                        </span>
-                        <span className="text-base font-serif font-bold text-[#27221F]">
-                          ${f.totalPriceClp.toLocaleString("es-CL")}{" "}
-                          <span className="text-[10px] font-sans font-normal text-[#8A7E73]">CLP</span>
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          onClick={() => setDetailFacilitator(f)}
-                          type="button"
-                          className="px-2.5 py-1.5 rounded-full border border-[#E7DECE] bg-white hover:bg-[#F3ECE2] text-[11px] font-medium text-[#27221F] transition-colors cursor-pointer"
-                        >
-                          Ver perfil
-                        </button>
-                        <button
-                          onClick={() => handleBook(f)}
-                          type="button"
-                          className="px-3 py-1.5 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white text-[11px] font-semibold shadow-xs transition-all cursor-pointer"
-                        >
-                          Reservar
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* ========================================================================= */}

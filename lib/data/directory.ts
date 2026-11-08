@@ -46,6 +46,9 @@ export interface FacilitatorProfile {
   schoolAndYear: string;
   status: FacilitatorStatusType;
   supervisorName?: string;
+  role?: string;
+  imageUrl?: string;
+  phone?: string;
   specialties: string[];
   modalities: ("online" | "presencial" | "taller_grupal")[];
   city: string;

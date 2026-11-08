@@ -47,14 +47,22 @@ export function FacilitatorDetailModal({
         {/* Cabecera del Facilitador */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 mb-6 pb-6 border-b border-[#E7DECE]">
           <div className="relative shrink-0">
-            <div className="w-20 h-20 rounded-full bg-[#F3ECE2] border-2 border-terracotta-200 flex items-center justify-center text-terracotta-700 font-serif text-2xl font-bold shadow-inner">
-              {initials}
-            </div>
+            {facilitator.imageUrl ? (
+              <img
+                src={facilitator.imageUrl}
+                alt={facilitator.name}
+                className="w-20 h-20 rounded-full object-cover border-2 border-terracotta-200 shadow-md"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-[#F3ECE2] border-2 border-terracotta-200 flex items-center justify-center text-terracotta-700 font-serif text-2xl font-bold shadow-inner">
+                {initials}
+              </div>
+            )}
           </div>
 
           <div className="text-center sm:text-left flex-1">
             <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-sage-100 text-sage-800 text-[11px] font-semibold mb-1.5">
-              <span>Facilitador de Constelaciones</span>
+              <span>{facilitator.role || "Facilitador de Constelaciones"}</span>
               <span>· {facilitator.experienceYears} años de práctica</span>
             </div>
             <h3 className="text-2xl sm:text-3xl font-serif font-semibold text-[#27221F]">

@@ -25,7 +25,8 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
   const [city, setCity] = useState("Concón / Viña del Mar");
   const [bookingPhone, setBookingPhone] = useState("+56 9 6373 0998");
 
-  // Tamaños de fuente ajustables para destacar
+  // Tamaños de fuente ajustables para destacar (con botones para agrandar y achicar)
+  const [dateFontSize, setDateFontSize] = useState<number>(24);
   const [subtitleFontSize, setSubtitleFontSize] = useState<number>(54);
   const [titleFontSize, setTitleFontSize] = useState<number>(44);
   const [quoteFontSize, setQuoteFontSize] = useState<number>(30);
@@ -34,13 +35,13 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
   const [logoType, setLogoType] = useState<"consteladores" | "icalma" | "custom" | "none">("consteladores");
   const [customLogoUrl, setCustomLogoUrl] = useState<string>("");
 
-  // Imagen de Fondo y Encuadre
+  // Imagen de Fondo y Encuadre (Foto luminosa sin velos negros obligatorios)
   const [bgImagePreset, setBgImagePreset] = useState<string>("/images/arbol-generaciones.png");
   const [customBgUrl, setCustomBgUrl] = useState<string>("");
   const [bgZoom, setBgZoom] = useState<number>(1.0);
   const [bgPositionY, setBgPositionY] = useState<number>(50); // 0 a 100%
   const [bgFit, setBgFit] = useState<"cover" | "contain">("cover");
-  const [overlayOpacity, setOverlayOpacity] = useState<number>(0.5);
+  const [overlayOpacity, setOverlayOpacity] = useState<number>(0.0);
 
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [exportNotice, setExportNotice] = useState<string>("");
@@ -107,30 +108,15 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
       ctx.drawImage(img, 0, 0, img.width, img.height, shiftX, shiftY, drawWidth, drawHeight);
     }
 
-    // 4. Capas cinematográficas de degradado transparente (permiten ver casi toda la imagen sin recuadros)
-    // 4.1 Velo general suave
-    ctx.fillStyle = `rgba(16, 12, 10, ${overlayOpacity * 0.45})`;
-    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    // 4. Tratamiento fotográfico luminoso y natural (Estilo Referencias: Margarita, Abrazo, Árbol)
+    // Sin velos negros opacos obligatorios para que la foto se luzca clara y radiante.
+    if (overlayOpacity > 0.05) {
+      ctx.fillStyle = `rgba(16, 12, 10, ${overlayOpacity * 0.35})`;
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    }
 
-    // 4.2 Degradado superior suave para logo y píldora de fecha
-    const topGrad = ctx.createLinearGradient(0, 0, 0, 360);
-    topGrad.addColorStop(0, "rgba(12, 9, 7, 0.75)");
-    topGrad.addColorStop(0.5, "rgba(12, 9, 7, 0.4)");
-    topGrad.addColorStop(1, "rgba(12, 9, 7, 0)");
-    ctx.fillStyle = topGrad;
-    ctx.fillRect(0, 0, CANVAS_WIDTH, 360);
-
-    // 4.3 Degradado inferior para textos y datos sin tapar con caja
-    const botGrad = ctx.createLinearGradient(0, CANVAS_HEIGHT * 0.35, 0, CANVAS_HEIGHT);
-    botGrad.addColorStop(0, "rgba(12, 9, 7, 0)");
-    botGrad.addColorStop(0.5, "rgba(12, 9, 7, 0.5)");
-    botGrad.addColorStop(0.85, "rgba(10, 8, 6, 0.85)");
-    botGrad.addColorStop(1, "rgba(8, 6, 5, 0.96)");
-    ctx.fillStyle = botGrad;
-    ctx.fillRect(0, CANVAS_HEIGHT * 0.35, CANVAS_WIDTH, CANVAS_HEIGHT * 0.65);
-
-    // 5. Marco fino decorativo exterior
-    ctx.strokeStyle = "rgba(231, 222, 206, 0.35)";
+    // 5. Marco fino decorativo exterior en dorado suave
+    ctx.strokeStyle = "rgba(235, 215, 175, 0.45)";
     ctx.lineWidth = 2.5;
     ctx.strokeRect(36, 36, CANVAS_WIDTH - 72, CANVAS_HEIGHT - 72);
 
@@ -189,12 +175,12 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
       ctx.letterSpacing = "0px";
     }
 
-    // 7. PÍLDORA DE FECHA Y HORARIO (Estilo Imagen 1: borde dorado y fondo translúcido)
-    const pillY = 190;
-    ctx.font = "bold 24px sans-serif";
+    // 7. PÍLDORA DE FECHA Y HORARIO (Estilo Referencias: tono ocre/tierra con borde dorado)
+    const pillY = 160;
+    ctx.font = `bold ${dateFontSize}px sans-serif`;
     const dateMetrics = ctx.measureText(dateAndHour);
     const datePillW = Math.min(CANVAS_WIDTH - 140, dateMetrics.width + 56);
-    const datePillH = 54;
+    const datePillH = dateFontSize + 30;
     const datePillX = 70;
 
     drawPill(
@@ -202,22 +188,26 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
       pillY,
       datePillW,
       datePillH,
-      27,
-      "rgba(28, 20, 15, 0.72)",
-      "#D4A359",
+      datePillH / 2,
+      "rgba(138, 86, 24, 0.90)",
+      "rgba(240, 205, 145, 0.70)",
       2.5
     );
 
-    ctx.fillStyle = "#F8ECD2";
-    ctx.font = "bold 24px sans-serif";
-    ctx.fillText(dateAndHour, datePillX + 28, pillY + 35);
+    ctx.save();
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = `bold ${dateFontSize}px sans-serif`;
+    ctx.shadowColor = "rgba(0, 0, 0, 0.65)";
+    ctx.shadowBlur = 5;
+    ctx.fillText(dateAndHour, datePillX + 28, pillY + datePillH - 19);
+    ctx.restore();
 
     // 8. TIPO DE TALLER ("TALLER PRESENCIAL CONSTELACIONES FAMILIARES")
-    // Letras GRANDES, en mayúsculas serif con sombra para alto impacto visual
-    let currentY = pillY + 110;
+    // Letras GRANDES Serif con sombra limpia para alta legibilidad sobre cualquier foto
+    let currentY = pillY + datePillH + 60;
     ctx.save();
-    ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
-    ctx.shadowBlur = 14;
+    ctx.shadowColor = "rgba(0, 0, 0, 0.85)";
+    ctx.shadowBlur = 12;
     ctx.shadowOffsetX = 2;
     ctx.shadowOffsetY = 3;
 
@@ -232,15 +222,15 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
     }
     ctx.restore();
 
-    // 9. TÍTULO DEL TALLER (con salto de línea inteligente y sombra)
-    currentY += 10;
+    // 9. TÍTULO DEL TALLER (con salto de línea inteligente y sombra de alto contraste)
+    currentY += 12;
     ctx.save();
-    ctx.shadowColor = "rgba(0, 0, 0, 0.85)";
-    ctx.shadowBlur = 10;
+    ctx.shadowColor = "rgba(0, 0, 0, 0.90)";
+    ctx.shadowBlur = 12;
     ctx.shadowOffsetX = 2;
     ctx.shadowOffsetY = 2;
 
-    ctx.fillStyle = "#FAF7F2";
+    ctx.fillStyle = "#FFF9ED";
     ctx.font = `bold ${titleFontSize}px Georgia, serif`;
     ctx.letterSpacing = "0px";
 
@@ -262,13 +252,13 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
     ctx.fillText(line, 70, currentY);
     ctx.restore();
 
-    // 10. LEMA O FRASE DE RESONANCIA (Agrandada, itálica en ocre suave con comillas)
+    // 10. LEMA O FRASE DE RESONANCIA
     if (quote) {
       currentY += 45;
       ctx.save();
-      ctx.fillStyle = "#E8C58A"; // Ocre dorado suave
+      ctx.fillStyle = "#F5D79E"; // Ocre dorado luminoso
       ctx.font = `italic 500 ${quoteFontSize}px Georgia, serif`;
-      ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+      ctx.shadowColor = "rgba(0, 0, 0, 0.85)";
       ctx.shadowBlur = 8;
       ctx.shadowOffsetX = 1;
       ctx.shadowOffsetY = 2;
@@ -276,77 +266,53 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
       ctx.restore();
     }
 
-    // 11. VALOR DESTACADO CON LÍNEA DORADA INFERIOR (Estilo Imagen 1)
-    currentY += 60;
-    ctx.save();
-    ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
-
-    const valueText = `VALOR: ${price}`;
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = "bold 40px Georgia, serif";
-    ctx.fillText(valueText, 70, currentY);
-
-    // Línea dorada de acento bajo el valor
-    const valMetrics = ctx.measureText(valueText);
-    ctx.strokeStyle = "#D4A359";
-    ctx.lineWidth = 3.5;
-    ctx.beginPath();
-    ctx.moveTo(70, currentY + 12);
-    ctx.lineTo(70 + valMetrics.width, currentY + 12);
-    ctx.stroke();
-    ctx.restore();
-
-    // 12. PÍLDORA DE FACILITADORAS (En la zona inferior izquierda, estilo Imagen 1)
-    const facPillY = CANVAS_HEIGHT - 170;
-    const facText = `Facilitadoras: ${facilitators}`;
-    ctx.font = "bold 24px sans-serif";
-    const facMetrics = ctx.measureText(facText);
-    const facPillW = Math.min(CANVAS_WIDTH - 140, facMetrics.width + 56);
-    const facPillH = 52;
+    // 11. FRANJA INFERIOR CÁLIDA UNIFICADA (Estilo exacto a imágenes de referencia 3, 4 y 5)
+    // Agrupa Facilitadoras, Dirección, Reservas y Valor en una franja ocre/madera redondeada sin choques
+    const bannerMargin = 50;
+    const bannerW = CANVAS_WIDTH - (bannerMargin * 2);
+    const bannerH = 175;
+    const bannerY = CANVAS_HEIGHT - bannerH - 50;
+    const bannerRadius = 26;
 
     drawPill(
-      70,
-      facPillY,
-      facPillW,
-      facPillH,
-      26,
-      "rgba(28, 20, 15, 0.72)",
-      "#D4A359",
+      bannerMargin,
+      bannerY,
+      bannerW,
+      bannerH,
+      bannerRadius,
+      "rgba(138, 86, 24, 0.92)",
+      "rgba(240, 205, 145, 0.65)",
       2.5
     );
 
-    ctx.fillStyle = "#F8ECD2";
-    ctx.font = "bold 24px sans-serif";
-    ctx.fillText(facText, 70 + 28, facPillY + 34);
+    ctx.save();
+    ctx.textAlign = "center";
 
-    // 13. FRANJA INFERIOR: UBICACIÓN Y RESERVAS (Sin botón de reservar, con teléfono directo)
-    const dividerY = CANVAS_HEIGHT - 90;
-    ctx.strokeStyle = "rgba(231, 222, 206, 0.4)";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(70, dividerY);
-    ctx.lineTo(CANVAS_WIDTH - 70, dividerY);
-    ctx.stroke();
+    // Línea 1: Facilitadoras (tipografía serif destacada)
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = `bold 28px Georgia, serif`;
+    ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
+    ctx.shadowBlur = 5;
+    ctx.fillText(`Facilitadoras: ${facilitators}`, CANVAS_WIDTH / 2, bannerY + 48);
 
-    const bottomY = CANVAS_HEIGHT - 48;
+    // Línea 2: Dirección y Ciudad (con ancho completo para que nunca se corte ni choque)
+    ctx.fillStyle = "#F8ECD5";
+    ctx.font = `500 23px Georgia, serif`;
+    ctx.shadowBlur = 4;
+    const locationString = city ? `Dirección: ${address}, ${city}` : `Dirección: ${address}`;
+    ctx.fillText(locationString, CANVAS_WIDTH / 2, bannerY + 92);
 
-    // Lado izquierdo: Dirección y Ciudad
-    ctx.fillStyle = "#FAF7F2";
-    ctx.font = "600 22px Georgia, serif";
-    ctx.fillText(`📍 ${address} (${city})`, 70, bottomY);
-
-    // Lado derecho: Reservas con número de teléfono
-    const cleanBookingPhone = bookingPhone.trim().startsWith("Reservas")
+    // Línea 3: Reserva tu cupo y Valor en una sola línea armónica
+    const cleanBookingPhone = bookingPhone.trim().startsWith("Reservas") || bookingPhone.trim().startsWith("Reserva")
       ? bookingPhone.trim()
-      : `Reservas: ${bookingPhone.trim()}`;
+      : `Reserva tu cupo: ${bookingPhone.trim()}`;
 
-    ctx.font = "bold 24px sans-serif";
-    const bookingMetrics = ctx.measureText(`💬 ${cleanBookingPhone}`);
-    ctx.fillStyle = "#55E89B"; // Verde WhatsApp luminoso y visible
-    ctx.fillText(`💬 ${cleanBookingPhone}`, CANVAS_WIDTH - 70 - bookingMetrics.width, bottomY);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = `bold 24px sans-serif`;
+    ctx.shadowBlur = 5;
+    ctx.fillText(`${cleanBookingPhone}   ·   Valor: ${price}`, CANVAS_WIDTH / 2, bannerY + 138);
+
+    ctx.restore();
   }, [
     title,
     subtitle,
@@ -357,6 +323,7 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
     address,
     city,
     bookingPhone,
+    dateFontSize,
     subtitleFontSize,
     titleFontSize,
     quoteFontSize,
@@ -682,16 +649,32 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
                 <label className="text-xs font-bold text-[#5C524A]">
                   Tipo de Taller (Letras Grandes) *
                 </label>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <span className="text-[11px] text-[#8A7E73]">Tamaño:</span>
+                  <button
+                    type="button"
+                    onClick={() => setSubtitleFontSize((p) => Math.max(28, p - 2))}
+                    className="w-6 h-6 rounded-md bg-white border border-[#E7DECE] text-xs font-bold text-[#27221F] hover:bg-[#F3ECE2] flex items-center justify-center cursor-pointer active:scale-95"
+                    title="Achicar letra"
+                  >
+                    -
+                  </button>
                   <input
                     type="range"
-                    min="36"
-                    max="68"
+                    min="28"
+                    max="74"
                     value={subtitleFontSize}
                     onChange={(e) => setSubtitleFontSize(Number(e.target.value))}
-                    className="w-24 accent-terracotta-500 cursor-pointer"
+                    className="w-20 accent-terracotta-500 cursor-pointer"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setSubtitleFontSize((p) => Math.min(74, p + 2))}
+                    className="w-6 h-6 rounded-md bg-white border border-[#E7DECE] text-xs font-bold text-[#27221F] hover:bg-[#F3ECE2] flex items-center justify-center cursor-pointer active:scale-95"
+                    title="Agrandar letra"
+                  >
+                    +
+                  </button>
                   <span className="text-xs font-bold text-[#27221F] w-6 text-right">
                     {subtitleFontSize}
                   </span>
@@ -712,16 +695,32 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
                 <label className="text-xs font-bold text-[#5C524A]">
                   Título del Taller *
                 </label>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <span className="text-[11px] text-[#8A7E73]">Tamaño:</span>
+                  <button
+                    type="button"
+                    onClick={() => setTitleFontSize((p) => Math.max(24, p - 2))}
+                    className="w-6 h-6 rounded-md bg-white border border-[#E7DECE] text-xs font-bold text-[#27221F] hover:bg-[#F3ECE2] flex items-center justify-center cursor-pointer active:scale-95"
+                    title="Achicar letra"
+                  >
+                    -
+                  </button>
                   <input
                     type="range"
-                    min="32"
-                    max="60"
+                    min="24"
+                    max="68"
                     value={titleFontSize}
                     onChange={(e) => setTitleFontSize(Number(e.target.value))}
-                    className="w-24 accent-terracotta-500 cursor-pointer"
+                    className="w-20 accent-terracotta-500 cursor-pointer"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setTitleFontSize((p) => Math.min(68, p + 2))}
+                    className="w-6 h-6 rounded-md bg-white border border-[#E7DECE] text-xs font-bold text-[#27221F] hover:bg-[#F3ECE2] flex items-center justify-center cursor-pointer active:scale-95"
+                    title="Agrandar letra"
+                  >
+                    +
+                  </button>
                   <span className="text-xs font-bold text-[#27221F] w-6 text-right">
                     {titleFontSize}
                   </span>
@@ -741,16 +740,32 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
                 <label className="text-xs font-bold text-[#5C524A]">
                   Lema o Frase de Resonancia
                 </label>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <span className="text-[11px] text-[#8A7E73]">Tamaño:</span>
+                  <button
+                    type="button"
+                    onClick={() => setQuoteFontSize((p) => Math.max(18, p - 2))}
+                    className="w-6 h-6 rounded-md bg-white border border-[#E7DECE] text-xs font-bold text-[#27221F] hover:bg-[#F3ECE2] flex items-center justify-center cursor-pointer active:scale-95"
+                    title="Achicar letra"
+                  >
+                    -
+                  </button>
                   <input
                     type="range"
-                    min="22"
-                    max="44"
+                    min="18"
+                    max="48"
                     value={quoteFontSize}
                     onChange={(e) => setQuoteFontSize(Number(e.target.value))}
-                    className="w-24 accent-terracotta-500 cursor-pointer"
+                    className="w-20 accent-terracotta-500 cursor-pointer"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setQuoteFontSize((p) => Math.min(48, p + 2))}
+                    className="w-6 h-6 rounded-md bg-white border border-[#E7DECE] text-xs font-bold text-[#27221F] hover:bg-[#F3ECE2] flex items-center justify-center cursor-pointer active:scale-95"
+                    title="Agrandar letra"
+                  >
+                    +
+                  </button>
                   <span className="text-xs font-bold text-[#27221F] w-6 text-right">
                     {quoteFontSize}
                   </span>
@@ -765,11 +780,43 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
               />
             </div>
 
-            {/* Fecha y Horario en Píldora */}
+            {/* Fecha y Horario en Píldora Superior con Tamaño */}
             <div>
-              <label className="block text-xs font-bold text-[#5C524A] mb-1">
-                Fecha y Horario (Aparece en la píldora superior) *
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-bold text-[#5C524A]">
+                  Fecha y Horario (Píldora superior) *
+                </label>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] text-[#8A7E73]">Tamaño:</span>
+                  <button
+                    type="button"
+                    onClick={() => setDateFontSize((p) => Math.max(16, p - 2))}
+                    className="w-6 h-6 rounded-md bg-white border border-[#E7DECE] text-xs font-bold text-[#27221F] hover:bg-[#F3ECE2] flex items-center justify-center cursor-pointer active:scale-95"
+                    title="Achicar letra"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="range"
+                    min="16"
+                    max="38"
+                    value={dateFontSize}
+                    onChange={(e) => setDateFontSize(Number(e.target.value))}
+                    className="w-20 accent-terracotta-500 cursor-pointer"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setDateFontSize((p) => Math.min(38, p + 2))}
+                    className="w-6 h-6 rounded-md bg-white border border-[#E7DECE] text-xs font-bold text-[#27221F] hover:bg-[#F3ECE2] flex items-center justify-center cursor-pointer active:scale-95"
+                    title="Agrandar letra"
+                  >
+                    +
+                  </button>
+                  <span className="text-xs font-bold text-[#27221F] w-6 text-right">
+                    {dateFontSize}
+                  </span>
+                </div>
+              </div>
               <input
                 type="text"
                 value={dateAndHour}
@@ -779,11 +826,11 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
               />
             </div>
 
-            {/* Facilitadoras y Valor */}
+            {/* Facilitadoras y Valor en Franja Inferior */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-bold text-[#5C524A] mb-1">
-                  Facilitadoras (Píldora inferior) *
+                  Facilitadoras (Línea 1 en franja inferior) *
                 </label>
                 <input
                   type="text"
@@ -796,7 +843,7 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
 
               <div>
                 <label className="block text-xs font-bold text-[#5C524A] mb-1">
-                  Valor con línea de acento *
+                  Valor (Línea 3 en franja inferior) *
                 </label>
                 <input
                   type="text"
@@ -812,7 +859,7 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-bold text-[#5C524A] mb-1">
-                  Dirección *
+                  Dirección (Línea 2 en franja inferior) *
                 </label>
                 <input
                   type="text"
@@ -831,26 +878,26 @@ export function FlyerDesigner({ onSaveToWorkshops }: FlyerDesignerProps) {
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="Ej. Concón / Viña del Mar"
+                  placeholder="Ej. Concón"
                   className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs sm:text-sm text-[#27221F]"
                 />
               </div>
             </div>
 
-            {/* Reservas: Teléfono editable */}
+            {/* Teléfono Reservas */}
             <div>
               <label className="block text-xs font-bold text-[#5C524A] mb-1">
-                Texto / Teléfono de Reservas (Franja inferior) *
+                Teléfono de Reservas (Línea 3 en franja inferior) *
               </label>
               <input
                 type="text"
                 value={bookingPhone}
                 onChange={(e) => setBookingPhone(e.target.value)}
-                placeholder="Ej. +56 9 6373 0998 o Reservas: +56 9 6373 0998"
+                placeholder="Ej. +56 9 6373 0998"
                 className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E7DECE] text-sm font-bold text-emerald-700"
               />
               <p className="text-[11px] text-[#8A7E73] mt-1">
-                Aparece directamente en la barra inferior del flyer (ej: <em>💬 Reservas: {bookingPhone}</em>), reemplazando al botón.
+                Aparece directamente en la franja inferior ocre del flyer: <em>Reserva tu cupo: {bookingPhone} · Valor: {price}</em>, sin choques.
               </p>
             </div>
           </div>
