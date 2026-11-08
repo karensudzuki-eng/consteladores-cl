@@ -3,14 +3,19 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { registerTherapistApplication } from "@/app/actions/therapists";
-import { AmmoniteIcon } from "@/components/watercolor/WatercolorNavbar";
+import { useCMS } from "@/lib/cms/CMSContext";
 
 export default function RegistroTerapeutaPage() {
+  const { content } = useCMS();
+  const settings = content?.settings;
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
     headline: "Facilitador",
+    city: "",
+    modality: "Online (Google Meet)",
     bio: "",
     approach: "",
     experienceYears: 2,
@@ -50,6 +55,8 @@ export default function RegistroTerapeutaPage() {
       data.append("email", formData.email);
       data.append("phone", formData.phone);
       data.append("headline", formData.headline);
+      data.append("city", formData.city);
+      data.append("modality", formData.modality);
       data.append("bio", formData.bio);
       data.append("approach", formData.approach);
       data.append("experienceYears", String(formData.experienceYears));
@@ -99,7 +106,9 @@ export default function RegistroTerapeutaPage() {
 
       setStatusMessage({
         type: "success",
-        text: "¡Tu postulación ha sido enviada con éxito! Tu postulación será evaluada. En caso de necesitar mayor información nos contactaremos contigo.",
+        text:
+          settings?.postulationSuccessNote ||
+          "¡Tu postulación ha sido enviada con éxito! Tu postulación será evaluada. En caso de necesitar mayor información nos contactaremos contigo.",
       });
     } catch (err: any) {
       setStatusMessage({
@@ -130,10 +139,10 @@ export default function RegistroTerapeutaPage() {
           
           <div className="text-center mb-8 space-y-2">
             <h1 className="text-2xl sm:text-3xl font-serif font-semibold text-[#27221F] tracking-tight">
-              Postulación a la Red de Consteladores
+              {settings?.postulationTitle || "Postulación a la Red de Consteladores"}
             </h1>
             <p className="text-xs sm:text-sm text-[#5C524A] leading-relaxed max-w-[500px] mx-auto">
-              Postula para formar parte de nuestro equipo de facilitadores y practicantes.
+              {settings?.postulationDescription || "Postula para formar parte de nuestro equipo de facilitadores y practicantes."}
             </p>
           </div>
 
@@ -228,6 +237,37 @@ export default function RegistroTerapeutaPage() {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-[#5C524A] mb-1">
+                      Ubicación (Ciudad / Región) *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Ej. Santiago / Región Metropolitana"
+                      value={formData.city}
+                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-full bg-[#FAF8F5] border border-[#E7DECE] text-sm text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-[#5C524A] mb-1">
+                      Modalidad de atención *
+                    </label>
+                    <select
+                      value={formData.modality}
+                      onChange={(e) => setFormData({ ...formData, modality: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-full bg-[#FAF8F5] border border-[#E7DECE] text-sm text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500 cursor-pointer font-medium"
+                    >
+                      <option value="Online (Google Meet)">Online (Google Meet)</option>
+                      <option value="Presencial">Presencial</option>
+                      <option value="Online y Presencial">Online y Presencial</option>
+                    </select>
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-xs font-semibold text-[#5C524A] mb-1">
                     Biografía y presentación *
@@ -315,7 +355,8 @@ export default function RegistroTerapeutaPage() {
                 </div>
 
                 <p className="text-[11px] text-[#8A7E73] text-center leading-relaxed">
-                  Tu postulación será evaluada. En caso de necesitar mayor información nos contactaremos contigo.
+                  {settings?.postulationSuccessNote ||
+                    "Tu postulación será evaluada. En caso de necesitar mayor información nos contactaremos contigo."}
                 </p>
               </form>
             </>

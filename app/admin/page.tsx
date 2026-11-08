@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCMS } from "@/lib/cms/CMSContext";
-import { CMSWorkshop, CMSHeroSlide, CMSTestimonial } from "@/lib/cms/types";
+import { CMSWorkshop, CMSHeroSlide, CMSTestimonial, CMSFacilitator } from "@/lib/cms/types";
 import { FlyerDesigner } from "@/components/flyer-designer/FlyerDesigner";
 import {
   saveAudioToIndexedDB,
@@ -40,10 +40,16 @@ export default function AdminPage() {
     | "disenador"
     | "carrusel-explicativo"
     | "sesion"
+    | "facilitadores"
     | "quienes-somos"
     | "experiencias"
     | "contacto"
   >("talleres");
+
+  // Estado para módulo Facilitadores
+  const [facilitatorSearch, setFacilitatorSearch] = useState("");
+  const [facilitatorRoleFilter, setFacilitatorRoleFilter] = useState<"todos" | "Facilitador" | "Practicante">("todos");
+  const [selectedFacilitatorId, setSelectedFacilitatorId] = useState<string>("");
 
   // Taller seleccionado actualmente para editar
   const [selectedWorkshopIndex, setSelectedWorkshopIndex] = useState(0);
@@ -235,6 +241,49 @@ export default function AdminPage() {
     }
   };
 
+  // Gestión de Facilitadores y Practicantes
+  const handleAddFacilitator = () => {
+    const newId = `facilitador-${Date.now()}`;
+    const newFacilitator: CMSFacilitator = {
+      id: newId,
+      name: "Nuevo Facilitador(a)",
+      headline: "Facilitador(a) en Constelaciones Familiares",
+      role: "Facilitador",
+      schoolAndYear: "Formación en Constelaciones Sistémicas",
+      city: "Santiago / Online Chile",
+      modality: "Online (Google Meet)",
+      price: "$40.000",
+      experienceYears: 2,
+      bio: "Espacio de acompañamiento y escucha para mirar las dinámicas del sistema familiar.",
+      imageUrl: "",
+      specialties: ["Familia y Origen", "Pareja y Vínculos"],
+      email: "",
+      phone: content.settings?.whatsappNumber || "+56 9 4193 9363",
+      certificationUrl: "",
+      isActive: true,
+    };
+
+    const updated = [newFacilitator, ...(content.facilitators || [])];
+    setContent({
+      ...content,
+      facilitators: updated,
+    });
+    setSelectedFacilitatorId(newId);
+  };
+
+  const handleDeleteFacilitator = (id: string) => {
+    if (confirm("¿Estás segura de eliminar a este facilitador(a) del directorio?")) {
+      const updated = (content.facilitators || []).filter((f) => f.id !== id);
+      setContent({
+        ...content,
+        facilitators: updated,
+      });
+      if (selectedFacilitatorId === id) {
+        setSelectedFacilitatorId(updated[0]?.id || "");
+      }
+    }
+  };
+
   // Si no está autenticado, mostrar formulario de login
   if (!isAuthenticated) {
     return (
@@ -286,6 +335,40 @@ export default function AdminPage() {
   }
 
   const currentWorkshop = content.workshops[selectedWorkshopIndex] || content.workshops[0];
+
+  const currentFacilitator =
+    (content.facilitators || []).find((f) => f.id === selectedFacilitatorId) ||
+    (content.facilitators || [])[0];
+
+  const handleUpdateCurrentFacilitator = (field: keyof CMSFacilitator, value: any) => {
+    if (!currentFacilitator) return;
+    const updated = (content.facilitators || []).map((f) => {
+      if (f.id === currentFacilitator.id) {
+        return { ...f, [field]: value };
+      }
+      return f;
+    });
+    setContent({ ...content, facilitators: updated });
+  };
+
+  const filteredFacilitators = (content.facilitators || []).filter((f) => {
+    if (facilitatorRoleFilter !== "todos") {
+      const roleStr = f.role || "Facilitador";
+      if (roleStr.toLowerCase() !== facilitatorRoleFilter.toLowerCase()) {
+        return false;
+      }
+    }
+    const searchClean = facilitatorSearch.trim().toLowerCase();
+    if (searchClean.length >= 3) {
+      const matchName = f.name?.toLowerCase().includes(searchClean);
+      const matchCity = f.city?.toLowerCase().includes(searchClean);
+      const matchHeadline = f.headline?.toLowerCase().includes(searchClean);
+      if (!matchName && !matchCity && !matchHeadline) {
+        return false;
+      }
+    }
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-[#27221F] font-sans antialiased pb-20">
@@ -447,6 +530,18 @@ export default function AdminPage() {
             }`}
           >
             🌿 Sesión Individual
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("facilitadores")}
+            className={`px-4 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              activeTab === "facilitadores"
+                ? "bg-terracotta-500 text-white shadow-sm"
+                : "bg-white text-[#5C524A] hover:bg-cream-100 border border-[#E7DECE]"
+            }`}
+          >
+            <span>👥 Facilitadores ({(content.facilitators || []).length})</span>
           </button>
 
           <button
@@ -1146,6 +1241,538 @@ export default function AdminPage() {
                     className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] border border-[#E7DECE] text-xs"
                   />
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* PESTAÑA: FACILITADORES Y PRACTICANTES                                     */}
+        {/* ========================================================================= */}
+        {activeTab === "facilitadores" && (
+          <div className="space-y-8">
+            {/* 1. SECCIÓN: TEXTOS DEL FORMULARIO DE POSTULACIÓN */}
+            <div className="bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-8 shadow-sm space-y-5">
+              <div className="pb-3 border-b border-[#E7DECE] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h2 className="text-lg font-serif font-bold text-[#27221F]">
+                    Textos del Formulario de Postulación (/registro-terapeuta)
+                  </h2>
+                  <p className="text-xs text-[#5C524A]">
+                    Personaliza los títulos, descripciones y notas de revisión que ven los postulantes al postular.
+                  </p>
+                </div>
+                <Link
+                  href="/registro-terapeuta"
+                  target="_blank"
+                  className="inline-flex items-center gap-1 text-xs text-terracotta-600 hover:text-terracotta-700 font-semibold"
+                >
+                  <span>Ver formulario público</span>
+                  <span>↗</span>
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                    Título principal de la página
+                  </label>
+                  <input
+                    type="text"
+                    value={content.settings?.postulationTitle || "Postulación a la Red de Consteladores"}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        settings: { ...content.settings, postulationTitle: e.target.value },
+                      })
+                    }
+                    className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                    Subtítulo / Bajada descriptiva
+                  </label>
+                  <input
+                    type="text"
+                    value={
+                      content.settings?.postulationDescription ||
+                      "Postula para formar parte de nuestro equipo de facilitadores y practicantes."
+                    }
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        settings: { ...content.settings, postulationDescription: e.target.value },
+                      })
+                    }
+                    className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                    Mensaje de confirmación y revisión (Nota final)
+                  </label>
+                  <input
+                    type="text"
+                    value={
+                      content.settings?.postulationSuccessNote ||
+                      "Tu postulación será evaluada. En caso de necesitar mayor información nos contactaremos contigo."
+                    }
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        settings: { ...content.settings, postulationSuccessNote: e.target.value },
+                      })
+                    }
+                    className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 2. GESTIÓN DEL DIRECTORIO DE FACILITADORES */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* COLUMNA IZQUIERDA: BUSCADOR, FILTRO Y LISTA */}
+              <div className="lg:col-span-5 bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 shadow-sm space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#E7DECE]">
+                  <div>
+                    <h3 className="font-serif font-bold text-base text-[#27221F]">
+                      Directorio de Facilitadores
+                    </h3>
+                    <p className="text-[11px] text-[#8A7E73]">
+                      {filteredFacilitators.length} de {(content.facilitators || []).length} registrados
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddFacilitator}
+                    className="px-3 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <span>+ Agregar</span>
+                  </button>
+                </div>
+
+                {/* Buscador en vivo por nombre (mínimo 3 caracteres) */}
+                <div>
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                    Buscador por nombre (mínimo 3 caracteres)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Ej. Karen, Erika, Santiago..."
+                      value={facilitatorSearch}
+                      onChange={(e) => setFacilitatorSearch(e.target.value)}
+                      className="w-full pl-8 pr-4 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                    />
+                    <span className="absolute left-2.5 top-2.5 text-xs text-[#8A7E73]">🔍</span>
+                    {facilitatorSearch && (
+                      <button
+                        type="button"
+                        onClick={() => setFacilitatorSearch("")}
+                        className="absolute right-2.5 top-2 text-xs text-[#8A7E73] hover:text-[#27221F]"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                  {facilitatorSearch.trim().length > 0 && facilitatorSearch.trim().length < 3 && (
+                    <p className="text-[11px] text-amber-700 mt-1">
+                      ℹ️ Escribe al menos 3 caracteres para filtrar por nombre...
+                    </p>
+                  )}
+                </div>
+
+                {/* Filtro desplegable por rol */}
+                <div>
+                  <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                    Filtrar por categoría / rol
+                  </label>
+                  <select
+                    value={facilitatorRoleFilter}
+                    onChange={(e) => setFacilitatorRoleFilter(e.target.value as any)}
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500 cursor-pointer"
+                  >
+                    <option value="todos">Todos los roles ({(content.facilitators || []).length})</option>
+                    <option value="Facilitador">Facilitador / Constelador</option>
+                    <option value="Practicante">Practicante</option>
+                  </select>
+                </div>
+
+                {/* Lista de Facilitadores */}
+                <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
+                  {filteredFacilitators.length === 0 ? (
+                    <div className="p-6 text-center bg-cream-50 rounded-2xl border border-dashed border-[#E7DECE]">
+                      <p className="text-xs text-[#8A7E73] mb-2">
+                        No se encontraron facilitadores con ese criterio.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFacilitatorSearch("");
+                          setFacilitatorRoleFilter("todos");
+                        }}
+                        className="text-xs text-terracotta-600 hover:underline font-semibold"
+                      >
+                        Limpiar filtros
+                      </button>
+                    </div>
+                  ) : (
+                    filteredFacilitators.map((f) => {
+                      const isSelected = currentFacilitator?.id === f.id;
+                      const isPracticante = f.role?.toLowerCase() === "practicante";
+                      const initials = f.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .substring(0, 2);
+
+                      return (
+                        <div
+                          key={f.id}
+                          onClick={() => setSelectedFacilitatorId(f.id)}
+                          className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center gap-3 ${
+                            isSelected
+                              ? "bg-terracotta-50/70 border-terracotta-400 ring-2 ring-terracotta-200"
+                              : "bg-white border-[#E7DECE] hover:border-terracotta-200 hover:bg-cream-50/50"
+                          }`}
+                        >
+                          {/* Mini avatar */}
+                          {f.imageUrl ? (
+                            <img
+                              src={f.imageUrl}
+                              alt={f.name}
+                              className="w-11 h-11 rounded-full object-cover border border-[#E7DECE] shrink-0"
+                            />
+                          ) : (
+                            <div className="w-11 h-11 rounded-full bg-[#F3ECE2] border border-terracotta-200 text-terracotta-700 font-serif font-bold text-xs flex items-center justify-center shrink-0">
+                              {initials}
+                            </div>
+                          )}
+
+                          {/* Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <h4 className="font-serif font-bold text-xs sm:text-sm text-[#27221F] truncate">
+                                {f.name}
+                              </h4>
+                              <span
+                                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                                  isPracticante
+                                    ? "bg-sky-100 text-sky-800 border border-sky-200"
+                                    : "bg-terracotta-100 text-terracotta-800 border border-terracotta-200"
+                                }`}
+                              >
+                                {f.role || "Facilitador"}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-[#8A7E73] truncate">
+                              📍 {f.city || "Sin ubicación"} · {f.modality || "Online"}
+                            </p>
+                            <div className="flex items-center justify-between text-[10px] mt-0.5">
+                              <span className="font-bold text-[#27221F]">{f.price || "$40.000"}</span>
+                              <span
+                                className={
+                                  f.isActive !== false
+                                    ? "text-emerald-700 font-semibold"
+                                    : "text-amber-700 font-semibold"
+                                }
+                              >
+                                {f.isActive !== false ? "🟢 Visible" : "⚪ Oculto"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+
+                <div className="pt-2 border-t border-[#E7DECE]">
+                  <button
+                    type="button"
+                    onClick={handleAddFacilitator}
+                    className="w-full py-2.5 rounded-xl border border-dashed border-terracotta-300 hover:bg-terracotta-50/50 text-terracotta-700 text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1"
+                  >
+                    <span>+ Agregar nuevo facilitador / practicante</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* COLUMNA DERECHA: FORMULARIO DE EDICIÓN COMPLETA */}
+              <div className="lg:col-span-7 bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                {!currentFacilitator ? (
+                  <div className="text-center py-12">
+                    <p className="text-sm text-[#8A7E73] mb-4">No hay ningún facilitador seleccionado.</p>
+                    <button
+                      type="button"
+                      onClick={handleAddFacilitator}
+                      className="px-6 py-2.5 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-semibold"
+                    >
+                      + Crear primer perfil
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    {/* Header del Editor */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E7DECE]">
+                      <div>
+                        <span className="text-[10px] uppercase tracking-wider text-terracotta-600 font-bold">
+                          Editando perfil de facilitador
+                        </span>
+                        <h3 className="font-serif font-bold text-xl text-[#27221F]">
+                          {currentFacilitator.name || "Nuevo Perfil"}
+                        </h3>
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <label className="flex items-center gap-2 cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-[#E7DECE] text-xs font-semibold text-[#27221F]">
+                          <input
+                            type="checkbox"
+                            checked={currentFacilitator.isActive !== false}
+                            onChange={(e) => handleUpdateCurrentFacilitator("isActive", e.target.checked)}
+                            className="rounded text-terracotta-500 focus:ring-terracotta-400"
+                          />
+                          <span>Visible en la web pública</span>
+                        </label>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteFacilitator(currentFacilitator.id)}
+                          className="text-xs text-red-600 hover:text-red-700 font-semibold px-3 py-1.5 rounded-xl border border-red-200 hover:bg-red-50 transition-colors cursor-pointer"
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Formulario Completo de Campos */}
+                    <div className="space-y-4">
+                      {/* Fila 1: Nombre y Rol */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                            Nombre completo *
+                          </label>
+                          <input
+                            type="text"
+                            value={currentFacilitator.name}
+                            onChange={(e) => handleUpdateCurrentFacilitator("name", e.target.value)}
+                            placeholder="Ej. Karen Suzuki"
+                            className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                            Rol o categoría *
+                          </label>
+                          <select
+                            value={currentFacilitator.role || "Facilitador"}
+                            onChange={(e) => handleUpdateCurrentFacilitator("role", e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500 font-medium cursor-pointer"
+                          >
+                            <option value="Facilitador">Facilitador / Constelador</option>
+                            <option value="Practicante">Practicante</option>
+                            <option value="Consultante">Consultante</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Fila 2: Titular / Especialidad */}
+                      <div>
+                        <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                          Titular de perfil (headline)
+                        </label>
+                        <input
+                          type="text"
+                          value={currentFacilitator.headline}
+                          onChange={(e) => handleUpdateCurrentFacilitator("headline", e.target.value)}
+                          placeholder="Ej. Facilitadora Acreditada en Constelaciones Familiares..."
+                          className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                        />
+                      </div>
+
+                      {/* Fila 3: Correo y Teléfono/WhatsApp */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                            Correo electrónico
+                          </label>
+                          <input
+                            type="email"
+                            value={currentFacilitator.email || ""}
+                            onChange={(e) => handleUpdateCurrentFacilitator("email", e.target.value)}
+                            placeholder="terapeuta@correo.cl"
+                            className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                            Teléfono / WhatsApp de contacto
+                          </label>
+                          <input
+                            type="text"
+                            value={currentFacilitator.phone || ""}
+                            onChange={(e) => handleUpdateCurrentFacilitator("phone", e.target.value)}
+                            placeholder="+56 9 1234 5678"
+                            className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Fila 4: Ubicación y Modalidad */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                            Ubicación (Ciudad / Región) *
+                          </label>
+                          <input
+                            type="text"
+                            value={currentFacilitator.city}
+                            onChange={(e) => handleUpdateCurrentFacilitator("city", e.target.value)}
+                            placeholder="Ej. Santiago / Online Chile o Concón, Valparaíso"
+                            className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                            Modalidad de atención *
+                          </label>
+                          <select
+                            value={currentFacilitator.modality || "Online (Google Meet)"}
+                            onChange={(e) => handleUpdateCurrentFacilitator("modality", e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500 cursor-pointer font-medium"
+                          >
+                            <option value="Online (Google Meet)">Online (Google Meet)</option>
+                            <option value="Presencial">Presencial</option>
+                            <option value="Online y Presencial">Online y Presencial</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Fila 5: Biografía y Presentación */}
+                      <div>
+                        <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                          Biografía y presentación *
+                        </label>
+                        <textarea
+                          rows={4}
+                          value={currentFacilitator.bio}
+                          onChange={(e) => handleUpdateCurrentFacilitator("bio", e.target.value)}
+                          placeholder="Explica la forma de acompañar, los temas donde tiene mayor experiencia..."
+                          className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500 leading-relaxed"
+                        />
+                      </div>
+
+                      {/* Fila 6: Escuela o linaje, Años y Tarifa */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                            Escuela o institución formativa
+                          </label>
+                          <input
+                            type="text"
+                            value={currentFacilitator.schoolAndYear || ""}
+                            onChange={(e) => handleUpdateCurrentFacilitator("schoolAndYear", e.target.value)}
+                            placeholder="Ej. Centro de Formación Icalma"
+                            className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                            Años de práctica
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            max="50"
+                            value={currentFacilitator.experienceYears || 0}
+                            onChange={(e) => handleUpdateCurrentFacilitator("experienceYears", Number(e.target.value))}
+                            className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                            Tarifa sesión (CLP)
+                          </label>
+                          <input
+                            type="text"
+                            value={currentFacilitator.price}
+                            onChange={(e) => handleUpdateCurrentFacilitator("price", e.target.value)}
+                            placeholder="$40.000"
+                            className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Fila 7: Foto de Perfil / Avatar */}
+                      <div className="p-4 rounded-2xl bg-white border border-[#E7DECE] space-y-3">
+                        <label className="block text-xs font-bold text-[#5C524A]">
+                          Foto de perfil o avatar del facilitador
+                        </label>
+                        <div className="flex items-center gap-4">
+                          {currentFacilitator.imageUrl ? (
+                            <img
+                              src={currentFacilitator.imageUrl}
+                              alt="Avatar"
+                              className="w-16 h-16 rounded-full object-cover border-2 border-terracotta-200"
+                            />
+                          ) : (
+                            <div className="w-16 h-16 rounded-full bg-[#F3ECE2] border-2 border-terracotta-200 text-terracotta-700 font-serif font-bold text-lg flex items-center justify-center">
+                              {currentFacilitator.name
+                                ? currentFacilitator.name.substring(0, 2).toUpperCase()
+                                : "CF"}
+                            </div>
+                          )}
+
+                          <div className="space-y-1.5">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                const dataUrl = await optimizeImageFile(file);
+                                handleUpdateCurrentFacilitator("imageUrl", dataUrl);
+                              }}
+                              className="block text-xs text-[#5C524A] file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-terracotta-50 file:text-terracotta-700 hover:file:bg-terracotta-100 cursor-pointer"
+                            />
+                            {currentFacilitator.imageUrl && (
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateCurrentFacilitator("imageUrl", "")}
+                                className="text-[11px] text-red-600 hover:underline block"
+                              >
+                                Quitar foto (usar iniciales)
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Fila 8: Certificado o Diploma (Enlace / Referencia) */}
+                      <div>
+                        <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                          Certificado o Diploma de Constelador (Referencia / Archivo)
+                        </label>
+                        <input
+                          type="text"
+                          value={currentFacilitator.certificationUrl || ""}
+                          onChange={(e) => handleUpdateCurrentFacilitator("certificationUrl", e.target.value)}
+                          placeholder="Ruta o enlace del documento de acreditación..."
+                          className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

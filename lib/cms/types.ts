@@ -49,13 +49,19 @@ export interface CMSFacilitator {
   id: string;
   name: string;
   headline: string;
+  role?: "Facilitador" | "Practicante" | "Consultante" | string;
   schoolAndYear: string;
   city: string;
+  modality?: string;
   price: string;
   bio: string;
   imageUrl?: string;
   experienceYears: number;
-  specialties: string[];
+  specialties?: string[];
+  email?: string;
+  phone?: string;
+  certificationUrl?: string;
+  isActive?: boolean;
 }
 
 export interface CMSSettings {
@@ -93,6 +99,11 @@ export interface CMSSettings {
   joinTeamImageUrl: string;
   joinTeamPostulateUrl: string;
   joinTeamPostulateLabel: string;
+
+  // Textos del formulario de postulación
+  postulationTitle?: string;
+  postulationDescription?: string;
+  postulationSuccessNote?: string;
 
   about: CMSAbout;
 
@@ -156,6 +167,10 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
     joinTeamImageUrl: "/images/comunidad-encuentro.png",
     joinTeamPostulateUrl: "/registro-terapeuta",
     joinTeamPostulateLabel: "Postular facilitador / practicante",
+
+    postulationTitle: "Postulación a la Red de Consteladores",
+    postulationDescription: "Postula para formar parte de nuestro equipo de facilitadores y practicantes.",
+    postulationSuccessNote: "Tu postulación será evaluada. En caso de necesitar mayor información nos contactaremos contigo.",
 
     about: {
       title: "Quiénes somos",
@@ -247,13 +262,37 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       id: "karen-sudzuki",
       name: "Karen Sudzuki",
       headline: "Facilitadora Acreditada en Constelaciones Familiares y Organizacionales",
+      role: "Facilitador",
       schoolAndYear: "Centro de Formación Icalma · Formación Sistémica",
       city: "Santiago / Online Chile",
+      modality: "Online (Google Meet)",
       price: "$40.000",
       experienceYears: 6,
       bio: "Facilitadora con más de 6 años de experiencia en acompañamiento individual y organizacional. Mi labor consiste en abrir un espacio de respeto y escucha para mirar el orden en el sistema familiar, reconociendo a quienes llegaron antes y permitiendo que cada persona ocupe su propio lugar en la vida.",
       imageUrl: "",
       specialties: ["Familia y Origen", "Pareja y Vínculos", "Trabajo y Vocación", "Empresas y Equipos"],
+      email: "karen.sudzuki@gmail.com",
+      phone: "+56 9 4193 9363",
+      certificationUrl: "",
+      isActive: true,
+    },
+    {
+      id: "erika-alert",
+      name: "Erika Alert",
+      headline: "Facilitadora de Constelaciones Familiares y Talleres Vivenciales",
+      role: "Facilitador",
+      schoolAndYear: "Formación en Constelaciones Sistémicas",
+      city: "Concón / Valparaíso y Online",
+      modality: "Online y Presencial",
+      price: "$40.000",
+      experienceYears: 7,
+      bio: "Facilitadora con amplia experiencia en constelaciones familiares grupales e individuales. Acompaña procesos de reconciliación y comprensión de nudos familiares en la V Región y vía online.",
+      imageUrl: "",
+      specialties: ["Familia y Origen", "Pareja y Vínculos", "Vocación y Trabajo"],
+      email: "contacto@consteladores.cl",
+      phone: "+56 9 4193 9363",
+      certificationUrl: "",
+      isActive: true,
     },
   ],
   workshops: [

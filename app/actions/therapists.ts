@@ -27,11 +27,13 @@ export async function registerTherapistApplication(
     const fullName = (formData.get("fullName") as string)?.trim() || "";
     const email = (formData.get("email") as string)?.trim().toLowerCase() || "";
     const phone = (formData.get("phone") as string)?.trim() || "";
-    const headline = (formData.get("headline") as string)?.trim() || "Facilitador en Constelaciones Familiares";
+    const headline = (formData.get("headline") as string)?.trim() || "Facilitador";
+    const city = (formData.get("city") as string)?.trim() || "";
+    const modality = (formData.get("modality") as string)?.trim() || "Online (Google Meet)";
     const bio = (formData.get("bio") as string)?.trim() || "";
     const approach = (formData.get("approach") as string)?.trim() || "";
     const experienceYears = Number(formData.get("experienceYears")) || 1;
-    const priceClp = Number(formData.get("priceClp")) || 45000;
+    const priceClp = Number(formData.get("priceClp")) || 40000;
     const certificateFile = formData.get("certificate") as File | null;
 
     if (!fullName || !email) {
@@ -41,20 +43,19 @@ export async function registerTherapistApplication(
       };
     }
 
-    if (!certificateFile || certificateFile.size === 0) {
-      return {
-        success: false,
-        error: "Por favor adjunta tu diploma o certificado de constelador.",
-      };
+    // Convertir archivo a Buffer para storage y adjunto de correo (si fue adjuntado)
+    let fileBuffer: Buffer | null = null;
+    let sanitizedFileName = "";
+    let storagePath = "";
+    let certificationUrl = "";
+
+    if (certificateFile && certificateFile.size > 0) {
+      const fileArrayBuffer = await certificateFile.arrayBuffer();
+      fileBuffer = Buffer.from(fileArrayBuffer);
+      sanitizedFileName = certificateFile.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+      storagePath = `postulaciones/${Date.now()}-${sanitizedFileName}`;
+      certificationUrl = storagePath;
     }
-
-    // Convertir archivo a Buffer para storage y adjunto de correo
-    const fileArrayBuffer = await certificateFile.arrayBuffer();
-    const fileBuffer = Buffer.from(fileArrayBuffer);
-    const sanitizedFileName = certificateFile.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const storagePath = `postulaciones/${Date.now()}-${sanitizedFileName}`;
-
-    let certificationUrl = storagePath;
     let therapistId = "";
 
     // 1. Guardar en Base de Datos Supabase (si las credenciales están configuradas)
@@ -63,22 +64,24 @@ export async function registerTherapistApplication(
         const supabase = createAdminClient();
 
         if (supabase) {
-          // 1.1 Intentar subir a Supabase Storage con cliente admin
-          try {
-            await supabase.storage.createBucket("certifications", { public: false });
-          } catch {
-            // El bucket ya existe
-          }
+          // 1.1 Intentar subir a Supabase Storage con cliente admin si adjuntó certificado
+          if (fileBuffer && storagePath && certificateFile) {
+            try {
+              await supabase.storage.createBucket("certifications", { public: false });
+            } catch {
+              // El bucket ya existe
+            }
 
-          const { error: uploadError } = await supabase.storage
-            .from("certifications")
-            .upload(storagePath, fileBuffer, {
-              contentType: certificateFile.type || "application/pdf",
-              upsert: true,
-            });
+            const { error: uploadError } = await supabase.storage
+              .from("certifications")
+              .upload(storagePath, fileBuffer, {
+                contentType: certificateFile.type || "application/pdf",
+                upsert: true,
+              });
 
-          if (uploadError) {
-            console.warn("Aviso en Supabase Storage:", uploadError.message);
+            if (uploadError) {
+              console.warn("Aviso en Supabase Storage:", uploadError.message);
+            }
           }
 
           // 1.2 Crear o vincular perfil
@@ -184,8 +187,16 @@ export async function registerTherapistApplication(
               <td style="padding: 8px 0; color: #27221F;">${phone}</td>
             </tr>
             <tr>
-              <td style="padding: 8px 0; color: #8A7E73;"><strong>Titular:</strong></td>
+              <td style="padding: 8px 0; color: #8A7E73;"><strong>Rol / Titular:</strong></td>
               <td style="padding: 8px 0; color: #27221F;">${headline}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #8A7E73;"><strong>Ubicación:</strong></td>
+              <td style="padding: 8px 0; color: #27221F;">${city || "No especificada"}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #8A7E73;"><strong>Modalidad:</strong></td>
+              <td style="padding: 8px 0; color: #27221F;">${modality}</td>
             </tr>
             <tr>
               <td style="padding: 8px 0; color: #8A7E73;"><strong>Escuela / Linaje:</strong></td>
@@ -273,12 +284,15 @@ export async function registerTherapistApplication(
               to: [recipient],
               subject: `Nueva postulación de constelador: ${fullName}`,
               html: adminEmailHtml,
-              attachments: [
-                {
-                  filename: certificateFile.name,
-                  content: fileBuffer,
-                },
-              ],
+              attachments:
+                fileBuffer && certificateFile
+                  ? [
+                      {
+                        filename: certificateFile.name,
+                        content: fileBuffer,
+                      },
+                    ]
+                  : undefined,
             });
 
             if (sendAdmin.error) {
@@ -327,7 +341,7 @@ export async function registerTherapistApplication(
       }
     } else {
       console.warn("⚠️ [Aviso de Configuración]: RESEND_API_KEY no está configurada en las Variables de Entorno de Vercel.");
-      console.warn(`[Modo Simulación] Correo preparado para Karen (${adminRecipients.join(", ")}) con adjunto: ${certificateFile.name}`);
+      console.warn(`[Modo Simulación] Correo preparado para Karen (${adminRecipients.join(", ")}) con adjunto: ${certificateFile?.name || "Sin archivo"}`);
       console.warn(`[Modo Simulación] Copia preparada para el postulante: ${email}`);
       console.log(`[URL de Aprobación en 1 clic]: ${approvalUrl}`);
     }
