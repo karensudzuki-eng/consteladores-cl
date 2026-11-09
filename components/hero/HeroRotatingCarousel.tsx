@@ -154,13 +154,32 @@ export function HeroRotatingCarousel({
       {/* Tarjeta del Carrusel Giratorio con Mayor Amplitud y Espacio */}
       <div className="relative bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 sm:p-10 shadow-xl overflow-hidden transition-all duration-700">
         
-        {/* Imagen del Slide con Mayor Altura y Espacio */}
-        <div className="relative w-full h-72 sm:h-96 md:h-[440px] rounded-2xl overflow-hidden mb-6 bg-[#EFE8DE] shadow-inner group">
+        {/* Imagen del Slide - Visualización completa sin cortes de rostros */}
+        <div className="relative w-full h-72 sm:h-96 md:h-[460px] rounded-2xl overflow-hidden mb-6 bg-[#2A221E] shadow-inner group flex items-center justify-center">
+          {/* Fondo ambiental difuminado de la misma imagen para estética inmersiva */}
+          <img
+            src={currentSlide.imageUrl}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-110 pointer-events-none"
+          />
+
+          {/* Fotografía principal: Completa sin cortar (object-contain) o con encuadre superior */}
           <img
             key={currentSlide.id || currentSlide.imageUrl}
             src={currentSlide.imageUrl}
             alt={currentSlide.title}
-            className="w-full h-full object-cover object-center animate-fadeIn duration-700 group-hover:scale-102 transition-transform"
+            className={`relative z-10 max-w-full max-h-full ${
+              currentSlide.fit === "cover"
+                ? `w-full h-full object-cover ${
+                    currentSlide.position === "top"
+                      ? "object-top"
+                      : currentSlide.position === "bottom"
+                      ? "object-bottom"
+                      : "object-center"
+                  }`
+                : "w-auto h-auto object-contain drop-shadow-md"
+            } animate-fadeIn duration-700 transition-transform`}
           />
 
           {/* Botones de navegación sobre la imagen */}

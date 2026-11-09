@@ -1,10 +1,11 @@
 import fs from "fs";
 import path from "path";
+import os from "os";
 import { CMSContent, DEFAULT_CMS_CONTENT } from "./types";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const DATA_FILE_PATH = path.join(process.cwd(), "data", "cms-content.json");
-const TMP_FILE_PATH = path.join("/tmp", "cms-content.json");
+const TMP_FILE_PATH = path.join(os.tmpdir(), "cms-content.json");
 
 export async function getCMSContentAsync(): Promise<CMSContent> {
   // 1. Intentar leer desde Supabase si está configurado
@@ -68,7 +69,7 @@ export async function saveCMSContentAsync(content: CMSContent): Promise<void> {
   const supabase = createAdminClient();
   if (supabase) {
     try {
-      await supabase.from("site_settings").upsert(
+      const { error } = await supabase.from("site_settings").upsert(
         {
           key: "main_cms_content",
           content,
@@ -76,6 +77,9 @@ export async function saveCMSContentAsync(content: CMSContent): Promise<void> {
         },
         { onConflict: "key" }
       );
+      if (error) {
+        console.warn("Aviso en Supabase site_settings:", error.message);
+      }
     } catch (e) {
       console.warn("No se pudo guardar en Supabase site_settings:", e);
     }

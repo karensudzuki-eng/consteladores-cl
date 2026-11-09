@@ -22,6 +22,8 @@ export interface CMSHeroSlide {
   imageUrl: string;
   title: string;
   description: string;
+  fit?: "contain" | "cover";
+  position?: "top" | "center" | "bottom";
 }
 
 export interface CMSTestimonial {
@@ -125,6 +127,44 @@ export interface CMSContent {
   testimonials: CMSTestimonial[];
   facilitators: CMSFacilitator[];
 }
+
+export const INITIAL_FACILITATORS: CMSFacilitator[] = [
+  {
+    id: "karen-sudzuki",
+    name: "Karen Sudzuki",
+    headline: "Facilitadora Acreditada en Constelaciones Familiares y Organizacionales",
+    role: "Facilitador",
+    schoolAndYear: "Centro de Formación Icalma · Formación Sistémica",
+    city: "Santiago / Online Chile",
+    modality: "Online (Google Meet)",
+    price: "$40.000",
+    experienceYears: 6,
+    bio: "Facilitadora con más de 6 años de experiencia en acompañamiento individual y organizacional. Mi labor consiste en abrir un espacio de respeto y escucha para mirar el orden en el sistema familiar, reconociendo a quienes llegaron antes y permitiendo que cada persona ocupe su propio lugar en la vida.",
+    imageUrl: "",
+    specialties: ["Familia y Origen", "Pareja y Vínculos", "Trabajo y Vocación", "Empresas y Equipos"],
+    email: "karen.sudzuki@gmail.com",
+    phone: "+56 9 4193 9363",
+    certificationUrl: "",
+    isActive: true,
+  },
+  {
+    id: "erika-alert",
+    name: "Erika Alert",
+    headline: "Facilitadora de Constelaciones Familiares y Talleres Vivenciales",
+    role: "Facilitador",
+    schoolAndYear: "Formación en Constelaciones Sistémicas",
+    city: "Concón / Valparaíso y Online",
+    modality: "Online y Presencial",
+    price: "$40.000",
+    experienceYears: 7,
+    bio: "Facilitadora con amplia experiencia en constelaciones familiares grupales e individuales. Acompaña procesos de reconciliación y comprensión de nudos familiares en la V Región y vía online.",
+    specialties: ["Familia y Origen", "Pareja y Vínculos", "Vocación y Trabajo"],
+    email: "contacto@consteladores.cl",
+    phone: "+56 9 4193 9363",
+    certificationUrl: "",
+    isActive: true,
+  },
+];
 
 export const DEFAULT_CMS_CONTENT: CMSContent = {
   settings: {
@@ -257,44 +297,7 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       attribution: "Consultante, Región del Biobío · febrero 2026",
     },
   ],
-  facilitators: [
-    {
-      id: "karen-sudzuki",
-      name: "Karen Sudzuki",
-      headline: "Facilitadora Acreditada en Constelaciones Familiares y Organizacionales",
-      role: "Facilitador",
-      schoolAndYear: "Centro de Formación Icalma · Formación Sistémica",
-      city: "Santiago / Online Chile",
-      modality: "Online (Google Meet)",
-      price: "$40.000",
-      experienceYears: 6,
-      bio: "Facilitadora con más de 6 años de experiencia en acompañamiento individual y organizacional. Mi labor consiste en abrir un espacio de respeto y escucha para mirar el orden en el sistema familiar, reconociendo a quienes llegaron antes y permitiendo que cada persona ocupe su propio lugar en la vida.",
-      imageUrl: "",
-      specialties: ["Familia y Origen", "Pareja y Vínculos", "Trabajo y Vocación", "Empresas y Equipos"],
-      email: "karen.sudzuki@gmail.com",
-      phone: "+56 9 4193 9363",
-      certificationUrl: "",
-      isActive: true,
-    },
-    {
-      id: "erika-alert",
-      name: "Erika Alert",
-      headline: "Facilitadora de Constelaciones Familiares y Talleres Vivenciales",
-      role: "Facilitador",
-      schoolAndYear: "Formación en Constelaciones Sistémicas",
-      city: "Concón / Valparaíso y Online",
-      modality: "Online y Presencial",
-      price: "$40.000",
-      experienceYears: 7,
-      bio: "Facilitadora con amplia experiencia en constelaciones familiares grupales e individuales. Acompaña procesos de reconciliación y comprensión de nudos familiares en la V Región y vía online.",
-      imageUrl: "",
-      specialties: ["Familia y Origen", "Pareja y Vínculos", "Vocación y Trabajo"],
-      email: "contacto@consteladores.cl",
-      phone: "+56 9 4193 9363",
-      certificationUrl: "",
-      isActive: true,
-    },
-  ],
+  facilitators: INITIAL_FACILITATORS,
   workshops: [
     {
       id: "taller-concon-enero",

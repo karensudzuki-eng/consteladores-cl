@@ -70,6 +70,26 @@
       "email": "karen.sudzuki@gmail.com"
     }
   },
+  "workshops": [
+    {
+      "id": "taller-concon-enero",
+      "title": "Sana tu historia y conecta con nuevas posibilidades. ✨",
+      "description": "Te invitamos a un taller vivencial donde, a través de la escenificación de dinámicas personales, podrás mirar tu vida desde una perspectiva más profunda y liberadora.",
+      "importantNote": "⚠️ Los casos a constelar se seleccionarán durante el encuentro. Aunque no todos los asistentes constelarán de forma individual, la experiencia demuestra que el trabajo de cada compañero resuena con nuestras propias vivencias, permitiendo que todos los presentes vivan un proceso de aprendizaje y transformación compartida. \"Cuando tú constelas, todos constelamos\".",
+      "date": "16 de enero de 2026",
+      "time": "10:00 a 14:00 hrs",
+      "facilitators": "Erika Alert y Karen Sudzuki",
+      "address": "Edmundo Eluchans 3047, ofic. 22, Concón",
+      "city": "Concón, Valparaíso",
+      "price": "$35.000",
+      "modality": "presencial",
+      "logoType": "icalma",
+      "logoUrl": "",
+      "flyerUrl": "/images/arbol-generaciones.png",
+      "phoneContact": "+56 9 6373 0998",
+      "isActive": true
+    }
+  ],
   "heroSlides": [
     {
       "id": "slide-1",
@@ -120,7 +140,12 @@
       "experienceYears": 6,
       "bio": "Facilitadora con más de 6 años de experiencia en acompañamiento individual y organizacional. Mi labor consiste en abrir un espacio de respeto y escucha para mirar el orden en el sistema familiar, reconociendo a quienes llegaron antes y permitiendo que cada persona ocupe su propio lugar en la vida.",
       "imageUrl": "",
-      "specialties": ["Familia y Origen", "Pareja y Vínculos", "Trabajo y Vocación", "Empresas y Equipos"],
+      "specialties": [
+        "Familia y Origen",
+        "Pareja y Vínculos",
+        "Trabajo y Vocación",
+        "Empresas y Equipos"
+      ],
       "email": "karen.sudzuki@gmail.com",
       "phone": "+56 9 4193 9363",
       "certificationUrl": "",
@@ -138,30 +163,14 @@
       "experienceYears": 7,
       "bio": "Facilitadora con amplia experiencia en constelaciones familiares grupales e individuales. Acompaña procesos de reconciliación y comprensión de nudos familiares en la V Región y vía online.",
       "imageUrl": "",
-      "specialties": ["Familia y Origen", "Pareja y Vínculos", "Vocación y Trabajo"],
+      "specialties": [
+        "Familia y Origen",
+        "Pareja y Vínculos",
+        "Vocación y Trabajo"
+      ],
       "email": "contacto@consteladores.cl",
       "phone": "+56 9 4193 9363",
       "certificationUrl": "",
-      "isActive": true
-    }
-  ],
-  "workshops": [
-    {
-      "id": "taller-concon-enero",
-      "title": "Sana tu historia y conecta con nuevas posibilidades. ✨",
-      "description": "Te invitamos a un taller vivencial donde, a través de la escenificación de dinámicas personales, podrás mirar tu vida desde una perspectiva más profunda y liberadora.",
-      "importantNote": "⚠️ Los casos a constelar se seleccionarán durante el encuentro. Aunque no todos los asistentes constelarán de forma individual, la experiencia demuestra que el trabajo de cada compañero resuena con nuestras propias vivencias, permitiendo que todos los presentes vivan un proceso de aprendizaje y transformación compartida. \"Cuando tú constelas, todos constelamos\".",
-      "date": "16 de enero de 2026",
-      "time": "10:00 a 14:00 hrs",
-      "facilitators": "Erika Alert y Karen Sudzuki",
-      "address": "Edmundo Eluchans 3047, ofic. 22, Concón",
-      "city": "Concón, Valparaíso",
-      "price": "$35.000",
-      "modality": "presencial",
-      "logoType": "icalma",
-      "logoUrl": "",
-      "flyerUrl": "/images/arbol-generaciones.png",
-      "phoneContact": "+56 9 6373 0998",
       "isActive": true
     }
   ]

@@ -3,6 +3,7 @@ import { getCMSContentAsync, saveCMSContentAsync } from "@/lib/cms/server-conten
 import { CMSContent } from "@/lib/cms/types";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
 export async function GET() {
   try {
@@ -19,17 +20,27 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body: CMSContent = await req.json();
-    if (!body || !body.settings || !Array.isArray(body.workshops)) {
+    if (!body || typeof body !== "object") {
       return NextResponse.json(
         { error: "Formato de datos inválido" },
         { status: 400 }
       );
     }
-    await saveCMSContentAsync(body);
-    return NextResponse.json({ success: true, data: body });
+    // Asegurar estructura mínima válida sin rechazar datos válidos
+    const sanitized: CMSContent = {
+      ...body,
+      settings: body.settings || ({} as any),
+      workshops: Array.isArray(body.workshops) ? body.workshops : [],
+      heroSlides: Array.isArray(body.heroSlides) ? body.heroSlides : [],
+      facilitators: Array.isArray(body.facilitators) ? body.facilitators : [],
+      updatedAt: Date.now(),
+    };
+    await saveCMSContentAsync(sanitized);
+    return NextResponse.json({ success: true, data: sanitized });
   } catch (err: any) {
+    console.error("Error en POST /api/cms:", err);
     return NextResponse.json(
-      { error: err?.message || "Error al guardar contenido" },
+      { error: err?.message || "Error al guardar contenido en servidor" },
       { status: 500 }
     );
   }

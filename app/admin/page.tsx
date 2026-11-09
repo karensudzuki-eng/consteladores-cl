@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCMS } from "@/lib/cms/CMSContext";
-import { CMSWorkshop, CMSHeroSlide, CMSTestimonial, CMSFacilitator } from "@/lib/cms/types";
+import { CMSWorkshop, CMSHeroSlide, CMSTestimonial, CMSFacilitator, INITIAL_FACILITATORS } from "@/lib/cms/types";
 import { FlyerDesigner } from "@/components/flyer-designer/FlyerDesigner";
 import {
   saveAudioToIndexedDB,
@@ -89,7 +89,7 @@ export default function AdminPage() {
     }
   };
 
-  // Función utilitaria robusta para optimizar imágenes y convertir a Data URL sin fallos
+  // Función utilitaria robusta para optimizar imágenes (reducción 95% para evitar fallos de cuota o 413)
   const optimizeImageFile = (file: File): Promise<string> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -101,7 +101,7 @@ export default function AdminPage() {
         const img = new Image();
         img.onload = () => {
           try {
-            const maxDim = 900;
+            const maxDim = 960;
             let width = img.width;
             let height = img.height;
             if (width > maxDim || height > maxDim) {
@@ -117,11 +117,33 @@ export default function AdminPage() {
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext("2d");
-            ctx?.drawImage(img, 0, 0, width, height);
-            const isPng = file.type === "image/png" || file.name.toLowerCase().endsWith(".png");
-            const dataUrl = isPng
-              ? canvas.toDataURL("image/png")
-              : canvas.toDataURL("image/jpeg", 0.80);
+            if (!ctx) return resolve(rawResult);
+
+            // 1. Probar compresión moderna WebP (reduce 90% preservando transparencias)
+            let dataUrl = "";
+            try {
+              ctx.drawImage(img, 0, 0, width, height);
+              const testWebp = canvas.toDataURL("image/webp", 0.8);
+              if (testWebp && testWebp.startsWith("data:image/webp")) {
+                dataUrl = testWebp;
+              }
+            } catch (e) {}
+
+            // 2. Si el navegador no soporta WebP, usar JPEG optimizado (0.78)
+            if (!dataUrl) {
+              const bgCanvas = document.createElement("canvas");
+              bgCanvas.width = width;
+              bgCanvas.height = height;
+              const bgCtx = bgCanvas.getContext("2d");
+              if (bgCtx) {
+                bgCtx.fillStyle = "#FAF8F5";
+                bgCtx.fillRect(0, 0, width, height);
+                bgCtx.drawImage(img, 0, 0, width, height);
+                dataUrl = bgCanvas.toDataURL("image/jpeg", 0.78);
+              } else {
+                dataUrl = canvas.toDataURL("image/jpeg", 0.78);
+              }
+            }
             resolve(dataUrl || rawResult);
           } catch {
             resolve(rawResult);
@@ -351,6 +373,42 @@ export default function AdminPage() {
     setContent({ ...content, facilitators: updated });
   };
 
+  // Restaurar perfiles iniciales recomendados (Erika Alert y Karen Sudzuki)
+  const handleRestoreDefaultFacilitators = () => {
+    const existing = content.facilitators || [];
+    const missing = INITIAL_FACILITATORS.filter(
+      (init) => !existing.some((f) => f.name.toLowerCase() === init.name.toLowerCase())
+    );
+
+    if (missing.length === 0) {
+      if (
+        confirm(
+          "Erika Alert y Karen Sudzuki ya están en la lista. ¿Deseas restablecer sus perfiles a la información inicial original?"
+        )
+      ) {
+        const others = existing.filter(
+          (f) =>
+            !INITIAL_FACILITATORS.some(
+              (init) =>
+                init.id === f.id ||
+                init.name.toLowerCase() === f.name.toLowerCase()
+            )
+        );
+        const updated = [...INITIAL_FACILITATORS, ...others];
+        setContent({ ...content, facilitators: updated });
+        setSelectedFacilitatorId(INITIAL_FACILITATORS[0].id);
+        setSuccessMessage("✓ Perfiles de Erika Alert y Karen Sudzuki restablecidos exitosamente.");
+        setTimeout(() => setSuccessMessage(""), 4000);
+      }
+    } else {
+      const updated = [...missing, ...existing];
+      setContent({ ...content, facilitators: updated });
+      setSelectedFacilitatorId(missing[0].id);
+      setSuccessMessage(`✓ Se agregaron ${missing.map((m) => m.name).join(" y ")} al directorio.`);
+      setTimeout(() => setSuccessMessage(""), 4000);
+    }
+  };
+
   const filteredFacilitators = (content.facilitators || []).filter((f) => {
     if (facilitatorRoleFilter !== "todos") {
       const roleStr = f.role || "Facilitador";
@@ -359,11 +417,15 @@ export default function AdminPage() {
       }
     }
     const searchClean = facilitatorSearch.trim().toLowerCase();
-    if (searchClean.length >= 3) {
+    if (searchClean.length >= 2) {
       const matchName = f.name?.toLowerCase().includes(searchClean);
       const matchCity = f.city?.toLowerCase().includes(searchClean);
       const matchHeadline = f.headline?.toLowerCase().includes(searchClean);
-      if (!matchName && !matchCity && !matchHeadline) {
+      const matchBio = f.bio?.toLowerCase().includes(searchClean);
+      const matchSpecialties = f.specialties?.some((s) =>
+        s.toLowerCase().includes(searchClean)
+      );
+      if (!matchName && !matchCity && !matchHeadline && !matchBio && !matchSpecialties) {
         return false;
       }
     }
@@ -1083,10 +1145,40 @@ export default function AdminPage() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
-                    <div className="sm:col-span-4 space-y-2">
-                      <div className="w-full h-32 rounded-xl overflow-hidden border border-[#E7DECE] bg-[#FAF8F5]">
-                        <img src={slide.imageUrl} alt={slide.title} className="w-full h-full object-cover" />
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 items-start">
+                    <div className="sm:col-span-5 space-y-2">
+                      <div className="relative w-full h-48 sm:h-56 rounded-2xl overflow-hidden border border-[#E7DECE] bg-[#2A221E] flex items-center justify-center shadow-inner group">
+                        {slide.imageUrl ? (
+                          <>
+                            {/* Fondo ambiental difuminado de la misma imagen */}
+                            <img
+                              src={slide.imageUrl}
+                              alt=""
+                              aria-hidden="true"
+                              className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-110 pointer-events-none"
+                            />
+                            {/* Fotografía principal completa sin cortes */}
+                            <img
+                              src={slide.imageUrl}
+                              alt={slide.title}
+                              className={`relative z-10 max-h-full max-w-full ${
+                                slide.fit === "cover"
+                                  ? `w-full h-full object-cover ${
+                                      slide.position === "top"
+                                        ? "object-top"
+                                        : slide.position === "bottom"
+                                        ? "object-bottom"
+                                        : "object-center"
+                                    }`
+                                  : "w-auto h-auto object-contain drop-shadow-md"
+                              }`}
+                            />
+                          </>
+                        ) : (
+                          <div className="text-center p-4 text-[#8A7E73] text-xs">
+                            Sin imagen cargada
+                          </div>
+                        )}
                       </div>
                       <input
                         type="file"
@@ -1103,11 +1195,11 @@ export default function AdminPage() {
                             alert("Error al cargar la imagen");
                           }
                         }}
-                        className="block w-full text-[11px] text-[#5C524A] file:mr-2 file:py-1 file:px-2.5 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-terracotta-50 file:text-terracotta-700 hover:file:bg-terracotta-100 cursor-pointer"
+                        className="block w-full text-[11px] text-[#5C524A] file:mr-2 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-terracotta-50 file:text-terracotta-700 hover:file:bg-terracotta-100 cursor-pointer"
                       />
                     </div>
 
-                    <div className="sm:col-span-8 space-y-3">
+                    <div className="sm:col-span-7 space-y-3">
                       <div>
                         <label className="block text-[11px] font-bold text-[#5C524A] mb-1">
                           Título de la Diapositiva
@@ -1138,6 +1230,47 @@ export default function AdminPage() {
                           }}
                           className="w-full px-3 py-2 rounded-xl bg-[#FAF8F5] border border-[#E7DECE] text-xs text-[#27221F] resize-none"
                         />
+                      </div>
+
+                      {/* Ajuste de foto: Foto completa vs Llenar contenedor */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-[#E7DECE]/60">
+                        <div>
+                          <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8A7E73] mb-1">
+                            Ajuste de fotografía
+                          </label>
+                          <select
+                            value={slide.fit || "contain"}
+                            onChange={(e) => {
+                              const updated = [...(content.heroSlides || [])];
+                              updated[sIdx].fit = e.target.value as any;
+                              setContent({ ...content, heroSlides: updated });
+                            }}
+                            className="w-full px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#E7DECE] text-xs text-[#27221F] cursor-pointer"
+                          >
+                            <option value="contain">Foto completa (sin cortar rostros)</option>
+                            <option value="cover">Llenar contenedor (recortado)</option>
+                          </select>
+                        </div>
+                        {slide.fit === "cover" && (
+                          <div>
+                            <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8A7E73] mb-1">
+                              Enfoque del recorte
+                            </label>
+                            <select
+                              value={slide.position || "top"}
+                              onChange={(e) => {
+                                const updated = [...(content.heroSlides || [])];
+                                updated[sIdx].position = e.target.value as any;
+                                setContent({ ...content, heroSlides: updated });
+                              }}
+                              className="w-full px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#E7DECE] text-xs text-[#27221F] cursor-pointer"
+                            >
+                              <option value="top">Arriba (priorizar rostros/cabezas)</option>
+                              <option value="center">Centrado</option>
+                              <option value="bottom">Abajo</option>
+                            </select>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1371,7 +1504,7 @@ export default function AdminPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               {/* COLUMNA IZQUIERDA: BUSCADOR, FILTRO Y LISTA */}
               <div className="lg:col-span-5 bg-[#FCFAF7] border border-[#E7DECE] rounded-3xl p-6 shadow-sm space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-[#E7DECE]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#E7DECE] gap-2">
                   <div>
                     <h3 className="font-serif font-bold text-base text-[#27221F]">
                       Directorio de Facilitadores
@@ -1380,24 +1513,34 @@ export default function AdminPage() {
                       {filteredFacilitators.length} de {(content.facilitators || []).length} registrados
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleAddFacilitator}
-                    className="px-3 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer flex items-center gap-1"
-                  >
-                    <span>+ Agregar</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleRestoreDefaultFacilitators}
+                      title="Restaurar o recuperar los perfiles iniciales de Erika Alert y Karen Sudzuki"
+                      className="px-2.5 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-[11px] font-semibold transition-all cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <span>🔄 Restaurar fundadoras</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleAddFacilitator}
+                      className="px-3 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      <span>+ Agregar</span>
+                    </button>
+                  </div>
                 </div>
 
-                {/* Buscador en vivo por nombre (mínimo 3 caracteres) */}
+                {/* Buscador en vivo por nombre o ubicación (mínimo 2 caracteres) */}
                 <div>
                   <label className="block text-xs font-bold text-[#5C524A] mb-1">
-                    Buscador por nombre (mínimo 3 caracteres)
+                    Buscador en tiempo real
                   </label>
                   <div className="relative">
                     <input
                       type="text"
-                      placeholder="Ej. Karen, Erika, Santiago..."
+                      placeholder="Ej. Karen, Erika, Santiago, Valparaíso..."
                       value={facilitatorSearch}
                       onChange={(e) => setFacilitatorSearch(e.target.value)}
                       className="w-full pl-8 pr-4 py-2 rounded-xl bg-white border border-[#E7DECE] text-xs text-[#27221F] focus:outline-none focus:ring-2 focus:ring-terracotta-500"
@@ -1413,9 +1556,9 @@ export default function AdminPage() {
                       </button>
                     )}
                   </div>
-                  {facilitatorSearch.trim().length > 0 && facilitatorSearch.trim().length < 3 && (
+                  {facilitatorSearch.trim().length > 0 && facilitatorSearch.trim().length < 2 && (
                     <p className="text-[11px] text-amber-700 mt-1">
-                      ℹ️ Escribe al menos 3 caracteres para filtrar por nombre...
+                      ℹ️ Escribe al menos 2 letras para filtrar...
                     </p>
                   )}
                 </div>
@@ -1439,20 +1582,29 @@ export default function AdminPage() {
                 {/* Lista de Facilitadores */}
                 <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
                   {filteredFacilitators.length === 0 ? (
-                    <div className="p-6 text-center bg-cream-50 rounded-2xl border border-dashed border-[#E7DECE]">
-                      <p className="text-xs text-[#8A7E73] mb-2">
+                    <div className="p-6 text-center bg-cream-50 rounded-2xl border border-dashed border-[#E7DECE] space-y-3">
+                      <p className="text-xs text-[#8A7E73]">
                         No se encontraron facilitadores con ese criterio.
                       </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setFacilitatorSearch("");
-                          setFacilitatorRoleFilter("todos");
-                        }}
-                        className="text-xs text-terracotta-600 hover:underline font-semibold"
-                      >
-                        Limpiar filtros
-                      </button>
+                      <div className="flex flex-wrap items-center justify-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFacilitatorSearch("");
+                            setFacilitatorRoleFilter("todos");
+                          }}
+                          className="px-3 py-1.5 rounded-full bg-white border border-[#E7DECE] text-xs font-semibold text-[#5C524A] hover:bg-cream-100 cursor-pointer"
+                        >
+                          Limpiar filtros
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleRestoreDefaultFacilitators}
+                          className="px-3 py-1.5 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-semibold cursor-pointer"
+                        >
+                          Restaurar Erika Alert y Karen Sudzuki
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     filteredFacilitators.map((f) => {

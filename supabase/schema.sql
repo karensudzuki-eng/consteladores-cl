@@ -206,3 +206,38 @@ CREATE POLICY "Dueño del certificado y admin pueden leer el archivo"
             )
         )
     );
+
+-- ==============================================================================
+-- 8. TABLA DE CONFIGURACIÓN Y CONTENIDO CMS DEL SITIO (SITE_SETTINGS)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.site_settings (
+    key TEXT PRIMARY KEY,
+    content JSONB NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
+
+-- Permitir lectura pública del contenido del sitio
+CREATE POLICY "Lectura pública de configuraciones del sitio"
+    ON public.site_settings FOR SELECT
+    USING (true);
+
+-- Permitir escritura con clave de servicio o usuarios administradores
+CREATE POLICY "Escritura de configuraciones para servicio y administradores"
+    ON public.site_settings FOR ALL
+    USING (
+        auth.role() = 'service_role'
+        OR EXISTS (
+            SELECT 1 FROM public.profiles 
+            WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+        )
+    )
+    WITH CHECK (
+        auth.role() = 'service_role'
+        OR EXISTS (
+            SELECT 1 FROM public.profiles 
+            WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+        )
+    );
+
