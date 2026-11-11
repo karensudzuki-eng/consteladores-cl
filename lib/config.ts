@@ -8,8 +8,8 @@ export const CONFIG = {
   PRICING_ENABLED: true,
   PRICING_NOTE: "Valores referenciales sujetos a cambio según facilitador y disponibilidad.",
 
-  // Método de pago para el abono del 20%: "transfer" (transferencia bancaria) | "gateway" (pasarela oficial)
-  PAYMENT_DEPOSIT_METHOD: "transfer" as "transfer" | "gateway",
+  // Método de pago para el 100% de la sesión: "transfer" (transferencia) | "gateway" (pasarela online)
+  PAYMENT_DEPOSIT_METHOD: "gateway" as "transfer" | "gateway",
 
   // Datos de contacto oficial (el número no debe mostrarse como texto plano en el diseño visual)
   WHATSAPP_NUMBER: "+56941939363",

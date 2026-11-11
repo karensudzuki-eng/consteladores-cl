@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createBookingPaymentPreference } from "@/lib/mercadopago";
+import fs from "fs/promises";
+import path from "path";
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,7 +25,29 @@ export async function POST(req: NextRequest) {
 
     const origin = req.nextUrl.origin;
 
-    // Si hay un token real de Mercado Pago configurado, creamos la preferencia oficial
+    // 1. Revisar si hay un Link de Cobro de Mercado Pago configurado en CMS o variables de entorno
+    let paymentLink = process.env.MP_PAYMENT_LINK;
+    if (!paymentLink) {
+      try {
+        const filePath = path.join(process.cwd(), "data", "cms-content.json");
+        const contentRaw = await fs.readFile(filePath, "utf-8");
+        const parsed = JSON.parse(contentRaw);
+        paymentLink = parsed?.settings?.mercadopagoPaymentLink;
+      } catch (e) {
+        // Ignorar si no se puede leer el archivo
+      }
+    }
+
+    if (paymentLink && paymentLink.trim().startsWith("http")) {
+      return NextResponse.json({
+        success: true,
+        preferenceId: `link_${Date.now()}`,
+        checkoutUrl: paymentLink.trim(),
+        mode: "payment_link",
+      });
+    }
+
+    // 2. Si hay un token API real de Mercado Pago configurado en .env.local
     if (
       process.env.MP_ACCESS_TOKEN &&
       !process.env.MP_ACCESS_TOKEN.startsWith("TEST-000000")
@@ -40,34 +64,24 @@ export async function POST(req: NextRequest) {
         originUrl: origin,
       });
 
-      if (result.success) {
+      if (result.success && (result.initPoint || result.sandboxInitPoint)) {
         return NextResponse.json({
           success: true,
           preferenceId: result.preferenceId,
-          // En modo test usamos sandboxInitPoint si está disponible
-          checkoutUrl: result.sandboxInitPoint || result.initPoint,
+          checkoutUrl: result.initPoint || result.sandboxInitPoint,
           mode: "mercadopago_live",
         });
       }
     }
 
-    // Modo Demostración / Simulación de Pasarela
-    // Esto permite probar el flujo completo de pago, redirección y confirmación
-    // sin requerir credenciales reales inmediatamente (ideal para la demo de Start-Up Chile).
-    const simulatedSuccessUrl = `${origin}/confirmacion?status=approved&collection_id=demo_${Date.now()}&preference_id=pref_demo&payment_id=pay_${Date.now()}&clientName=${encodeURIComponent(
-      clientName
-    )}&clientEmail=${encodeURIComponent(
-      clientEmail
-    )}&scheduledAt=${encodeURIComponent(scheduledAt)}`;
-
-    return NextResponse.json({
-      success: true,
-      preferenceId: `demo_pref_${Date.now()}`,
-      checkoutUrl: simulatedSuccessUrl,
-      mode: "simulation",
-      message:
-        "Modo de prueba activo. Puedes agregar tu MP_ACCESS_TOKEN en .env.local para procesar pagos reales.",
-    });
+    // 3. Si no hay credenciales de pago online configuradas aún:
+    return NextResponse.json(
+      {
+        error:
+          "La pasarela de pago en línea está en proceso de activación. Por favor selecciona la opción 'Pagar con Transferencia Bancaria' para asegurar tu hora.",
+      },
+      { status: 422 }
+    );
   } catch (error: any) {
     console.error("Error en API create-preference:", error);
     return NextResponse.json(

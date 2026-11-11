@@ -7,6 +7,7 @@ import { WatercolorHero } from "@/components/watercolor/WatercolorHero";
 import { WorkshopsCarousel } from "@/components/workshops/WorkshopsCarousel";
 import { WorkshopDetailModal } from "@/components/workshops/WorkshopDetailModal";
 import { WatercolorServices } from "@/components/watercolor/WatercolorServices";
+import { WatercolorTherapists } from "@/components/watercolor/WatercolorTherapists";
 import { WatercolorTestimonials } from "@/components/watercolor/WatercolorTestimonials";
 import { WatercolorFooter } from "@/components/watercolor/WatercolorFooter";
 import { WatercolorFloatingWhatsApp } from "@/components/watercolor/WatercolorFloatingWhatsApp";
@@ -50,6 +51,9 @@ function HomeInner() {
 
       {/* 5. Sesión Individual (Online / Presencial / Videollamada, $40.000, botón WhatsApp) */}
       <WatercolorServices onBookClick={handleOpenBooking} />
+
+      {/* 5.1 Equipo de Facilitadores Acreditados (Tarjetas Editables desde el Admin) */}
+      <WatercolorTherapists onBookClick={handleOpenBooking} />
 
       {/* 6. Testimonios y Experiencias de Consultantes */}
       <WatercolorTestimonials />

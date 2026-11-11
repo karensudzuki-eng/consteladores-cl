@@ -12,8 +12,8 @@ export function WatercolorFAQ() {
       a: "En la modalidad online individual, el facilitador te acompaña a través de videollamada por Google Meet utilizando figuras sistémicas (como figuras de madera o anclajes espaciales), visualizaciones y preguntas reflexivas. La imagen interna de tu sistema familiar se hace visible y comprensible con la misma profundidad que en una sesión presencial.",
     },
     {
-      q: "¿Por qué se abona el 20% al solicitar la hora?",
-      a: "El abono del 20% asegura tu horario en la agenda de tu facilitador y cubre los costos de gestión técnica de la plataforma. Este monto se descuenta íntegramente del valor total de la sesión. El saldo restante (80%) se cancela por transferencia directa a tu facilitador antes o al iniciar el encuentro.",
+      q: "¿Cómo se realiza el pago de la sesión?",
+      a: "El valor de la sesión individual es de $40.000 CLP (pago 100% unificado). Puedes pagarlo directamente en línea con débito, crédito o Webpay a través de Mercado Pago, o mediante transferencia bancaria directa. No realizamos cobros fragmentados ni cobros sorpresa posteriores: el valor cubre la totalidad del encuentro.",
     },
     {
       q: "¿Qué necesito tener preparado para el día de mi sesión?",
@@ -29,7 +29,7 @@ export function WatercolorFAQ() {
     },
     {
       q: "¿Puedo reprogramar mi hora si tengo un imprevisto?",
-      a: `Sí. Si nos avisas con al menos ${CONFIG.CANCELLATION_HOURS_NOTICE} horas de anticipación a la fecha agendada, puedes reasignar tu sesión sin costo adicional o solicitar la restitución del 100% de tu abono por transferencia bancaria.`,
+      a: "Sí. Siguiendo el estándar de las principales plataformas profesionales, puedes reagendar tu sesión sin costo avisando con al menos 24 horas de anticipación a la fecha y hora acordada. Dentro de las 24 horas previas o en caso de inasistencia, el facilitador reserva exclusivamente su tiempo para ti, por lo que no aplica devolución ni reagendamiento sin costo.",
     },
   ];
 

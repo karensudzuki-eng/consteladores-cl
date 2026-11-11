@@ -8,35 +8,34 @@ export function WatercolorPaymentExplainer() {
   const steps = [
     {
       step: "01",
-      title: "Solicitud de disponibilidad",
+      title: "Solicitud y fecha libre",
       description:
-        "Seleccionas el facilitador, la modalidad (online o presencial) y el horario que mejor se adapte a tu agenda. Cada solicitud genera una referencia única de reserva (ej. CR-2026-000123).",
+        "Seleccionas el facilitador, la modalidad online (Google Meet) y el horario que mejor se adapte a tu agenda. Cada solicitud genera una referencia única de reserva.",
       bgClass: "bg-[#FEF9EE] border-[#F7E1B0]/80",
       accent: "text-ochre-700",
     },
     {
       step: "02",
-      title: "Abono del 20% por transferencia",
+      title: "Pago 100% del servicio ($40.000)",
       description:
-        "Para confirmar tu hora en la agenda, realizas el abono del 20% mediante transferencia bancaria directa indicando tu código de referencia en la glosa. La plataforma valida la recepción.",
+        "Pagas de forma directa e inmediata con Mercado Pago / Webpay (débito, crédito) o mediante transferencia bancaria. Sin cobros sorpresa posteriores.",
       bgClass: "bg-[#FDF7F4] border-terracotta-200/80",
       accent: "text-terracotta-600",
     },
     {
       step: "03",
-      title: "Saldo del 80% al facilitador",
+      title: "Enlace privado a Google Meet",
       description:
-        "El saldo restante (80%) se transfiere directamente a los datos bancarios de tu facilitador antes o al iniciar el encuentro. La plataforma no intermedia ni retiene ese pago.",
+        "Una vez registrado o verificado tu pago, recibes en tu correo el enlace seguro a la sala virtual de Google Meet para tu encuentro con el facilitador.",
       bgClass: "bg-[#F2F4F9] border-[#D5DEEB]/80",
       accent: "text-indigo-warm",
     },
   ];
 
   const states = [
-    { label: "Pendiente Abono", desc: "Hora solicitada, esperando transferencia del 20%" },
-    { label: "Abono Recibido", desc: "Recepción conciliada, hora agendada en calendario" },
-    { label: "Saldo Pendiente", desc: "Enlace Google Meet emitido, 80% por transferir" },
-    { label: "Confirmada", desc: "Pago completo y sala lista para el encuentro" },
+    { label: "Pre-reserva", desc: "Hora solicitada, 2 horas para completar el pago" },
+    { label: "Pago Confirmado", desc: "Pago del 100% recibido, cita agendada" },
+    { label: "Enlace Emitido", desc: "Sala privada Google Meet enviada al consultante" },
     { label: "Realizada", desc: "Acompañamiento sistémico completado" },
   ];
 
@@ -53,7 +52,7 @@ export function WatercolorPaymentExplainer() {
             Cómo funciona el pago de tu sesión
           </h2>
           <p className="text-base text-[#5C524A] leading-relaxed">
-            Diseñamos un modelo claro y seguro para ambas partes: aseguras tu espacio con un abono inicial y abonas la diferencia directamente a quien te acompaña.
+            Diseñamos un modelo claro y seguro: reservas tu espacio con el pago íntegro del servicio y recibes tu sala privada de Google Meet sin trámites engorrosos.
           </p>
         </div>
 
@@ -121,7 +120,7 @@ export function WatercolorPaymentExplainer() {
               Cancelación y reprogramación responsable
             </h4>
             <p className="text-xs text-[#5C524A] leading-relaxed mb-3">
-              Si necesitas reagendar o cancelar tu sesión con al menos <strong>{CONFIG.CANCELLATION_HOURS_NOTICE} horas de anticipación</strong>, podrás reasignar tu hora sin costo o solicitar la devolución del 100% de tu abono por transferencia bancaria.
+              Si necesitas reagendar tu sesión con al menos <strong>24 horas de anticipación</strong>, podrás reasignar tu hora sin costo. Dentro de las 24 horas previas o en caso de inasistencia, el facilitador reserva su tiempo para ti y no aplica devolución.
             </p>
             <div className="border-t border-[#E7DECE]/80 pt-2 flex items-center justify-between text-xs">
               <span className="text-[#8A7E73] text-[11px]">

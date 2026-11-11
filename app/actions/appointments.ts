@@ -111,7 +111,7 @@ export async function bookAndConfirmAppointment(
             scheduled_at: input.scheduledAt,
             status: "pending",
             meet_link: meetLink,
-            payment_id: input.paymentId || "abono_20_pendiente",
+            payment_id: input.paymentId || "pago_total_pendiente",
             amount_paid_clp: input.amountPaidClp || 0,
             consultation_motive: input.consultationMotive,
           })
@@ -133,15 +133,16 @@ export async function bookAndConfirmAppointment(
       "contacto@vorticeintegration.com",
     ];
     const senderEmail = process.env.RESEND_FROM_EMAIL || "consteladores.cl <onboarding@resend.dev>";
+    const totalSessionPrice = "$40.000 CLP";
 
     if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== "re_dummy_key") {
       try {
-        // Correo 1: Notificación directa a Karen (administradora/soporte) para seguimiento de comisión y cita
+        // Correo 1: Notificación directa a Karen (administradora/soporte) con Meet lista
         const adminEmailHtml = `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #FAF8F5; color: #27221F; border: 1px solid #E7DECE; border-radius: 16px;">
             <div style="text-align: center; margin-bottom: 24px;">
               <h2 style="font-size: 22px; color: #27221F; margin: 0 0 8px;">🔔 Nueva Solicitud de Cita en consteladores.cl</h2>
-              <p style="font-size: 14px; color: #5C524A; margin: 0;">Abono de Reserva (20% - $9.000 CLP) Pendiente de Validación</p>
+              <p style="font-size: 14px; color: #5C524A; margin: 0;">Valor Total: ${totalSessionPrice} (Pago 100%)</p>
             </div>
 
             <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #E7DECE; margin-bottom: 24px;">
@@ -159,7 +160,7 @@ export async function bookAndConfirmAppointment(
                   <td style="padding: 8px 0; color: #27221F;"><a href="https://wa.me/${(input.clientPhone || '').replace(/[^0-9]/g, '')}" target="_blank" style="color: #128C7E; font-weight: bold;">${input.clientPhone || 'No indicado'} (Abrir WhatsApp)</a></td>
                 </tr>
                 <tr>
-                  <td style="padding: 8px 0; color: #8A7E73;"><strong>Fecha propuesta:</strong></td>
+                  <td style="padding: 8px 0; color: #8A7E73;"><strong>Fecha y Hora:</strong></td>
                   <td style="padding: 8px 0; color: #27221F; font-weight: bold;">${formattedDate}</td>
                 </tr>
                 <tr>
@@ -167,12 +168,8 @@ export async function bookAndConfirmAppointment(
                   <td style="padding: 8px 0; color: #27221F;">${therapistName}</td>
                 </tr>
                 <tr>
-                  <td style="padding: 8px 0; color: #8A7E73;"><strong>Abono 20% (Plataforma):</strong></td>
-                  <td style="padding: 8px 0; color: #166534; font-weight: bold;">$${(input.amountPaidClp || 9000).toLocaleString("es-CL")} CLP (Pendiente de pago/conciliación)</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px 0; color: #8A7E73;"><strong>Saldo al constelador (80%):</strong></td>
-                  <td style="padding: 8px 0; color: #27221F;">$36.000 CLP (Vía transferencia con voucher)</td>
+                  <td style="padding: 8px 0; color: #8A7E73;"><strong>Modalidad de Pago:</strong></td>
+                  <td style="padding: 8px 0; color: #166534; font-weight: bold;">Transferencia Bancaria Directa (${totalSessionPrice} - Pendiente de comprobante)</td>
                 </tr>
               </table>
 
@@ -183,17 +180,18 @@ export async function bookAndConfirmAppointment(
                 </p>
               </div>
 
-              <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #E7DECE;">
-                <p style="font-size: 13px; color: #8A7E73; margin: 0 0 6px;"><strong>Sala de Google Meet pre-generada para este encuentro:</strong></p>
-                <a href="${meetLink}" style="color: #D66847; font-size: 14px; word-break: break-all; font-weight: bold;">${meetLink}</a>
-                <p style="font-size: 11px; color: #166534; margin: 4px 0 0;">
-                  (Por seguridad, este enlace NO fue expuesto al consultante en la web. Reenvíaselo a su correo una vez que valide su comprobante de pago por WhatsApp).
+              {/* SALA GOOGLE MEET DESTACADA PARA KAREN */}
+              <div style="margin-top: 16px; padding: 16px; background-color: #EBF7F2; border: 1px solid #BDE3D1; border-radius: 10px;">
+                <p style="font-size: 13px; color: #166534; margin: 0 0 6px; font-weight: bold;">🎥 Enlace de Google Meet para este encuentro:</p>
+                <a href="${meetLink}" style="color: #1a73e8; font-size: 15px; word-break: break-all; font-weight: bold;">${meetLink}</a>
+                <p style="font-size: 12px; color: #2D5A43; margin: 8px 0 0; line-height: 1.4;">
+                  💡 Este enlace ya está reservado para ti. Cuando el consultante te envíe su comprobante de transferencia bancaria por WhatsApp o correo, puedes validarlo y reenviarle este enlace para su ingreso.
                 </p>
               </div>
             </div>
 
             <p style="font-size: 11px; color: #8A7E73; text-align: center; margin: 0;">
-              consteladores.cl · Notificación Automática de Citas y Comisión
+              consteladores.cl · Notificación Automática de Gestión de Citas
             </p>
           </div>
         `;
@@ -203,7 +201,7 @@ export async function bookAndConfirmAppointment(
             await resend.emails.send({
               from: senderEmail,
               to: [recipient],
-              subject: `🔔 Nueva solicitud de cita de ${input.clientName} (Pendiente Abono 20%)`,
+              subject: `🔔 Nueva solicitud de cita de ${input.clientName} (${totalSessionPrice})`,
               html: adminEmailHtml,
             });
           } catch (admErr) {
@@ -211,18 +209,19 @@ export async function bookAndConfirmAppointment(
           }
         }
 
-        // Correo 2: Notificación para el consultante con instrucciones de abono 20%
+        // Correo 2: Notificación para el consultante con instrucciones de transferencia total
         try {
           await resend.emails.send({
             from: senderEmail,
             to: [input.clientEmail],
-            subject: `Tu espacio está pre-agendado: completa el abono del 20% para confirmar con ${therapistName}`,
+            subject: `Tu sesión con ${therapistName} está pre-agendada (${totalSessionPrice})`,
             react: AppointmentConfirmationEmail({
               clientName: input.clientName,
               therapistName: therapistName,
               scheduledDate: formattedDate,
               meetLink: meetLink,
               isConfirmed: false,
+              totalPrice: totalSessionPrice,
             }),
           });
         } catch (clientErr) {
@@ -242,6 +241,7 @@ export async function bookAndConfirmAppointment(
                 scheduledDate: formattedDate,
                 meetLink: meetLink,
                 isConfirmed: false,
+                totalPrice: totalSessionPrice,
               }),
             });
           } catch (copyErr) {
@@ -249,7 +249,7 @@ export async function bookAndConfirmAppointment(
           }
         }
 
-        // Correo 3: Notificación al constelador facilitador con los datos del consultante y la sala Meet
+        // Correo 3: Notificación al constelador facilitador
         if (therapistEmail && therapistEmail !== "contacto@consteladores.cl" && therapistEmail !== input.clientEmail) {
           const therapistEmailHtml = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #FAF8F5; color: #27221F; border: 1px solid #E7DECE; border-radius: 16px;">
@@ -260,14 +260,14 @@ export async function bookAndConfirmAppointment(
 
               <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #E7DECE; margin-bottom: 20px; font-size: 14px; line-height: 1.6; color: #5C524A;">
                 <p>Hola <strong>${therapistName}</strong>,</p>
-                <p>Se ha pre-agendado una sesión de constelación familiar. El consultante ha sido derivado a completar el abono del 20% de plataforma. Te compartimos los detalles para tu preparación:</p>
+                <p>Se ha pre-agendado una sesión de constelación familiar por un valor de <strong>${totalSessionPrice}</strong>. Te compartimos los detalles para tu preparación:</p>
                 
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0;">
                   <tr><td style="padding: 6px 0; color: #8A7E73;"><strong>Consultante:</strong></td><td>${input.clientName}</td></tr>
                   <tr><td style="padding: 6px 0; color: #8A7E73;"><strong>Correo:</strong></td><td>${input.clientEmail}</td></tr>
                   <tr><td style="padding: 6px 0; color: #8A7E73;"><strong>WhatsApp:</strong></td><td>${input.clientPhone || 'No indicado'}</td></tr>
                   <tr><td style="padding: 6px 0; color: #8A7E73;"><strong>Fecha y Hora:</strong></td><td><strong>${formattedDate}</strong></td></tr>
-                  <tr><td style="padding: 6px 0; color: #8A7E73;"><strong>Saldo a recibir (80%):</strong></td><td>$36.000 CLP (Directo a tu cuenta mediante voucher)</td></tr>
+                  <tr><td style="padding: 6px 0; color: #8A7E73;"><strong>Valor Total:</strong></td><td><strong>${totalSessionPrice}</strong></td></tr>
                 </table>
 
                 <div style="background-color: #FAF8F5; padding: 12px; border-radius: 8px; margin: 12px 0;">
@@ -288,7 +288,7 @@ export async function bookAndConfirmAppointment(
             await resend.emails.send({
               from: senderEmail,
               to: [therapistEmail],
-              subject: `🗓️ Nueva cita asignada con ${input.clientName} (${formattedDate})`,
+              subject: `🗓️ Nueva cita agendada con ${input.clientName} (${formattedDate})`,
               html: therapistEmailHtml,
             });
           } catch (tErr) {
@@ -329,7 +329,7 @@ export interface ConfirmAppointmentInput {
 }
 
 /**
- * Confirmación definitiva de cita tras completar el abono del 20% en Mercado Pago.
+ * Confirmación definitiva de cita tras completar el pago del 100% en Mercado Pago / Webpay.
  * - Despacha el correo definitivo con la sala de Google Meet activa al consultante.
  * - Notifica a Karen con copia de respaldo y datos del consultante.
  * - Actualiza el estado en Supabase a 'confirmed'.
@@ -353,7 +353,7 @@ export async function confirmAppointmentPaymentAction(
           .from("appointments")
           .update({
             status: "confirmed",
-            payment_id: "mercadopago_20_confirmado",
+            payment_id: "mercadopago_100_confirmado",
           })
           .eq("id", input.appointmentId);
       } catch (dbErr) {
@@ -377,24 +377,26 @@ export async function confirmAppointmentPaymentAction(
             scheduledDate: formattedDate,
             meetLink,
             isConfirmed: true,
+            totalPrice: "$40.000 CLP",
           }),
         });
       } catch (clientErr) {
         console.warn("Aviso al notificar confirmación al cliente:", clientErr);
       }
 
-      // Notificación directa a Karen con Google Meet activo y confirmación de abono
+      // Notificación directa a Karen con Google Meet activo y confirmación de pago total
       try {
         await resend.emails.send({
           from: senderEmail,
           to: ["karen.sudzuki@gmail.com"],
-          subject: `[Abono 20% Confirmado] Cita activa de ${input.clientName} con ${therapistName}`,
+          subject: `[Pago 100% Confirmado] Cita activa de ${input.clientName} con ${therapistName}`,
           react: AppointmentConfirmationEmail({
             clientName: input.clientName,
             therapistName,
             scheduledDate: formattedDate,
             meetLink,
             isConfirmed: true,
+            totalPrice: "$40.000 CLP",
           }),
         });
       } catch (admErr) {

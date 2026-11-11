@@ -442,13 +442,17 @@ export function HumanInTheLoopModal({
         {step === "confirmed" && (
           <div className="space-y-5 animate-fadeIn">
             {/* Mensaje de Reserva Exitosa */}
-            <div className="p-5 rounded-2xl bg-[#EBF7F2] border border-[#BDE3D1] text-[#1B5E3C] space-y-1">
+            <div className="p-5 rounded-2xl bg-[#EBF7F2] border border-[#BDE3D1] text-[#1B5E3C] space-y-1.5">
               <div className="flex items-center gap-2 font-serif font-bold text-lg text-[#166534]">
-                <span>✓ ¡Reserva Registrada con Éxito!</span>
+                <span>✓ ¡Reserva Pre-bloqueada con Éxito!</span>
               </div>
               <p className="text-xs sm:text-sm leading-relaxed text-[#2D5A43]">
-                Tu solicitud para el <strong>{getFriendlyDate(selectedDate)}</strong> a las <strong>{selectedTime} hrs</strong> a nombre de <strong>{formData.fullName}</strong> ha sido registrada.
+                Tu solicitud para el <strong>{getFriendlyDate(selectedDate)}</strong> a las <strong>{selectedTime} hrs</strong> a nombre de <strong>{formData.fullName}</strong> ha quedado pre-registrada.
               </p>
+              <div className="text-xs bg-white/70 p-2.5 rounded-xl border border-[#BDE3D1] text-[#166534] mt-1 space-y-1">
+                <p>⏳ <strong>Plazo de confirmación:</strong> Tu espacio se mantendrá reservado durante <strong>2 horas</strong> para recibir tu comprobante de pago.</p>
+                <p>🔒 <strong>Enlace Google Meet:</strong> El link oficial a la sala privada de videollamada se enviará a tu correo (<strong>{formData.email}</strong>) una vez verificado tu comprobante.</p>
+              </div>
             </div>
 
             {/* BOTÓN PROMINENTE DE PAGO ONLINE CON MERCADO PAGO */}
@@ -457,7 +461,7 @@ export function HumanInTheLoopModal({
                 Opción Rápida con Tarjetas
               </div>
               <p className="text-xs text-[#5C524A] mb-3">
-                Puedes pagar directamente ahora con débito, crédito o Webpay con confirmación instantánea:
+                Puedes pagar directamente los $40.000 ahora con débito, crédito o Webpay con confirmación instantánea:
               </p>
               <button
                 type="button"
@@ -478,10 +482,10 @@ export function HumanInTheLoopModal({
             {/* Aviso de Comprobante y Envío de la Meet */}
             <div className="p-4 rounded-2xl bg-[#FFF8EB] border border-[#F5E0B8] text-[#7A4B10] text-xs sm:text-sm leading-relaxed space-y-1 shadow-sm">
               <div className="font-bold flex items-center gap-1.5 text-[#8F5614]">
-                <span>🏦 O pagar mediante Transferencia Bancaria</span>
+                <span>🏦 O pagar mediante Transferencia Bancaria Directa</span>
               </div>
               <p>
-                Si prefieres transferir manualmente, utiliza los siguientes datos y luego presiona "Enviar Comprobante por WhatsApp":
+                Transfiere el valor total de <strong>$40.000 CLP</strong> a los siguientes datos y luego presiona &ldquo;Enviar Comprobante por WhatsApp&rdquo;:
               </p>
             </div>
 

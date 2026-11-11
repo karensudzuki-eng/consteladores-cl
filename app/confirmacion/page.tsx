@@ -90,8 +90,8 @@ export default function ConfirmacionPage() {
           ✓
         </div>
 
-        <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-emerald-100/80 border border-emerald-200 text-xs font-semibold text-emerald-800 mb-3">
-          <span>Abono del 20% Conciliado con Éxito</span>
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100/90 border border-emerald-300 text-xs font-semibold text-emerald-900 mb-3 shadow-xs">
+          <span>✓ Pago del 100% Conciliado con Éxito</span>
           <span>•</span>
           <span className="font-mono">{ticketId}</span>
         </div>
@@ -100,7 +100,7 @@ export default function ConfirmacionPage() {
           ¡Tu espacio está 100% confirmado!
         </h1>
         <p className="text-xs sm:text-sm text-[#5C524A] max-w-lg mx-auto mb-8 leading-relaxed">
-          Hola <strong>{clientName}</strong>, tu cita de constelación familiar online junto a <strong>{facilitatorName}</strong> ha quedado confirmada y agendada.
+          Hola <strong>{clientName}</strong>, tu cita de constelación familiar online junto a <strong>{facilitatorName}</strong> ha quedado confirmada y agendada con pago total cubierto.
         </p>
 
         {/* BOTÓN PROMINENTE DE ACCESO A GOOGLE MEET */}
@@ -152,24 +152,17 @@ export default function ConfirmacionPage() {
             </span>
           </div>
           <div className="flex justify-between border-b border-[#E7DECE] pb-2">
-            <span className="text-[#8A7E73]">Abono inicial (20%):</span>
+            <span className="text-[#8A7E73]">Valor del Servicio:</span>
             <span className="font-bold text-emerald-700">
-              {CONFIG.PRICING_ENABLED
-                ? `$${deposit.toLocaleString("es-CL")} CLP (Registrado)`
-                : "20% reservado"}
+              $40.000 CLP (100% Pagado)
             </span>
           </div>
-          <div className="flex justify-between pt-1">
-            <span className="text-[#8A7E73]">Saldo restante al facilitador (80%):</span>
-            <span className="font-semibold text-[#27221F]">
-              {CONFIG.PRICING_ENABLED
-                ? `$${balance.toLocaleString("es-CL")} CLP`
-                : "80% restante directo al facilitador"}
+          <div className="flex justify-between pt-1 text-[#5C524A]">
+            <span className="text-[#8A7E73]">Política de Reagendamiento:</span>
+            <span className="font-medium text-right">
+              Reprogramación sin costo hasta con 24 hrs de anticipación
             </span>
           </div>
-          <p className="text-[11px] text-[#8A7E73] pt-1">
-            * El saldo restante del 80% se transfiere directamente a la cuenta del facilitador. Recuerda enviar tu comprobante antes o al finalizar la sesión (valores referenciales sujetos a cambio).
-          </p>
         </div>
 
         {/* Recomendaciones para la Sesión */}

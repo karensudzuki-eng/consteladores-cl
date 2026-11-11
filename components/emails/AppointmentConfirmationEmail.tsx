@@ -18,6 +18,8 @@ interface AppointmentEmailProps {
   scheduledDate: string; // Ej: "Jueves 24 de Octubre a las 18:00 hrs (Hora de Chile)"
   meetLink: string;
   isConfirmed?: boolean;
+  totalPrice?: string;
+  paymentMethod?: "online" | "transfer";
 }
 
 export function AppointmentConfirmationEmail({
@@ -26,18 +28,24 @@ export function AppointmentConfirmationEmail({
   scheduledDate,
   meetLink,
   isConfirmed = false,
+  totalPrice = "$40.000 CLP",
+  paymentMethod = "online",
 }: AppointmentEmailProps) {
   return (
     <Html>
       <Head />
-      <Preview>{isConfirmed ? `Tu espacio está confirmado con ${therapistName}` : `Tu pre-reserva está lista: abona el 20% para asegurar tu hora`}</Preview>
+      <Preview>
+        {isConfirmed
+          ? `Tu espacio está 100% confirmado con ${therapistName}`
+          : `Tu sesión está pre-agendada: completa tu transferencia para confirmar con ${therapistName}`}
+      </Preview>
       <Body style={mainStyle}>
         <Container style={containerStyle}>
           {/* Encabezado suave */}
           <Section style={headerSection}>
             <Text style={subBrandText}>consteladores.cl</Text>
             <Heading style={headingStyle}>
-              {isConfirmed ? "Tu espacio está confirmado" : "Tu sesión está pre-agendada"}
+              {isConfirmed ? "Tu espacio está 100% confirmado" : "Tu sesión está pre-agendada"}
             </Heading>
           </Section>
 
@@ -48,8 +56,8 @@ export function AppointmentConfirmationEmail({
             </Text>
             <Text style={paragraph}>
               {isConfirmed
-                ? `Te confirmamos que tu sesión de constelación familiar junto a ${therapistName} ha quedado 100% confirmada.`
-                : `Te escribimos para informarte que tu solicitud de constelación familiar junto a ${therapistName} ha sido pre-bloqueada con éxito en nuestra agenda.`}
+                ? `Te confirmamos que el pago de tu sesión de constelación familiar junto a ${therapistName} ha sido recibido y tu encuentro está 100% agendado.`
+                : `Tu solicitud de constelación familiar junto a ${therapistName} ha sido pre-bloqueada con éxito en nuestra agenda.`}
             </Text>
 
             {/* Tarjeta de detalles de la sesión */}
@@ -59,96 +67,86 @@ export function AppointmentConfirmationEmail({
 
               {isConfirmed ? (
                 <>
-                  <Text style={{ ...cardLabel, marginTop: "14px" }}>Dónde entrar (Google Meet):</Text>
-                  <Link href={meetLink} style={meetButton}>
-                    Abrir sala en Google Meet
-                  </Link>
+                  <Text style={{ ...cardLabel, marginTop: "16px" }}>Tu Sala Virtual Privada (Google Meet):</Text>
+                  <div style={{ textAlign: "center", margin: "14px 0" }}>
+                    <Link href={meetLink} style={meetButton}>
+                      Abrir Sala en Google Meet →
+                    </Link>
+                  </div>
                   <Text style={linkFallback}>
-                    Enlace directo:{" "}
+                    Enlace permanente:{" "}
                     <Link href={meetLink} style={{ color: "#A94F32", wordBreak: "break-all" }}>
                       {meetLink}
                     </Link>
                   </Text>
                 </>
               ) : (
-                <div style={{ backgroundColor: "#F3ECE2", padding: "12px 16px", borderRadius: "8px", margin: "14px 0" }}>
-                  <Text style={{ fontSize: "12px", color: "#5C524A", margin: "0", lineHeight: "1.4" }}>
-                    🔒 <strong>Acceso a Google Meet:</strong> El enlace a la sala virtual se activará y te será enviado en cuanto se verifique el pago del abono del 20%.
+                <div style={{ backgroundColor: "#FFF8EB", border: "1px solid #F5E0B8", padding: "14px 16px", borderRadius: "8px", margin: "14px 0" }}>
+                  <Text style={{ fontSize: "12px", color: "#7A4B10", margin: "0", lineHeight: "1.4" }}>
+                    🔒 <strong>Acceso a Google Meet:</strong> Tu hora está pre-reservada por 2 horas. El enlace seguro a la sala virtual te será enviado a este correo en cuanto verifiquemos tu comprobante de transferencia bancaria.
                   </Text>
                 </div>
               )}
 
               <Hr style={{ borderColor: "#E7DECE", margin: "16px 0 12px" }} />
 
-              <Text style={{ ...cardLabel, margin: "0 0 6px" }}>Desglose de Pago:</Text>
-              <Text style={{ fontSize: "13px", color: "#5C524A", margin: "0 0 4px" }}>
-                • <strong>Abono de Reserva (20%):</strong> $9.000 CLP (Servicio de plataforma consteladores.cl)
-              </Text>
-              <Text style={{ fontSize: "13px", color: "#5C524A", margin: "0 0 8px" }}>
-                • <strong>Saldo a pagar al constelador (80%):</strong> $36.000 CLP
-              </Text>
-              <Text style={{ fontSize: "12px", color: "#8A7E73", margin: "0 0 10px", lineHeight: "1.4" }}>
-                El saldo del 80% se transfiere directamente al facilitador. Recuerda enviar tu comprobante/voucher de transferencia antes o al finalizar tu constelación.
+              <Text style={{ ...cardLabel, margin: "0 0 6px" }}>Valor del Servicio:</Text>
+              <Text style={{ fontSize: "15px", color: "#27221F", fontWeight: "bold", margin: "0 0 8px" }}>
+                Valor Total de la Sesión: {totalPrice} (Pago 100%)
               </Text>
 
-              <div style={{ textAlign: "center", margin: "12px 0 12px" }}>
-                <Link
-                  href="https://link.mercadopago.cl/reserva20"
-                  style={{
-                    display: "inline-block",
-                    backgroundColor: "#009EE3",
-                    color: "#ffffff",
-                    textDecoration: "none",
-                    padding: "12px 24px",
-                    borderRadius: "50px",
-                    fontWeight: "bold",
-                    fontSize: "13px",
-                  }}
-                >
-                  Pagar $9.000 en Mercado Pago / Webpay →
-                </Link>
-              </div>
+              {!isConfirmed && (
+                <>
+                  <div style={{ backgroundColor: "#FAF8F5", border: "1px solid #E7DECE", borderRadius: "8px", padding: "14px", margin: "12px 0" }}>
+                    <Text style={{ fontSize: "12px", color: "#27221F", margin: "0 0 6px", fontWeight: "bold" }}>
+                      Datos para Transferencia Bancaria (Total {totalPrice}):
+                    </Text>
+                    <Text style={{ fontSize: "12px", color: "#5C524A", margin: "0", lineHeight: "1.6" }}>
+                      • <strong>Institución:</strong> Mercado Pago<br />
+                      • <strong>Tipo de Cuenta:</strong> Cuenta Vista<br />
+                      • <strong>N° de Cuenta:</strong> 1038886585<br />
+                      • <strong>Titular:</strong> Karen Valeria Sudzuki Toro<br />
+                      • <strong>RUT:</strong> 13.298.884-6<br />
+                      • <strong>Correo de confirmación:</strong> karen.sudzuki@gmail.com
+                    </Text>
+                  </div>
 
-              <Hr style={{ borderColor: "#E7DECE", margin: "12px 0 8px" }} />
-
-              <Text style={{ fontSize: "11px", color: "#8A7E73", margin: "0", lineHeight: "1.4" }}>
-                <strong>Datos si prefieres Transferencia Bancaria Directa:</strong><br />
-                Banco / Institución: <strong>Mercado Pago</strong><br />
-                Tipo de Cuenta: <strong>Cuenta Vista</strong> · N°: <strong>1038886585</strong><br />
-                Titular: <strong>Karen Valeria Sudzuki Toro</strong> · RUT: <strong>13.298.884-6</strong><br />
-                Comprobante a: <strong>karen.sudzuki@gmail.com</strong>
-              </Text>
+                  <Text style={{ fontSize: "12px", color: "#5C524A", margin: "10px 0" }}>
+                    Una vez realizada la transferencia, envía tu comprobante respondiendo a este correo o por WhatsApp al <strong>+56 9 4193 9363</strong>.
+                  </Text>
+                </>
+              )}
             </Section>
 
-            {/* Política de Inasistencia y Reagendamiento */}
+            {/* Política de Reserva y Reagendamiento */}
             <Section style={{ backgroundColor: "#FDF7F4", border: "1px solid #F2D5C8", borderRadius: "12px", padding: "14px 18px", margin: "20px 0" }}>
               <Text style={{ fontSize: "12px", color: "#8B3E25", margin: "0 0 6px", fontWeight: "bold" }}>
-                ⚠️ Política de Reserva y Reagendamiento:
+                ⚠️ Política de Reagendamiento y Cancelación:
               </Text>
               <Text style={{ fontSize: "12px", color: "#5A493B", margin: "0", lineHeight: "1.5" }}>
-                El abono del 20% asegura tu cupo en la agenda del constelador y cubre los gastos de gestión de la plataforma. Si no asistes sin previo aviso, este 20% no es reembolsable. En casos excepcionales de fuerza mayor, puedes solicitar reagendamiento con un mínimo de 24 horas de anticipación escribiendo a soporte: <Link href="mailto:contacto@vorticeintegration.com" style={{ color: "#C46849", fontWeight: "bold" }}>contacto@vorticeintegration.com</Link>.
+                El pago del 100% reserva de manera exclusiva el horario del facilitador. Puedes solicitar reagendamiento sin costo con un mínimo de <strong>24 horas de anticipación</strong>. Las cancelaciones con menos de 24 horas o la inasistencia ("no-show") no tienen derecho a devolución.
               </Text>
             </Section>
 
             {/* Consejos para el momento */}
             <Heading as="h3" style={subHeadingStyle}>
-              Unas pequeñas sugerencias para tu encuentro
+              Orientaciones para tu encuentro
             </Heading>
 
             <Text style={bulletPoint}>
-              🌿 <strong>Tu rincón:</strong> Elige un lugar en el que te sientas en confianza, donde puedas hablar con libertad y sin interrupciones.
+              🌿 <strong>Tu rincón:</strong> Elige un lugar tranquilo y privado donde puedas hablar con libertad y sin interrupciones.
             </Text>
             <Text style={bulletPoint}>
-              💧 <strong>Agua y abrigo:</strong> Ten a mano un vaso de agua o una infusión tibia, y algo cómodo que te abrigue si el cuerpo lo pide.
+              💧 <strong>Agua y abrigo:</strong> Ten a mano un vaso de agua o una infusión tibia, y algo cómodo que te abrigue.
             </Text>
             <Text style={bulletPoint}>
-              📖 <strong>Sin apuro:</strong> No hace falta que prepares una lista exhaustiva ni explicaciones perfectas. Lo que necesita ser visto encontrará su curso a tu propio ritmo.
+              📖 <strong>Sin apuro:</strong> No hace falta que prepares explicaciones exhaustivas; el trabajo fenomenológico se desplegará a tu propio ritmo.
             </Text>
 
             <Hr style={dividerStyle} />
 
             <Text style={footerNote}>
-              Si por algún motivo de fuerza mayor necesitas reprogramar, responde a este mismo correo con al menos 24 horas de anticipación para que podamos acompañarte.
+              Si necesitas asistencia técnica o consultar sobre tu sesión, contáctanos a contacto@consteladores.cl.
             </Text>
 
             <Text style={signature}>
@@ -162,137 +160,126 @@ export function AppointmentConfirmationEmail({
   );
 }
 
-// Estilos en línea compatibles con clientes de correo (Gmail, Outlook, Apple Mail)
+// Estilos sobrios y naturales acordes al diseño de consteladores.cl
 const mainStyle: React.CSSProperties = {
-  backgroundColor: "#FAF8F5",
-  fontFamily: "Georgia, serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica",
-  padding: "36px 12px",
-  color: "#2B221B",
+  backgroundColor: "#FBF7F2",
+  fontFamily: "HelveticaNeue, Helvetica, Arial, sans-serif",
+  padding: "20px 0",
 };
 
 const containerStyle: React.CSSProperties = {
-  backgroundColor: "#FFFFFF",
-  borderRadius: "20px",
-  maxWidth: "580px",
+  backgroundColor: "#FCFAF7",
+  border: "1px solid #E7DECE",
+  borderRadius: "16px",
+  maxWidth: "600px",
   margin: "0 auto",
-  border: "1px solid #E7DFD5",
   overflow: "hidden",
-  boxShadow: "0 10px 30px -10px rgba(74, 52, 38, 0.05)",
 };
 
 const headerSection: React.CSSProperties = {
-  backgroundColor: "#F9ECE6",
-  padding: "32px 32px 28px",
+  backgroundColor: "#F3ECE2",
+  padding: "32px 24px 24px",
   textAlign: "center" as const,
-  borderBottom: "1px solid #F2D5C8",
+  borderBottom: "1px solid #E7DECE",
 };
 
 const subBrandText: React.CSSProperties = {
   fontSize: "12px",
-  letterSpacing: "2px",
+  letterSpacing: "1.5px",
   textTransform: "uppercase" as const,
-  color: "#8B3E25",
-  margin: "0 0 8px 0",
-  fontFamily: "system-ui, -apple-system, sans-serif",
-  fontWeight: 600,
+  color: "#8A7E73",
+  margin: "0 0 8px",
 };
 
 const headingStyle: React.CSSProperties = {
-  fontSize: "26px",
-  fontWeight: "normal",
+  fontSize: "24px",
+  color: "#27221F",
   margin: "0",
-  color: "#2B221B",
-  fontFamily: "Georgia, serif",
+  fontWeight: "bold",
 };
 
 const contentSection: React.CSSProperties = {
-  padding: "32px",
+  padding: "32px 24px",
 };
 
 const paragraph: React.CSSProperties = {
-  fontSize: "15px",
-  lineHeight: "26px",
-  color: "#5A493B",
-  margin: "0 0 16px 0",
+  fontSize: "14px",
+  lineHeight: "1.6",
+  color: "#5C524A",
+  margin: "0 0 16px",
 };
 
 const detailsCard: React.CSSProperties = {
-  backgroundColor: "#FAF8F5",
-  borderRadius: "14px",
+  backgroundColor: "#FFFFFF",
+  border: "1px solid #E7DECE",
+  borderRadius: "12px",
   padding: "20px",
-  border: "1px solid #E7DFD5",
   margin: "24px 0",
 };
 
 const cardLabel: React.CSSProperties = {
-  fontSize: "12px",
+  fontSize: "11px",
   textTransform: "uppercase" as const,
   letterSpacing: "1px",
-  color: "#8C7561",
-  margin: "0 0 4px 0",
-  fontFamily: "system-ui, -apple-system, sans-serif",
-  fontWeight: 600,
+  color: "#8A7E73",
+  margin: "0 0 4px",
+  fontWeight: "bold",
 };
 
 const cardValue: React.CSSProperties = {
   fontSize: "16px",
-  color: "#2B221B",
+  color: "#27221F",
   fontWeight: "bold",
   margin: "0",
 };
 
 const meetButton: React.CSSProperties = {
   display: "inline-block",
-  marginTop: "8px",
-  backgroundColor: "#C46849",
+  backgroundColor: "#1a73e8",
   color: "#FFFFFF",
-  padding: "11px 22px",
-  borderRadius: "999px",
-  textDecoration: "none",
+  padding: "14px 28px",
+  borderRadius: "50px",
   fontSize: "14px",
-  fontWeight: 600,
-  fontFamily: "system-ui, -apple-system, sans-serif",
+  fontWeight: "bold",
+  textDecoration: "none",
+  textAlign: "center" as const,
 };
 
 const linkFallback: React.CSSProperties = {
-  fontSize: "12px",
-  color: "#8C7561",
-  marginTop: "10px",
-  marginBottom: "0",
-  fontFamily: "system-ui, -apple-system, sans-serif",
+  fontSize: "11px",
+  color: "#8A7E73",
+  marginTop: "12px",
+  textAlign: "center" as const,
 };
 
 const subHeadingStyle: React.CSSProperties = {
-  fontSize: "18px",
-  fontWeight: "normal",
-  color: "#2B221B",
-  margin: "26px 0 12px 0",
-  fontFamily: "Georgia, serif",
+  fontSize: "16px",
+  color: "#27221F",
+  margin: "24px 0 12px",
 };
 
 const bulletPoint: React.CSSProperties = {
-  fontSize: "14px",
-  lineHeight: "22px",
-  color: "#5A493B",
-  margin: "0 0 10px 0",
+  fontSize: "13px",
+  lineHeight: "1.5",
+  color: "#5C524A",
+  margin: "0 0 10px",
 };
 
 const dividerStyle: React.CSSProperties = {
-  borderColor: "#E7DFD5",
-  borderWidth: "1px 0 0 0",
-  margin: "28px 0 20px 0",
+  borderColor: "#E7DECE",
+  margin: "28px 0 20px",
 };
 
 const footerNote: React.CSSProperties = {
-  fontSize: "13px",
-  lineHeight: "20px",
-  color: "#8C7561",
-  margin: "0 0 20px 0",
+  fontSize: "12px",
+  color: "#8A7E73",
+  margin: "0 0 16px",
+  lineHeight: "1.5",
 };
 
 const signature: React.CSSProperties = {
-  fontSize: "14px",
-  lineHeight: "22px",
-  color: "#5A493B",
+  fontSize: "13px",
+  lineHeight: "1.5",
+  color: "#27221F",
   margin: "0",
 };

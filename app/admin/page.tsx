@@ -2493,6 +2493,47 @@ export default function AdminPage() {
               </div>
             </div>
 
+            {/* Pasarela de Pago Online: Link de Mercado Pago / Webpay */}
+            <div className="bg-[#FAF8F5] p-5 rounded-2xl border-2 border-[#009EE3]/30 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#007EB5] block">
+                    💳 Pasarela de Pago Online (Mercado Pago / Webpay)
+                  </span>
+                  <p className="text-xs text-[#5C524A] mt-0.5">
+                    Pega aquí tu Link de Cobro de Mercado Pago (ej. <code className="bg-white px-1.5 py-0.5 rounded text-[11px] text-[#007EB5]">https://mpago.la/...</code> o <code className="bg-white px-1.5 py-0.5 rounded text-[11px] text-[#007EB5]">https://link.mercadopago.cl/...</code>).
+                  </p>
+                </div>
+                <span className="px-2.5 py-1 rounded-full bg-[#009EE3]/10 text-[#007EB5] font-semibold text-[11px]">
+                  100% Pago Directo
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#5C524A] mb-1">
+                  Link de Cobro Oficial de Mercado Pago
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://mpago.la/xxxxxx o https://link.mercadopago.cl/..."
+                  value={content.settings.mercadopagoPaymentLink || ""}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      settings: {
+                        ...content.settings,
+                        mercadopagoPaymentLink: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#009EE3]/40 text-xs sm:text-sm font-mono text-[#007EB5] placeholder:text-[#8A7E73] focus:outline-none focus:ring-2 focus:ring-[#009EE3]"
+                />
+                <p className="text-[11px] text-[#8A7E73] mt-1.5">
+                  Al configurar este link, el botón azul &ldquo;Pagar con Mercado Pago / Webpay&rdquo; enviará al consultante directamente a pagar los $40.000 de forma segura. Si se deja vacío, la pasarela sugerirá transferencia bancaria.
+                </p>
+              </div>
+            </div>
+
             {/* 3. MÓDULO DE CONVOCATORIA A FACILITADORES ("Si eres facilitador y quieres pertenecer al equipo") */}
             <div className="bg-[#FAF8F5] p-5 rounded-2xl border border-[#E7DECE] space-y-4">
               <div className="border-b border-[#E7DECE] pb-3">

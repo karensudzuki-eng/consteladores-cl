@@ -117,6 +117,7 @@ export interface CMSSettings {
     accountNumber: string;
     email: string;
   };
+  mercadopagoPaymentLink?: string;
 }
 
 export interface CMSContent {
