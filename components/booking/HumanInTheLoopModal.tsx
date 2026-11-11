@@ -37,6 +37,7 @@ export function HumanInTheLoopModal({
   const [timeNotes, setTimeNotes] = useState("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   if (!isOpen) return null;
 
@@ -105,6 +106,63 @@ export function HumanInTheLoopModal({
       setStep("confirmed");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleMercadoPagoPayment = async () => {
+    if (!selectedDate) {
+      alert("Por favor selecciona una fecha para tu sesión.");
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    try {
+      const scheduledDateTime = `${selectedDate}T${selectedTime || "16:00"}:00`;
+
+      // Guardar datos en sessionStorage para recuperarlos en la pantalla de confirmación
+      const bookingData = {
+        ticketId: `CST-MP-${Date.now().toString().slice(-6)}`,
+        clientName: formData.fullName,
+        clientEmail: formData.email,
+        clientPhone: formData.phone,
+        facilitatorName: "Karen Valeria Sudzuki Toro",
+        scheduledDate: getFriendlyDate(selectedDate),
+        scheduledHour: selectedTime || "16:00",
+        meetLink: "https://meet.google.com/cst-safe-room",
+        deposit: 40000,
+        balance: 0,
+        total: 40000,
+      };
+
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("cst_last_booking", JSON.stringify(bookingData));
+      }
+
+      // Llamar al endpoint de Mercado Pago
+      const response = await fetch("/api/mercadopago/create-preference", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientName: formData.fullName,
+          clientEmail: formData.email,
+          clientPhone: formData.phone,
+          scheduledAt: scheduledDateTime,
+          therapistId: "karen-sudzuki-icalma",
+          consultationMotive: `Sesión Individual (${getFriendlyDate(selectedDate)} a las ${selectedTime || "16:00"} hrs${timeNotes ? ` · Nota: ${timeNotes}` : ""})`,
+          amountPaidClp: 40000,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        throw new Error(data.error || "No se pudo generar el enlace de pago");
+      }
+    } catch (err: any) {
+      alert("Error al conectar con la pasarela de pago: " + (err?.message || "Intenta nuevamente."));
+      setIsProcessingPayment(false);
     }
   };
 
@@ -330,22 +388,52 @@ export function HumanInTheLoopModal({
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            {/* OPCIONES DE PAGO */}
+            <div className="pt-2 space-y-3">
+              {/* Botón Principal: Mercado Pago / Webpay */}
               <button
                 type="button"
-                onClick={() => setStep("form")}
-                className="w-full sm:w-1/3 py-3 px-4 rounded-full bg-[#FAF8F5] hover:bg-[#F3ECE2] border border-[#E7DECE] text-xs text-[#5C524A] font-medium transition-all cursor-pointer"
+                onClick={handleMercadoPagoPayment}
+                disabled={isProcessingPayment || isSubmitting}
+                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#009EE3] to-[#007EB5] hover:from-[#008CC9] hover:to-[#006E9E] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all active:scale-98 cursor-pointer disabled:opacity-50 flex items-center justify-between"
               >
-                ← Volver
+                <div className="flex items-center gap-2.5">
+                  <span className="w-6 h-6 rounded-full bg-white text-[#009EE3] flex items-center justify-center font-bold text-xs">
+                    💳
+                  </span>
+                  <div className="text-left">
+                    <div className="leading-tight">
+                      {isProcessingPayment ? "Conectando con Mercado Pago..." : "Pagar con Mercado Pago / Webpay"}
+                    </div>
+                    <div className="text-[10px] font-normal text-white/90">
+                      Débito, Crédito o Transferencia · Confirmación inmediata
+                    </div>
+                  </div>
+                </div>
+                <span className="font-mono text-sm bg-white/20 px-2.5 py-1 rounded-lg">
+                  {servicePrice}
+                </span>
               </button>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full sm:w-2/3 py-3 px-6 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all active:scale-98 cursor-pointer disabled:opacity-50"
-              >
-                {isSubmitting ? "Registrando reserva..." : "Confirmar Reserva →"}
-              </button>
+              {/* Botón Secundario: Transferencia Bancaria Manual */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setStep("form")}
+                  className="w-full sm:w-1/3 py-3 px-4 rounded-xl bg-[#FAF8F5] hover:bg-[#F3ECE2] border border-[#E7DECE] text-xs text-[#5C524A] font-medium transition-all cursor-pointer"
+                >
+                  ← Volver
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting || isProcessingPayment}
+                  className="w-full sm:w-2/3 py-3 px-4 rounded-xl bg-white hover:bg-[#FDFBF7] border border-[#E7DECE] text-[#5C524A] hover:text-[#27221F] font-semibold text-xs shadow-sm transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
+                >
+                  <span>🏦</span>
+                  <span>{isSubmitting ? "Registrando..." : "Pagar con Transferencia Bancaria"}</span>
+                </button>
+              </div>
             </div>
           </form>
         )}
@@ -363,13 +451,37 @@ export function HumanInTheLoopModal({
               </p>
             </div>
 
+            {/* BOTÓN PROMINENTE DE PAGO ONLINE CON MERCADO PAGO */}
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-[#009EE3]/10 to-[#007EB5]/10 border-2 border-[#009EE3]/30 text-left">
+              <div className="text-xs font-semibold text-[#007EB5] uppercase tracking-wider mb-1">
+                Opción Rápida con Tarjetas
+              </div>
+              <p className="text-xs text-[#5C524A] mb-3">
+                Puedes pagar directamente ahora con débito, crédito o Webpay con confirmación instantánea:
+              </p>
+              <button
+                type="button"
+                onClick={handleMercadoPagoPayment}
+                disabled={isProcessingPayment}
+                className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-[#009EE3] to-[#007EB5] hover:from-[#008CC9] hover:to-[#006E9E] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all active:scale-98 cursor-pointer disabled:opacity-50 flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-white text-[#009EE3] flex items-center justify-center font-bold text-xs shadow-sm">
+                    💳
+                  </span>
+                  <span>{isProcessingPayment ? "Conectando con pasarela..." : "Pagar $40.000 con Mercado Pago / Webpay"}</span>
+                </div>
+                <span className="text-xs bg-white/20 px-2 py-0.5 rounded">Pagar Online →</span>
+              </button>
+            </div>
+
             {/* Aviso de Comprobante y Envío de la Meet */}
             <div className="p-4 rounded-2xl bg-[#FFF8EB] border border-[#F5E0B8] text-[#7A4B10] text-xs sm:text-sm leading-relaxed space-y-1 shadow-sm">
               <div className="font-bold flex items-center gap-1.5 text-[#8F5614]">
-                <span>⚠️ No olvides enviar tu comprobante de pago</span>
+                <span>🏦 O pagar mediante Transferencia Bancaria</span>
               </div>
               <p>
-                Envía tu voucher de transferencia por WhatsApp. Una vez recibido y validado, <strong>te enviaremos el enlace con la Google Meet de la reunión directamente a tu correo electrónico ({formData.email})</strong>.
+                Si prefieres transferir manualmente, utiliza los siguientes datos y luego presiona "Enviar Comprobante por WhatsApp":
               </p>
             </div>
 
